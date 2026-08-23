@@ -1,0 +1,534 @@
+{
+  "tracks": [
+    { "id": "data_ai", "name": "Data Analytics & AI / ML" },
+    { "id": "software_eng", "name": "Software Engineering & Architecture" },
+    { "id": "product_management", "name": "Product Strategy & AI Products" },
+    { "id": "devops_cloud", "name": "DevOps, SRE & Cloud Systems" }
+  ],
+  "skills": [
+    {
+      "id": "sql_mastery",
+      "name": "SQL & Data Warehousing",
+      "category": "Data Analytics & AI",
+      "description": "Complex JOINs, Window Functions, Query Optimization, BigQuery, Snowflake",
+      "prerequisites": [],
+      "levels": {
+        "1": "Basic SELECT & WHERE queries",
+        "2": "JOINs, GROUP BY, aggregations",
+        "3": "Window functions, CTEs, indexing basics",
+        "4": "Query optimization, partitioning, warehouse design",
+        "5": "Expert DBA/Data Platform tuning & architecture"
+      }
+    },
+    {
+      "id": "python_analytics",
+      "name": "Python for Data & Automation",
+      "category": "Data Analytics & AI",
+      "description": "Pandas, NumPy, script automation, API data ingestion",
+      "prerequisites": [],
+      "levels": {
+        "1": "Variables, loops, basic syntax",
+        "2": "Data cleaning with Pandas & NumPy",
+        "3": "API data parsing, automation scripts, Jupyter",
+        "4": "Performant vectorization, custom modules, OOP",
+        "5": "Distributed data processing (PySpark, Dask)"
+      }
+    },
+    {
+      "id": "tableau_bi",
+      "name": "BI & Data Visualization (Tableau/PowerBI)",
+      "category": "Data Analytics & AI",
+      "description": "Interactive dashboards, LOD expressions, DAX, executive stories",
+      "prerequisites": ["sql_mastery"],
+      "levels": {
+        "1": "Basic charts & filters",
+        "2": "Calculated fields, drill-down dashboards",
+        "3": "LOD expressions, parameters, performance tuning",
+        "4": "Enterprise data governance & dashboard design system",
+        "5": "C-suite strategic story mapping & automated reporting"
+      }
+    },
+    {
+      "id": "stat_modeling",
+      "name": "Statistical Modeling & A/B Testing",
+      "category": "Data Analytics & AI",
+      "description": "Hypothesis testing, regression analysis, confidence intervals, experiment design",
+      "prerequisites": ["python_analytics", "sql_mastery"],
+      "levels": {
+        "1": "Mean, median, standard deviation",
+        "2": "Linear regression, t-tests, basic probability",
+        "3": "A/B testing, sample size calculation, p-values",
+        "4": "Multivariate testing, causal inference, logistic regression",
+        "5": "Advanced Bayesian inference & experimental engineering"
+      }
+    },
+    {
+      "id": "llm_engineering",
+      "name": "LLM & RAG Application Building",
+      "category": "Data Analytics & AI",
+      "description": "LangChain, LlamaIndex, Vector DBs (Chroma/Pinecone), Prompt Engineering, Fine-tuning",
+      "prerequisites": ["python_analytics"],
+      "levels": {
+        "1": "Basic API calls to OpenAI/Claude",
+        "2": "Prompt engineering, structured JSON outputs",
+        "3": "RAG implementation with Vector DBs & chunking",
+        "4": "Agentic workflows, tool use, evaluation frameworks",
+        "5": "Model fine-tuning, local LLM quantization & latency optimization"
+      }
+    },
+    {
+      "id": "react_frontend",
+      "name": "Modern React & Frontend Architecture",
+      "category": "Software Engineering",
+      "description": "React 18+, State Management, Hooks, Performance, Component Design",
+      "prerequisites": [],
+      "levels": {
+        "1": "JSX, basic components & props",
+        "2": "Hooks (useState, useEffect), state lifting",
+        "3": "Context, custom hooks, async data fetching, Tailwind",
+        "4": "State management (Zustand/Redux), virtual DOM optimization",
+        "5": "Micro-frontends, custom rendering engines & design systems"
+      }
+    },
+    {
+      "id": "node_express",
+      "name": "Node.js & Express API Development",
+      "category": "Software Engineering",
+      "description": "RESTful APIs, Middleware, Auth, Middleware, Event Loop, DB Integration",
+      "prerequisites": [],
+      "levels": {
+        "1": "Basic HTTP server, routing",
+        "2": "REST API design, middleware, async/await",
+        "3": "Auth (JWT/OAuth), DB ORM integration, error handling",
+        "4": "WebSockets, rate limiting, caching (Redis), clustering",
+        "5": "High-throughput microservices & event-driven architecture"
+      }
+    },
+    {
+      "id": "system_design",
+      "name": "System Design & Distributed Architecture",
+      "category": "Software Engineering",
+      "description": "Scalability, Caching, Load Balancing, Message Queues (Kafka/RabbitMQ), Microservices",
+      "prerequisites": ["node_express"],
+      "levels": {
+        "1": "Single-server database & web app architecture",
+        "2": "Caching strategies, database indexing",
+        "3": "Load balancing, stateless API scaling, database replication",
+        "4": "Event-driven architecture, distributed transactions (Saga)",
+        "5": "Global scale infrastructure, CAP theorem trade-offs"
+      }
+    },
+    {
+      "id": "product_discovery",
+      "name": "Product Discovery & User Research",
+      "category": "Product Strategy",
+      "description": "Customer interviews, opportunity solution trees, wireframing, feature validation",
+      "prerequisites": [],
+      "levels": {
+        "1": "User feedback collection",
+        "2": "Structured customer interviews & persona mapping",
+        "3": "Opportunity Solution Trees, MVP scoping",
+        "4": "Quantitative feature prioritization (RICE/Kano), product analytics",
+        "5": "Strategic portfolio management & market expansion"
+      }
+    },
+    {
+      "id": "ai_product_strategy",
+      "name": "AI Product Management & Ethics",
+      "category": "Product Strategy",
+      "description": "AI capability assessment, model metric tradeoffs (precision/recall), AI UX design",
+      "prerequisites": ["product_discovery"],
+      "levels": {
+        "1": "Understanding basic AI terminology",
+        "2": "Identifying AI vs non-AI use cases",
+        "3": "Defining AI metrics (accuracy, latency, cost per query)",
+        "4": "Designing human-in-the-loop AI workflows & ethics guidelines",
+        "5": "Enterprise AI roadmap leadership & AI ROI optimization"
+      }
+    },
+    {
+      "id": "docker_k8s",
+      "name": "Docker Containerization & Kubernetes",
+      "category": "DevOps & Cloud",
+      "description": "Dockerfile, Docker Compose, K8s Pods, Deployments, Helm, Cluster Ingress",
+      "prerequisites": [],
+      "levels": {
+        "1": "Running docker containers, simple Dockerfile",
+        "2": "Multi-stage builds, Docker Compose for dev",
+        "3": "Kubernetes manifests (Pods, Services, Deployments)",
+        "4": "Helm charts, Ingress controllers, cluster monitoring",
+        "5": "Multi-region Kubernetes cluster auto-scaling & service mesh"
+      }
+    },
+    {
+      "id": "cicd_terraform",
+      "name": "CI/CD Pipelines & Infrastructure as Code (Terraform)",
+      "category": "DevOps & Cloud",
+      "description": "GitHub Actions, Terraform modules, state management, automated testing gates",
+      "prerequisites": ["docker_k8s"],
+      "levels": {
+        "1": "Basic GitHub Action workflows",
+        "2": "Automated build & test pipelines",
+        "3": "Terraform basics for AWS/GCP resources",
+        "4": "Modular IaC, secrets management, blue-green deployments",
+        "5": "Enterprise GitOps, zero-downtime progressive rollouts"
+      }
+    }
+  ],
+  "roles": [
+    {
+      "id": "sr_data_analyst",
+      "title": "Senior Data Analyst",
+      "track": "data_ai",
+      "description": "Transforms raw enterprise data into actionable executive insights, drives statistical experimentations, and builds self-serve data models.",
+      "required_skills": [
+        { "skill_id": "sql_mastery", "min_level": 4 },
+        { "skill_id": "python_analytics", "min_level": 3 },
+        { "skill_id": "tableau_bi", "min_level": 4 },
+        { "skill_id": "stat_modeling", "min_level": 3 }
+      ]
+    },
+    {
+      "id": "lead_ai_eng",
+      "title": "Lead AI / LLM Engineer",
+      "track": "data_ai",
+      "description": "Architects production LLM applications, RAG pipelines, multi-agent systems, and custom model evaluation frameworks.",
+      "required_skills": [
+        { "skill_id": "python_analytics", "min_level": 4 },
+        { "skill_id": "llm_engineering", "min_level": 4 },
+        { "skill_id": "sql_mastery", "min_level": 3 },
+        { "skill_id": "node_express", "min_level": 3 }
+      ]
+    },
+    {
+      "id": "sr_fullstack_eng",
+      "title": "Senior Full-Stack Engineer",
+      "track": "software_eng",
+      "description": "Delivers end-to-end resilient web platforms, from responsive frontend micro-interactions to scalable Node.js microservices.",
+      "required_skills": [
+        { "skill_id": "react_frontend", "min_level": 4 },
+        { "skill_id": "node_express", "min_level": 4 },
+        { "skill_id": "system_design", "min_level": 3 },
+        { "skill_id": "sql_mastery", "min_level": 3 }
+      ]
+    },
+    {
+      "id": "lead_ai_pm",
+      "title": "Lead AI Product Manager",
+      "track": "product_management",
+      "description": "Owns product vision for AI-powered enterprise software, defining ML success metrics, user experience, and go-to-market strategies.",
+      "required_skills": [
+        { "skill_id": "product_discovery", "min_level": 4 },
+        { "skill_id": "ai_product_strategy", "min_level": 4 },
+        { "skill_id": "stat_modeling", "min_level": 3 },
+        { "skill_id": "tableau_bi", "min_level": 3 }
+      ]
+    },
+    {
+      "id": "sr_devops_eng",
+      "title": "Senior DevOps / SRE Engineer",
+      "track": "devops_cloud",
+      "description": "Automates cloud infrastructure, Kubernetes clusters, zero-downtime deployment pipelines, and high availability systems.",
+      "required_skills": [
+        { "skill_id": "docker_k8s", "min_level": 4 },
+        { "skill_id": "cicd_terraform", "min_level": 4 },
+        { "skill_id": "system_design", "min_level": 3 },
+        { "skill_id": "python_analytics", "min_level": 3 }
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "id": "c_sql_1",
+      "title": "Advanced SQL & Database Tuning for Analytics",
+      "skill_id": "sql_mastery",
+      "target_level": 4,
+      "provider": "Coursera / Mode Analytics",
+      "duration_hrs": 12,
+      "rating": 4.9,
+      "enrolled_count": 34200,
+      "source_url": "https://www.coursera.org/learn/analytics-sql",
+      "format": "Interactive Exercises + Real DB Queries",
+      "key_takeaways": "Master Window Functions (RANK, NTILE, LAG), Common Table Expressions, indexing, and query execution plan analysis."
+    },
+    {
+      "id": "c_sql_2",
+      "title": "SQL Query Optimization & Data Warehousing (BigQuery/Snowflake)",
+      "skill_id": "sql_mastery",
+      "target_level": 4,
+      "provider": "Udemy",
+      "duration_hrs": 10,
+      "rating": 4.8,
+      "enrolled_count": 21800,
+      "source_url": "https://www.udemy.com/course/sql-data-warehousing",
+      "format": "Video + Hands-on Lab",
+      "key_takeaways": "Partitioning, clustering, cost optimization in cloud data warehouses, star schema design."
+    },
+    {
+      "id": "c_py_1",
+      "title": "Python for Data Analysis & Automation Masterclass",
+      "skill_id": "python_analytics",
+      "target_level": 3,
+      "provider": "freeCodeCamp",
+      "duration_hrs": 14,
+      "rating": 4.9,
+      "enrolled_count": 89000,
+      "source_url": "https://www.youtube.com/watch?v=r-uOLxNrNk8",
+      "format": "Video Tutorial + GitHub Repo",
+      "key_takeaways": "Pandas DataFrame transformations, clean data cleaning pipelines, automated CSV/Excel parsing, REST API data scraping."
+    },
+    {
+      "id": "c_py_2",
+      "title": "Performant Python: Vectorization & Production Code",
+      "skill_id": "python_analytics",
+      "target_level": 4,
+      "provider": "DataCamp",
+      "duration_hrs": 8,
+      "rating": 4.7,
+      "enrolled_count": 15400,
+      "source_url": "https://www.datacamp.com/courses/writing-efficient-python-code",
+      "format": "Interactive Coding Environment",
+      "key_takeaways": "NumPy vectorization, memory profiling, multiprocessing, object-oriented design for data pipelines."
+    },
+    {
+      "id": "c_tab_1",
+      "title": "Tableau Desktop Specialist & Executive Dashboard Design",
+      "skill_id": "tableau_bi",
+      "target_level": 4,
+      "provider": "Udemy",
+      "duration_hrs": 16,
+      "rating": 4.8,
+      "enrolled_count": 41200,
+      "source_url": "https://www.udemy.com/course/tableau-desktop",
+      "format": "Project-based Case Studies",
+      "key_takeaways": "Fixed/Include/Exclude LOD Expressions, parameter actions, executive storytelling, theme standardization."
+    },
+    {
+      "id": "c_stat_1",
+      "title": "A/B Testing & Statistical Experimentation in Tech",
+      "skill_id": "stat_modeling",
+      "target_level": 3,
+      "provider": "Udacity / Google",
+      "duration_hrs": 15,
+      "rating": 4.9,
+      "enrolled_count": 62000,
+      "source_url": "https://www.udacity.com/course/ab-testing--ud257",
+      "format": "Video + Quizzes + Real Datasets",
+      "key_takeaways": "Hypothesis testing, sample size & power analysis, p-hacking prevention, variance reduction techniques (CUPED)."
+    },
+    {
+      "id": "c_llm_1",
+      "title": "Building Production RAG & Multi-Agent Applications",
+      "skill_id": "llm_engineering",
+      "target_level": 4,
+      "provider": "DeepLearning.AI",
+      "duration_hrs": 10,
+      "rating": 4.95,
+      "enrolled_count": 115000,
+      "source_url": "https://www.deeplearning.ai/short-courses/building-agentic-rag/",
+      "format": "Jupyter Notebooks + API Labs",
+      "key_takeaways": "LangChain, LlamaIndex, Vector DB chunking strategies, hybrid keyword-vector search, self-correcting RAG agents."
+    },
+    {
+      "id": "c_react_1",
+      "title": "Advanced React Patterns, Performance & State Architecture",
+      "skill_id": "react_frontend",
+      "target_level": 4,
+      "provider": "Frontend Masters",
+      "duration_hrs": 14,
+      "rating": 4.9,
+      "enrolled_count": 28400,
+      "source_url": "https://frontendmasters.com/courses/advanced-react-patterns/",
+      "format": "Interactive Code Exercises",
+      "key_takeaways": "Compound components, custom hooks, React 18 concurrent rendering, Zustand state management, memory leak prevention."
+    },
+    {
+      "id": "c_node_1",
+      "title": "Node.js Microservices, REST & Security Architecture",
+      "skill_id": "node_express",
+      "target_level": 4,
+      "provider": "Udemy / Node University",
+      "duration_hrs": 18,
+      "rating": 4.8,
+      "enrolled_count": 53000,
+      "source_url": "https://www.udemy.com/course/understand-nodejs/",
+      "format": "Code-along Projects",
+      "key_takeaways": "Express middleware pipeline, JWT auth, rate limiting, async error handling, ORM integration, API versioning."
+    },
+    {
+      "id": "c_sys_1",
+      "title": "System Design Interview & High-Scale Architecture",
+      "skill_id": "system_design",
+      "target_level": 3,
+      "provider": "ByteByteGo / Alex Xu",
+      "duration_hrs": 20,
+      "rating": 4.96,
+      "enrolled_count": 78000,
+      "source_url": "https://bytebytego.com/",
+      "format": "Diagrams, Case Studies & System Walks",
+      "key_takeaways": "Caching strategies (Redis), CDN, database sharding, rate limiters, message queues (Kafka), distributed locks."
+    },
+    {
+      "id": "c_pm_1",
+      "title": "Continuous Product Discovery & Opportunity Trees",
+      "skill_id": "product_discovery",
+      "target_level": 4,
+      "provider": "Product Talk Academy / Teresa Torres",
+      "duration_hrs": 8,
+      "rating": 4.9,
+      "enrolled_count": 18900,
+      "source_url": "https://www.producttalk.org/",
+      "format": "Workshop Videos + Templates",
+      "key_takeaways": "Weekly customer interview loops, opportunity mapping, assumption testing, feature validation before building."
+    },
+    {
+      "id": "c_aipm_1",
+      "title": "AI Product Strategy: From LLMs to Business Value",
+      "skill_id": "ai_product_strategy",
+      "target_level": 4,
+      "provider": "Reforge / Stanford Online",
+      "duration_hrs": 12,
+      "rating": 4.9,
+      "enrolled_count": 9400,
+      "source_url": "https://www.reforge.com/",
+      "format": "Case Studies + Strategy Frameworks",
+      "key_takeaways": "AI unit economics, evaluation framework design, human-in-the-loop UX, AI safety & compliance."
+    },
+    {
+      "id": "c_k8s_1",
+      "title": "Kubernetes & Docker in Production Bootcamp",
+      "skill_id": "docker_k8s",
+      "target_level": 4,
+      "provider": "Udemy / Mumshad Mannambeth",
+      "duration_hrs": 22,
+      "rating": 4.9,
+      "enrolled_count": 140000,
+      "source_url": "https://www.udemy.com/course/certified-kubernetes-administrator-with-pkb/",
+      "format": "Interactive KodeKloud Labs",
+      "key_takeaways": "K8s Pods, Deployments, Services, ConfigMaps, Ingress, Helm deployments, cluster troubleshooting."
+    },
+    {
+      "id": "c_iac_1",
+      "title": "Infrastructure as Code with Terraform & GitHub Actions",
+      "skill_id": "cicd_terraform",
+      "target_level": 4,
+      "provider": "HashiCorp Learn / HashiCorp",
+      "duration_hrs": 14,
+      "rating": 4.85,
+      "enrolled_count": 31000,
+      "source_url": "https://developer.hashicorp.com/terraform/tutorials",
+      "format": "Hands-on Terraform Labs",
+      "key_takeaways": "Modular Terraform, state locking with S3/DynamoDB, GitHub Action CI/CD deployment pipelines, secret masking."
+    }
+  ],
+  "personas": [
+    {
+      "id": "p_priya",
+      "name": "Priya Sharma",
+      "role": "Junior Data Analyst",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+      "target_role_id": "sr_data_analyst",
+      "weekly_hours": 6,
+      "current_skills": {
+        "sql_mastery": 2,
+        "python_analytics": 2,
+        "tableau_bi": 2,
+        "stat_modeling": 1,
+        "llm_engineering": 1
+      },
+      "bio": "Priya builds basic Tableau charts and writes SELECT queries. She wants to level up to Senior Data Analyst to lead statistical experimentations and data warehouse queries."
+    },
+    {
+      "id": "p_marcus",
+      "name": "Marcus Chen",
+      "role": "Frontend Developer",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "target_role_id": "sr_fullstack_eng",
+      "weekly_hours": 8,
+      "current_skills": {
+        "react_frontend": 3,
+        "node_express": 2,
+        "sql_mastery": 1,
+        "system_design": 1
+      },
+      "bio": "Marcus is a React specialist looking to become a Senior Full-Stack Engineer by mastering Node.js REST APIs, database architecture, and distributed system design."
+    },
+    {
+      "id": "p_sarah",
+      "name": "Sarah Jenkins",
+      "role": "Associate Product Manager",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
+      "target_role_id": "lead_ai_pm",
+      "weekly_hours": 5,
+      "current_skills": {
+        "product_discovery": 2,
+        "ai_product_strategy": 1,
+        "stat_modeling": 1,
+        "tableau_bi": 2
+      },
+      "bio": "Sarah manages traditional feature backlog sprints. She wants to transition into AI Product Management to spearhead LLM-driven features and AI product metrics."
+    }
+  ],
+  "team_heatmap": [
+    {
+      "employee_name": "Priya Sharma",
+      "current_role": "Junior Data Analyst",
+      "target_role": "Senior Data Analyst",
+      "readiness_percent": 68,
+      "skills": {
+        "sql_mastery": 2,
+        "python_analytics": 2,
+        "tableau_bi": 2,
+        "stat_modeling": 1
+      }
+    },
+    {
+      "employee_name": "Marcus Chen",
+      "current_role": "Frontend Developer",
+      "target_role": "Senior Full-Stack Engineer",
+      "readiness_percent": 57,
+      "skills": {
+        "react_frontend": 3,
+        "node_express": 2,
+        "sql_mastery": 1,
+        "system_design": 1
+      }
+    },
+    {
+      "employee_name": "Sarah Jenkins",
+      "current_role": "Associate Product Manager",
+      "target_role": "Lead AI Product Manager",
+      "readiness_percent": 50,
+      "skills": {
+        "product_discovery": 2,
+        "ai_product_strategy": 1,
+        "stat_modeling": 1,
+        "tableau_bi": 2
+      }
+    },
+    {
+      "employee_name": "David Kim",
+      "current_role": "Cloud Support Associate",
+      "target_role": "Senior DevOps Engineer",
+      "readiness_percent": 75,
+      "skills": {
+        "docker_k8s": 3,
+        "cicd_terraform": 3,
+        "system_design": 2,
+        "python_analytics": 2
+      }
+    },
+    {
+      "employee_name": "Elena Rostova",
+      "current_role": "Data Engineer",
+      "target_role": "Lead AI Engineer",
+      "readiness_percent": 82,
+      "skills": {
+        "python_analytics": 4,
+        "sql_mastery": 4,
+        "llm_engineering": 3,
+        "node_express": 3
+      }
+    }
+  ]
+}
