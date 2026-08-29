@@ -1,13 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
-  Sparkles, Calendar, Clock, BookOpen, ExternalLink, CheckCircle2, Award, ArrowRight, ShieldCheck, PlayCircle, RotateCw 
+  Sparkles, Calendar, Clock, BookOpen, ExternalLink, CheckCircle2, Award, ArrowRight, 
+  ShieldCheck, PlayCircle, RotateCw, Lightbulb, Bot, Download, Coffee, FileCheck, Volume2, VolumeX, Zap, FileText, Code2, MessageSquare, Trophy 
 } from 'lucide-react';
+import { generateAndDownloadICS } from '../utils/calendarUtils';
+import { speakText, stopSpeaking, isSpeaking } from '../utils/speechUtils';
+import YearHeatmap from './YearHeatmap';
+import DailyChallengeWidget from './DailyChallengeWidget';
 
-export default function RoadmapView({ learningPath, onStartQuiz, onReplanClick }) {
+export default function RoadmapView({ 
+  learningPath, 
+  onStartQuiz, 
+  onOpenMentor, 
+  onOpenCertificate, 
+  onOpenMentorship,
+  onOpenRoleplay,
+  onOpenPromotionMemo,
+  onOpenPlayground,
+  onOpenSlack,
+  onOpenLeaderboard,
+  learnerName
+}) {
+  const [activeSpeakingStep, setActiveSpeakingStep] = useState(null);
+
   if (!learningPath || !learningPath.phases) {
     return (
-      <div className="p-8 text-center text-gray-400 glass-card rounded-2xl">
-        Generating Adaptive Learning Roadmap...
+      <div className="p-12 text-center text-slate-500 bg-white border border-slate-200 shadow-sm rounded-2xl">
+        <div className="animate-spin w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+        <p className="font-semibold text-slate-700">Generating your personalized adaptive roadmap...</p>
+        <p className="text-xs text-slate-400 mt-1">Analyzing skill requirements, course prerequisites, and learning pace</p>
       </div>
     );
   }
@@ -17,74 +38,180 @@ export default function RoadmapView({ learningPath, onStartQuiz, onReplanClick }
   const completedCount = roadmap_steps.filter(s => s.status === 'verified').length;
   const progressPercent = Math.round((completedCount / (roadmap_steps.length || 1)) * 100);
 
+  const handleDownloadCalendar = () => {
+    generateAndDownloadICS({
+      roleTitle: target_role_title,
+      weeklyHours: weekly_hours_budget,
+      roadmapSteps: roadmap_steps
+    });
+  };
+
+  const handleToggleVoice = (step) => {
+    if (activeSpeakingStep === step.step_number) {
+      stopSpeaking();
+      setActiveSpeakingStep(null);
+    } else {
+      setActiveSpeakingStep(step.step_number);
+      const textToRead = `Lesson for step ${step.step_number}. ${step.course?.title}. Target skill: ${step.skill_name}. Why this course was chosen: ${step.ai_explanation}. Core learning takeaways: ${step.course?.key_takeaways || 'Practical industry implementation.'}`;
+      speakText(textToRead, () => {
+        setActiveSpeakingStep(null);
+      });
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fadeIn">
       
+      {/* Daily Challenge & Streak Widget */}
+      <DailyChallengeWidget streakDays={8} />
+
       {/* Header Summary Banner */}
-      <div className="glass-panel rounded-2xl p-6 border border-indigo-500/30 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
+      <div className="bg-gradient-to-br from-white via-blue-50/40 to-indigo-50/50 rounded-2xl p-6 sm:p-8 border border-blue-200/80 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16"></div>
 
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
           
-          <div className="space-y-2 max-w-3xl">
+          <div className="space-y-2.5 max-w-3xl">
             <div className="flex items-center space-x-2">
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center space-x-1">
-                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                <span>AI-Generated Adaptive Roadmap</span>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200 flex items-center space-x-1.5 shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                <span>AI Adaptive Career Roadmap</span>
               </span>
-              <span className="text-xs text-gray-400">Budget: {weekly_hours_budget} hrs/week</span>
+              <span className="text-xs font-medium text-slate-500 bg-white/80 px-2.5 py-0.5 rounded-full border border-slate-200">
+                Pace: {weekly_hours_budget} hrs/week
+              </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-outfit">
-              Learning Path for <span className="gradient-text">{target_role_title}</span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-outfit">
+              Learning Roadmap for <span className="gradient-text">{target_role_title}</span>
             </h1>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-slate-600 leading-relaxed font-normal">
               {ai_summary_narrative}
             </p>
+
+            {/* Quick Action Pills */}
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              <button
+                onClick={() => onOpenPlayground('SQL & Data Warehousing')}
+                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-xs transition active:scale-95"
+              >
+                <Code2 className="w-3.5 h-3.5" />
+                <span>💻 Code & SQL Playground</span>
+              </button>
+
+
+              <button
+                onClick={onOpenRoleplay}
+                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
+              >
+                <Zap className="w-3.5 h-3.5 text-blue-600" />
+                <span>🎮 Roleplay Simulator</span>
+              </button>
+
+              <button
+                onClick={onOpenLeaderboard}
+                className="px-3 py-1.5 rounded-xl bg-white hover:bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
+              >
+                <Trophy className="w-3.5 h-3.5 text-amber-600" />
+                <span>🏆 Leaderboard</span>
+              </button>
+
+              <button
+                onClick={onOpenSlack}
+                className="px-3 py-1.5 rounded-xl bg-white hover:bg-purple-50 border border-purple-200 text-purple-900 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-purple-600" />
+                <span>💬 Slack Bot</span>
+              </button>
+
+              <button
+                onClick={onOpenPromotionMemo}
+                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
+              >
+                <FileText className="w-3.5 h-3.5 text-blue-600" />
+                <span>📊 Promotion Pitch</span>
+              </button>
+
+              <button
+                onClick={handleDownloadCalendar}
+                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
+                title="Sync weekly study blocks into Google Calendar, Outlook or Apple Calendar"
+              >
+                <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                <span>Sync Calendar (.ics)</span>
+              </button>
+
+              <button
+                onClick={onOpenCertificate}
+                className="px-3 py-1.5 rounded-xl bg-white hover:bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
+              >
+                <FileCheck className="w-3.5 h-3.5 text-blue-600" />
+                <span>Verified Certificate</span>
+              </button>
+
+              <button
+                onClick={onOpenMentorship}
+                className="px-3 py-1.5 rounded-xl bg-white hover:bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
+              >
+                <Coffee className="w-3.5 h-3.5 text-amber-600" />
+                <span>Peer Mentorship</span>
+              </button>
+
+              <button
+                onClick={() => onOpenMentor({ name: 'Roadmap & Career Strategy' })}
+                className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold flex items-center space-x-1.5 transition"
+              >
+                <Bot className="w-3.5 h-3.5 text-blue-600" />
+                <span>AI Mentor Co-Pilot</span>
+              </button>
+            </div>
           </div>
 
-          {/* Key Metrics Pill Badges */}
+          {/* Key Metrics Badges */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="px-4 py-2.5 rounded-xl bg-gray-900/80 border border-gray-800 text-center">
-              <div className="text-[10px] text-gray-400 uppercase font-semibold flex items-center space-x-1 justify-center">
-                <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="px-4 py-3 rounded-xl bg-white border border-slate-200/80 shadow-xs text-center min-w-[110px]">
+              <div className="text-[11px] text-slate-400 uppercase font-bold flex items-center space-x-1 justify-center">
+                <Calendar className="w-3.5 h-3.5 text-blue-600" />
                 <span>Timeline</span>
               </div>
-              <div className="text-base font-black text-white font-outfit">{total_estimated_weeks} Weeks</div>
+              <div className="text-lg font-black text-slate-900 font-outfit mt-0.5">{total_estimated_weeks} Weeks</div>
             </div>
 
-            <div className="px-4 py-2.5 rounded-xl bg-gray-900/80 border border-gray-800 text-center">
-              <div className="text-[10px] text-gray-400 uppercase font-semibold flex items-center space-x-1 justify-center">
-                <Clock className="w-3.5 h-3.5 text-purple-400" />
-                <span>Total Commitment</span>
+            <div className="px-4 py-3 rounded-xl bg-white border border-slate-200/80 shadow-xs text-center min-w-[110px]">
+              <div className="text-[11px] text-slate-400 uppercase font-bold flex items-center space-x-1 justify-center">
+                <Clock className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Total Time</span>
               </div>
-              <div className="text-base font-black text-white font-outfit">{total_estimated_hours} Hours</div>
+              <div className="text-lg font-black text-slate-900 font-outfit mt-0.5">{total_estimated_hours} Hours</div>
             </div>
 
-            <div className="px-4 py-2.5 rounded-xl bg-gray-900/80 border border-gray-800 text-center">
-              <div className="text-[10px] text-gray-400 uppercase font-semibold flex items-center space-x-1 justify-center">
-                <Award className="w-3.5 h-3.5 text-pink-400" />
-                <span>Verified Mastery</span>
+            <div className="px-4 py-3 rounded-xl bg-white border border-blue-200/80 shadow-xs text-center min-w-[110px]">
+              <div className="text-[11px] text-blue-600 uppercase font-bold flex items-center space-x-1 justify-center">
+                <Award className="w-3.5 h-3.5 text-blue-600" />
+                <span>Mastered</span>
               </div>
-              <div className="text-base font-black text-indigo-300 font-outfit">{completedCount}/{roadmap_steps.length} Modules</div>
+              <div className="text-lg font-black text-blue-700 font-outfit mt-0.5">{completedCount}/{roadmap_steps.length} Skills</div>
             </div>
           </div>
 
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-6 pt-4 border-t border-gray-800/80 flex items-center space-x-4">
-          <span className="text-xs font-semibold text-gray-400 whitespace-nowrap">Overall Path Completion:</span>
-          <div className="flex-1 bg-gray-900 rounded-full h-2.5 overflow-hidden border border-gray-800">
+        <div className="mt-6 pt-5 border-t border-slate-200/80 flex items-center space-x-4">
+          <span className="text-xs font-bold text-slate-600 whitespace-nowrap">Roadmap Progress:</span>
+          <div className="flex-1 bg-slate-200/70 rounded-full h-3 overflow-hidden">
             <div 
-              className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-700" 
+              className="bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 h-full rounded-full transition-all duration-700 shadow-xs" 
               style={{ width: `${progressPercent}%` }}
             ></div>
           </div>
-          <span className="text-xs font-bold text-indigo-300">{progressPercent}%</span>
+          <span className="text-xs font-black text-blue-700">{progressPercent}%</span>
         </div>
 
       </div>
+
+      {/* 365-Day Learning Activity Heatmap */}
+      <YearHeatmap learnerName={learnerName} />
 
       {/* Phases Timeline */}
       <div className="space-y-8">
@@ -92,81 +219,101 @@ export default function RoadmapView({ learningPath, onStartQuiz, onReplanClick }
           <div key={phase.phase_number} className="space-y-4">
             
             {/* Phase Banner */}
-            <div className="flex items-center space-x-3 pb-2 border-b border-gray-800">
-              <div className="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold font-outfit text-sm">
+            <div className="flex items-center space-x-3 pb-2 border-b border-slate-200">
+              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold font-outfit text-sm shadow-sm shadow-blue-500/20">
                 0{phase.phase_number}
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white font-outfit">{phase.title}</h2>
-                <p className="text-xs text-gray-400">{phase.description}</p>
+                <h2 className="text-lg font-bold text-slate-900 font-outfit">{phase.title}</h2>
+                <p className="text-xs text-slate-500 font-medium">{phase.description}</p>
               </div>
             </div>
 
             {/* Steps Cards */}
-            <div className="space-y-4 pl-4 border-l-2 border-indigo-900/40">
+            <div className="space-y-4 pl-4 border-l-2 border-blue-200">
               {phase.steps.map((step) => {
                 const course = step.course;
                 const isVerified = step.status === 'verified';
+                const isThisStepSpeaking = activeSpeakingStep === step.step_number;
 
                 return (
                   <div 
                     key={step.step_number}
-                    className={`relative p-5 rounded-2xl glass-card border transition ${
+                    className={`relative p-5 sm:p-6 rounded-2xl transition bg-white border ${
                       isVerified
-                        ? 'border-emerald-500/40 bg-emerald-950/10'
-                        : 'border-gray-800 bg-gray-900/40'
+                        ? 'border-emerald-200 shadow-sm shadow-emerald-900/5 ring-1 ring-emerald-400/20'
+                        : 'border-slate-200 shadow-sm hover:border-blue-300 hover:shadow-md'
                     }`}
                   >
                     {/* Step Timeline Indicator dot */}
-                    <div className={`absolute -left-[23px] top-6 w-3 h-3 rounded-full border-2 ${
-                      isVerified ? 'bg-emerald-500 border-emerald-300 shadow-md shadow-emerald-500/50' : 'bg-indigo-600 border-gray-900'
+                    <div className={`absolute -left-[23px] top-7 w-3 h-3 rounded-full border-2 ${
+                      isVerified 
+                        ? 'bg-emerald-500 border-white shadow-md ring-2 ring-emerald-200' 
+                        : 'bg-blue-600 border-white ring-2 ring-blue-100'
                     }`} />
 
-                    <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
+                    <div className="flex flex-col lg:flex-row items-start justify-between gap-5">
                       
-                      <div className="space-y-3 flex-1">
+                      <div className="space-y-3.5 flex-1">
                         
                         {/* Tags Header */}
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                             Week {step.start_week}-{step.end_week} ({step.estimated_hours} hrs)
                           </span>
-                          <span className="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-gray-800 text-gray-300 border border-gray-700">
+                          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             {course.provider}
                           </span>
-                          <span className="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-gray-800 text-gray-300 border border-gray-700">
-                            Rating ★ {course.rating || 4.8}
+                          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 flex items-center space-x-1">
+                            <span>★</span>
+                            <span>{course.rating || 4.8}</span>
                           </span>
                           
                           {isVerified && (
-                            <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center space-x-1">
-                              <ShieldCheck className="w-3.5 h-3.5" />
+                            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1">
+                              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                               <span>Verified Mastery</span>
                             </span>
                           )}
+
+                          {/* Voice Narration Button */}
+                          <button
+                            onClick={() => handleToggleVoice(step)}
+                            className={`px-2 py-0.5 rounded-md text-[11px] font-bold border flex items-center space-x-1 transition ${
+                              isThisStepSpeaking
+                                ? 'bg-indigo-600 text-white border-indigo-700 animate-pulse'
+                                : 'bg-white hover:bg-slate-100 text-slate-600 border-slate-200'
+                            }`}
+                            title="Listen to 1-minute voice audio summary of this module"
+                          >
+                            {isThisStepSpeaking ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3 text-blue-600" />}
+                            <span>{isThisStepSpeaking ? 'Stop Audio' : '🎙️ Listen (Audio)'}</span>
+                          </button>
                         </div>
 
                         {/* Title */}
                         <div>
-                          <h3 className="text-base font-bold text-white font-outfit flex items-center space-x-2">
+                          <h3 className="text-base font-bold text-slate-900 font-outfit flex items-center space-x-2">
                             <span>Step {step.step_number}: {course.title}</span>
                           </h3>
-                          <p className="text-xs text-gray-400 mt-1">Skill Target: <strong className="text-gray-200">{step.skill_name}</strong> (Lvl {step.current_level} → Lvl {step.required_level})</p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Target Skill: <strong className="text-slate-800 font-semibold">{step.skill_name}</strong> (Current Lvl {step.current_level} → Target Lvl {step.required_level})
+                          </p>
                         </div>
 
                         {/* AI Reasoning Explainability Box */}
-                        <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-800/40 text-xs text-indigo-200 flex items-start space-x-2">
-                          <Sparkles className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                        <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200/70 text-xs text-blue-950 flex items-start space-x-2.5">
+                          <Lightbulb className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                           <div>
-                            <span className="font-semibold text-indigo-300">Why AI Picked This Course: </span>
-                            <span>{step.ai_explanation}</span>
+                            <span className="font-bold text-blue-900">Why this was chosen: </span>
+                            <span className="text-blue-800 font-normal leading-relaxed">{step.ai_explanation}</span>
                           </div>
                         </div>
 
                         {/* Key Takeaways */}
                         {course.key_takeaways && (
-                          <div className="text-xs text-gray-300 bg-gray-950/60 p-3 rounded-xl border border-gray-800/80">
-                            <span className="font-semibold text-gray-400 block mb-1">Core Learning Takeaways:</span>
+                          <div className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <span className="font-bold text-slate-700 block mb-1">What you'll master:</span>
                             {course.key_takeaways}
                           </div>
                         )}
@@ -174,28 +321,46 @@ export default function RoadmapView({ learningPath, onStartQuiz, onReplanClick }
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex flex-row lg:flex-col items-center lg:items-end gap-2 shrink-0 w-full lg:w-auto pt-2 lg:pt-0">
+                      <div className="flex flex-row lg:flex-col items-center lg:items-end gap-2.5 shrink-0 w-full lg:w-auto pt-2 lg:pt-0">
+                        <button
+                          onClick={() => onOpenPlayground(step.skill_name)}
+                          className="flex-1 lg:flex-initial px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white flex items-center justify-center space-x-1.5 transition shadow-xs"
+                          title="Open in-browser SQL & code execution workbench"
+                        >
+                          <Code2 className="w-3.5 h-3.5 text-blue-400" />
+                          <span>Code Workbench</span>
+                        </button>
+
+                        <button
+                          onClick={() => onOpenMentor({ id: step.skill_id, name: step.skill_name })}
+                          className="flex-1 lg:flex-initial px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-xs font-bold text-blue-800 border border-blue-200 flex items-center justify-center space-x-1.5 transition"
+                          title="Ask AI Mentor for simplified analogies, code hints, or practice questions"
+                        >
+                          <Bot className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Ask AI Mentor</span>
+                        </button>
+
                         <a
                           href={course.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 lg:flex-initial px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-white border border-gray-700 flex items-center justify-center space-x-1.5 transition"
+                          className="flex-1 lg:flex-initial px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 border border-slate-200 shadow-xs flex items-center justify-center space-x-1.5 transition"
                         >
-                          <PlayCircle className="w-3.5 h-3.5 text-indigo-400" />
+                          <PlayCircle className="w-4 h-4 text-blue-600" />
                           <span>Open Resource</span>
-                          <ExternalLink className="w-3 h-3 text-gray-400" />
+                          <ExternalLink className="w-3 h-3 text-slate-400" />
                         </a>
 
                         <button
                           onClick={() => onStartQuiz(step.skill_id, step.skill_name)}
                           disabled={isVerified}
-                          className={`flex-1 lg:flex-initial px-4 py-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition shadow-lg ${
+                          className={`flex-1 lg:flex-initial px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition shadow-xs ${
                             isVerified
-                              ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-800 opacity-80 cursor-default'
-                              : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-indigo-500/20'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 opacity-90 cursor-default'
+                              : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20'
                           }`}
                         >
-                          <Award className="w-3.5 h-3.5" />
+                          <Award className="w-4 h-4" />
                           <span>{isVerified ? 'Verified with Quiz' : 'Take Verification Quiz'}</span>
                         </button>
                       </div>

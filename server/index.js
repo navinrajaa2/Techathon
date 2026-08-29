@@ -3,11 +3,26 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+import { connectDB, isDBConnected } from './db/connection.js';
+import User from './models/User.js';
+import LearningPath from './models/LearningPath.js';
+import QuizResult from './models/QuizResult.js';
+import Taxonomy from './models/Taxonomy.js';
 
 import { calculateSkillGaps } from './services/gapAnalyzer.js';
 import { generateLearningPath, replanPath } from './services/aiPathGenerator.js';
 import { parseFreeTextSkills } from './services/skillParser.js';
 import { getQuizForSkill } from './services/quizGenerator.js';
+import { 
+  generateMentorChat, 
+  parseSkillsWithGemini, 
+  generateDynamicQuiz, 
+  reviewCodeWithGemini 
+} from './services/geminiService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,7 +32,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 function loadTaxonomyData() {
   const raw = fs.readFileSync(taxonomyPath, 'utf8');
@@ -29,13 +44,26 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'PathCraft AI Learning Platform API',
+    database: isDBConnected() ? 'MongoDB Atlas Connected' : 'Fallback Local Mode',
+    gemini_ai: process.env.GEMINI_API_KEY ? 'Configured' : 'Local Fallback',
     timestamp: new Date().toISOString()
   });
 });
 
 // Taxonomy & catalog endpoint
-app.get('/api/taxonomy', (req, res) => {
+app.get('/api/taxonomy', async (req, res) => {
   try {
+    if (isDBConnected()) {
+      const dbTaxonomy = await Taxonomy.findOne({ doc_type: 'main_taxonomy' });
+      if (dbTaxonomy) {
+        return res.json({
+          tracks: dbTaxonomy.tracks,
+          roles: dbTaxonomy.roles,
+          skills: dbTaxonomy.skills,
+          courses: dbTaxonomy.courses
+        });
+      }
+    }
     const data = loadTaxonomyData();
     res.json({
       tracks: data.tracks,
@@ -49,8 +77,14 @@ app.get('/api/taxonomy', (req, res) => {
 });
 
 // Personas endpoint for instant live demo
-app.get('/api/personas', (req, res) => {
+app.get('/api/personas', async (req, res) => {
   try {
+    if (isDBConnected()) {
+      const users = await User.find();
+      if (users.length > 0) {
+        return res.json(users);
+      }
+    }
     const data = loadTaxonomyData();
     res.json(data.personas);
   } catch (err) {
@@ -58,12 +92,91 @@ app.get('/api/personas', (req, res) => {
   }
 });
 
-// Free-text skill parsing endpoint
-app.post('/api/parse-skills', (req, res) => {
+// AI Mentor Live Interactive Chat Endpoint (Powered by Gemini)
+app.post('/api/mentor/chat', async (req, res) => {
+  try {
+    const { query, skill_name, target_role_title, history } = req.body;
+    if (!query) {
+      return res.status(400).json({ error: 'query is required' });
+    }
+
+    const reply = await generateMentorChat({
+      query,
+      skillName: skill_name,
+      targetRoleTitle: target_role_title,
+      history: history || []
+    });
+
+    res.json({ reply });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Real-Time In-Browser Code & SQL Review (Powered by Gemini)
+app.post('/api/code/review', async (req, res) => {
+  try {
+    const { code, language, problem_prompt, skill_name } = req.body;
+    if (!code) {
+      return res.status(400).json({ error: 'code is required' });
+    }
+
+    const review = await reviewCodeWithGemini({
+      code,
+      language: language || 'sql',
+      problemPrompt: problem_prompt,
+      skillName: skill_name
+    });
+
+    res.json(review);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Dynamic AI Scenario Assessment Quiz Generator (Powered by Gemini)
+app.post('/api/quiz/generate-dynamic', async (req, res) => {
+  try {
+    const { skill_name, current_level, target_role_title, skill_id } = req.body;
+    const dynamicQuiz = await generateDynamicQuiz({
+      skillName: skill_name || 'Technical Engineering',
+      currentLevel: current_level || 2,
+      targetRoleTitle: target_role_title || 'Senior Role'
+    });
+
+    if (dynamicQuiz && dynamicQuiz.questions && dynamicQuiz.questions.length > 0) {
+      return res.json(dynamicQuiz);
+    }
+
+    // Fallback to static quiz generator if dynamic fails
+    const staticQuiz = getQuizForSkill(skill_id || 'sql_mastery');
+    res.json(staticQuiz);
+  } catch (err) {
+    const staticQuiz = getQuizForSkill(req.body.skill_id || 'sql_mastery');
+    res.json(staticQuiz);
+  }
+});
+
+// Free-text & Resume skill parsing endpoint (Powered by Gemini + Fallback NLP)
+app.post('/api/parse-skills', async (req, res) => {
   try {
     const { text } = req.body;
-    const result = parseFreeTextSkills(text || '');
-    res.json(result);
+    if (!text) {
+      return res.json({ parsed_skills: {}, detected_mentions: [] });
+    }
+
+    // Try Gemini Semantic Parser first
+    const data = loadTaxonomyData();
+    const validSkillIds = (data.skills || []).map(s => s.id);
+    const geminiResult = await parseSkillsWithGemini(text, validSkillIds);
+
+    if (geminiResult && Object.keys(geminiResult.parsed_skills || {}).length > 0) {
+      return res.json(geminiResult);
+    }
+
+    // Fallback to regex/keyword rule parser
+    const fallbackResult = parseFreeTextSkills(text);
+    res.json(fallbackResult);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -86,9 +199,9 @@ app.post('/api/gap-analysis', (req, res) => {
 });
 
 // AI Path Generation endpoint
-app.post('/api/generate-path', (req, res) => {
+app.post('/api/generate-path', async (req, res) => {
   try {
-    const { current_skills, target_role_id, weekly_hours } = req.body;
+    const { current_skills, target_role_id, weekly_hours, user_id, user_name } = req.body;
 
     if (!target_role_id) {
       return res.status(400).json({ error: 'target_role_id is required' });
@@ -98,9 +211,29 @@ app.post('/api/generate-path', (req, res) => {
     const gapAnalysis = calculateSkillGaps(current_skills || {}, target_role_id);
     const learningPath = generateLearningPath(gapAnalysis, hours);
 
+    // Persist to MongoDB if connected
+    let savedDoc = null;
+    if (isDBConnected()) {
+      try {
+        savedDoc = await LearningPath.create({
+          user_id: user_id || 'demo_user',
+          user_name: user_name || 'Alex Rivera',
+          target_role_id,
+          target_role_title: gapAnalysis.target_role_title,
+          weekly_hours: hours,
+          gap_analysis: gapAnalysis,
+          learning_path: learningPath,
+          status: 'active'
+        });
+      } catch (dbErr) {
+        console.warn('Could not persist path to MongoDB:', dbErr.message);
+      }
+    }
+
     res.json({
       gap_analysis: gapAnalysis,
-      learning_path: learningPath
+      learning_path: learningPath,
+      db_id: savedDoc ? savedDoc._id : null
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -108,22 +241,36 @@ app.post('/api/generate-path', (req, res) => {
 });
 
 // Adaptive Path Re-planning endpoint
-app.post('/api/replan-path', (req, res) => {
+app.post('/api/replan-path', async (req, res) => {
   try {
-    const { current_path, completed_skill_id, quiz_passed, updated_skills } = req.body;
+    const { current_path, completed_skill_id, quiz_passed, updated_skills, user_id } = req.body;
 
     if (!current_path || !completed_skill_id) {
       return res.status(400).json({ error: 'current_path and completed_skill_id are required' });
     }
 
     const updatedPath = replanPath(current_path, completed_skill_id, quiz_passed, updated_skills);
+
+    // Save updated status in MongoDB
+    if (isDBConnected() && user_id) {
+      try {
+        await LearningPath.findOneAndUpdate(
+          { user_id, status: 'active' },
+          { $set: { learning_path: updatedPath, status: 're_planned' } },
+          { new: true, upsert: false }
+        );
+      } catch (dbErr) {
+        console.warn('MongoDB update notice:', dbErr.message);
+      }
+    }
+
     res.json(updatedPath);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Verification Quiz endpoint
+// Verification Quiz endpoint (static)
 app.get('/api/quiz/:skillId', (req, res) => {
   try {
     const { skillId } = req.params;
@@ -134,8 +281,64 @@ app.get('/api/quiz/:skillId', (req, res) => {
   }
 });
 
+// Submit Quiz Result endpoint (MongoDB persistence)
+app.post('/api/quiz/submit', async (req, res) => {
+  try {
+    const { user_id, skill_id, skill_name, score, total_questions, passed, answers } = req.body;
+
+    let savedResult = null;
+    if (isDBConnected()) {
+      savedResult = await QuizResult.create({
+        user_id: user_id || 'demo_user',
+        skill_id,
+        skill_name,
+        score,
+        total_questions,
+        passed,
+        user_answers: answers
+      });
+
+      if (passed && user_id) {
+        await User.findOneAndUpdate(
+          { $or: [{ _id: user_id }, { name: user_id }] },
+          {
+            $addToSet: { completed_skills: skill_id },
+            $inc: { points: score * 10 }
+          }
+        );
+      }
+    }
+
+    res.json({
+      success: true,
+      passed,
+      score,
+      total_questions,
+      saved_id: savedResult ? savedResult._id : null
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get User's Active Learning Path from DB
+app.get('/api/learning-paths/:userId?', async (req, res) => {
+  try {
+    const userId = req.params.userId || 'demo_user';
+    if (isDBConnected()) {
+      const pathDoc = await LearningPath.findOne({ user_id: userId }).sort({ createdAt: -1 });
+      if (pathDoc) {
+        return res.json(pathDoc);
+      }
+    }
+    res.json({ message: 'No stored path found' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Manager Team Heatmap & Org Analytics endpoint
-app.get('/api/manager/heatmap', (req, res) => {
+app.get('/api/manager/heatmap', async (req, res) => {
   try {
     const data = loadTaxonomyData();
     res.json({
@@ -157,6 +360,13 @@ app.get('/api/manager/heatmap', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`PathCraft AI Express Server listening on http://localhost:${PORT}`);
-});
+// Connect to MongoDB and start server
+async function startServer() {
+  await connectDB();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 PathCraft AI Express Server listening on http://localhost:${PORT}`);
+  });
+}
+
+startServer();

@@ -2,10 +2,19 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import GapAnalysisView from './components/GapAnalysisView';
 import RoadmapView from './components/RoadmapView';
+import CareerSimulatorView from './components/CareerSimulatorView';
 import ManagerDashboard from './components/ManagerDashboard';
 import SkillInputModal from './components/SkillInputModal';
 import QuizModal from './components/QuizModal';
 import AdaptiveNotice from './components/AdaptiveNotice';
+import AIMentorDrawer from './components/AIMentorDrawer';
+import CertificateModal from './components/CertificateModal';
+import PeerMentorshipModal from './components/PeerMentorshipModal';
+import DayInTheLifeModal from './components/DayInTheLifeModal';
+import PromotionPitchModal from './components/PromotionPitchModal';
+import CodePlaygroundModal from './components/CodePlaygroundModal';
+import SlackIntegrationModal from './components/SlackIntegrationModal';
+import LeaderboardModal from './components/LeaderboardModal';
 
 import { 
   fetchTaxonomy, fetchPersonas, calculateGapAnalysis, generatePath, replanPath 
@@ -59,7 +68,7 @@ const FALLBACK_PERSONAS = [
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('roadmap'); // 'roadmap' | 'gap' | 'manager'
+  const [activeTab, setActiveTab] = useState('roadmap'); // 'roadmap' | 'gap' | 'simulator' | 'manager'
   const [personas, setPersonas] = useState(FALLBACK_PERSONAS);
   const [selectedPersona, setSelectedPersona] = useState(FALLBACK_PERSONAS[0]);
   
@@ -71,10 +80,22 @@ export default function App() {
   const [gapAnalysis, setGapAnalysis] = useState(null);
   const [learningPath, setLearningPath] = useState(null);
 
-  // Modals & Notices
+  // Modals & Drawers
   const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
   const [activeQuizSkill, setActiveQuizSkill] = useState(null); // { id, name }
   const [adaptiveNotice, setAdaptiveNotice] = useState(null);
+  const [isMentorOpen, setIsMentorOpen] = useState(false);
+  const [mentorContextSkill, setMentorContextSkill] = useState(null);
+  const [isCertificateOpen, setIsCertificateOpen] = useState(false);
+  const [isMentorshipOpen, setIsMentorshipOpen] = useState(false);
+  const [isRoleplayOpen, setIsRoleplayOpen] = useState(false);
+  const [isPromotionMemoOpen, setIsPromotionMemoOpen] = useState(false);
+  
+  // Powerhouse Modals
+  const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
+  const [playgroundSkillName, setPlaygroundSkillName] = useState('SQL & Data Warehousing');
+  const [isSlackOpen, setIsSlackOpen] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
   // Initialize Taxonomy & Personas
   useEffect(() => {
@@ -118,7 +139,7 @@ export default function App() {
     setCurrentSkills(persona.current_skills);
     setTargetRoleId(persona.target_role_id);
     setWeeklyHours(persona.weekly_hours || 6);
-    setAdaptiveNotice(`Loaded persona profile for ${persona.name}. Gap analysis & roadmap updated.`);
+    setAdaptiveNotice(`Loaded learner profile for ${persona.name}. Gap analysis & roadmap updated.`);
   };
 
   // Handle Skill Matrix Modal Save
@@ -126,7 +147,7 @@ export default function App() {
     setCurrentSkills(skills);
     setTargetRoleId(newRole);
     setWeeklyHours(newHours);
-    setAdaptiveNotice(`Updated skill profile and target role. Recalculating roadmap...`);
+    setAdaptiveNotice(`Updated skill profile and target career goal. Recalculating roadmap...`);
   };
 
   // Handle Quiz Trigger
@@ -134,10 +155,24 @@ export default function App() {
     setActiveQuizSkill({ id: skillId, name: skillName });
   };
 
+  // Handle Opening AI Mentor
+  const handleOpenMentor = (skillObj) => {
+    setMentorContextSkill(skillObj);
+    setIsMentorOpen(true);
+  };
+
+  // Handle Opening Code Playground
+  const handleOpenPlayground = (skillName) => {
+    const validName = (typeof skillName === 'string' && skillName.trim()) ? skillName : 'SQL & Data Warehousing';
+    setPlaygroundSkillName(validName);
+    setIsPlaygroundOpen(true);
+  };
+
+
   // Handle Quiz Completion & Adaptive Path Re-planning
   const handleQuizCompleted = async ({ skillId, passed, scorePercent }) => {
     if (passed) {
-      // 1. Update current skill level in local state (+1 level or target level)
+      // 1. Update current skill level in local state (+1 or +2 levels)
       const currentLvl = currentSkills[skillId] || 1;
       const updatedSkills = {
         ...currentSkills,
@@ -153,14 +188,14 @@ export default function App() {
         }
       }
 
-      setAdaptiveNotice(`🎉 Verification Passed (${scorePercent}%)! Skill level upgraded for '${skillId}'. Remaining roadmap adaptively updated.`);
+      setAdaptiveNotice(`🎉 Verification Passed (${scorePercent}%)! Mastery confirmed for '${skillId}'. Remaining roadmap adaptively updated.`);
     } else {
-      setAdaptiveNotice(`⚠️ Assessment score was ${scorePercent}%. Path updated with recommended remedial exercises for '${skillId}'.`);
+      setAdaptiveNotice(`⚠️ Assessment score was ${scorePercent}%. Path refreshed with helpful remedial modules for '${skillId}'.`);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-gray-100 flex flex-col selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col selection:bg-blue-600 selection:text-white">
       
       {/* Header */}
       <Header
@@ -175,41 +210,61 @@ export default function App() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {activeTab === 'roadmap' && (
-          <RoadmapView
-            learningPath={learningPath}
-            onStartQuiz={handleStartQuiz}
-            onReplanClick={() => generatePath(currentSkills, targetRoleId, weeklyHours)}
-          />
-        )}
+        <div key={activeTab} className="page-transition">
+          {activeTab === 'roadmap' && (
+            <RoadmapView
+              learningPath={learningPath}
+              learnerName={selectedPersona?.name}
+              onStartQuiz={handleStartQuiz}
+              onOpenMentor={handleOpenMentor}
+              onOpenCertificate={() => setIsCertificateOpen(true)}
+              onOpenMentorship={() => setIsMentorshipOpen(true)}
+              onOpenRoleplay={() => setIsRoleplayOpen(true)}
+              onOpenPromotionMemo={() => setIsPromotionMemoOpen(true)}
+              onOpenPlayground={handleOpenPlayground}
+              onOpenSlack={() => setIsSlackOpen(true)}
+              onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+              onReplanClick={() => generatePath(currentSkills, targetRoleId, weeklyHours)}
+            />
+          )}
 
-        {activeTab === 'gap' && (
-          <GapAnalysisView
-            gapAnalysis={gapAnalysis}
-            onGeneratePathClick={() => setActiveTab('roadmap')}
-          />
-        )}
+          {activeTab === 'gap' && (
+            <GapAnalysisView
+              gapAnalysis={gapAnalysis}
+              onGeneratePathClick={() => setActiveTab('roadmap')}
+            />
+          )}
 
-        {activeTab === 'manager' && (
-          <ManagerDashboard />
-        )}
+          {activeTab === 'simulator' && (
+            <CareerSimulatorView
+              currentSkills={currentSkills}
+              taxonomy={taxonomy}
+              onSelectTargetRole={(roleId) => setTargetRoleId(roleId)}
+              onNavigateToRoadmap={() => setActiveTab('roadmap')}
+            />
+          )}
+
+          {activeTab === 'manager' && (
+            <ManagerDashboard />
+          )}
+        </div>
 
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 bg-gray-950 py-6 text-center text-xs text-gray-500 glass-panel mt-12">
+      <footer className="border-t border-slate-200/90 bg-white/90 py-6 text-xs text-slate-500 glass-panel mt-12">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <span className="font-bold text-gray-400 font-outfit">PathCraft AI</span>
-            <span>— Employee Learning Recommendation Platform</span>
+            <span className="font-bold text-blue-600 font-outfit text-sm">PathCraft AI</span>
+            <span>— Enterprise Adaptive Upskilling & Internal Mobility</span>
           </div>
-          <div>
-            Built with React, Tailwind CSS, Recharts & Node/Express API
+          <div className="text-slate-400">
+            Powered by React, Tailwind CSS, Recharts, Google Gemini AI & MongoDB Atlas
           </div>
         </div>
       </footer>
 
-      {/* Modals */}
+      {/* Modals & Drawers */}
       <SkillInputModal
         isOpen={isSkillModalOpen}
         onClose={() => setIsSkillModalOpen(false)}
@@ -227,6 +282,66 @@ export default function App() {
         skillId={activeQuizSkill?.id}
         skillName={activeQuizSkill?.name}
         onQuizCompleted={handleQuizCompleted}
+      />
+
+      <AIMentorDrawer
+        isOpen={isMentorOpen}
+        onClose={() => setIsMentorOpen(false)}
+        contextSkill={mentorContextSkill}
+        targetRoleTitle={learningPath?.target_role_title}
+      />
+
+      <CertificateModal
+        isOpen={isCertificateOpen}
+        onClose={() => setIsCertificateOpen(false)}
+        learnerName={selectedPersona?.name}
+        targetRoleTitle={learningPath?.target_role_title}
+        completedSkillsCount={learningPath?.roadmap_steps?.filter(s => s.status === 'verified')?.length || 0}
+        totalSkillsCount={learningPath?.roadmap_steps?.length || 0}
+      />
+
+      <PeerMentorshipModal
+        isOpen={isMentorshipOpen}
+        onClose={() => setIsMentorshipOpen(false)}
+        learnerName={selectedPersona?.name}
+        onBooked={(msg) => setAdaptiveNotice(msg)}
+      />
+
+      <DayInTheLifeModal
+        isOpen={isRoleplayOpen}
+        onClose={() => setIsRoleplayOpen(false)}
+        targetRoleTitle={learningPath?.target_role_title}
+        learnerName={selectedPersona?.name}
+      />
+
+      <PromotionPitchModal
+        isOpen={isPromotionMemoOpen}
+        onClose={() => setIsPromotionMemoOpen(false)}
+        learnerName={selectedPersona?.name}
+        currentRole={selectedPersona?.role}
+        targetRoleTitle={learningPath?.target_role_title}
+        verifiedSkillsCount={learningPath?.roadmap_steps?.filter(s => s.status === 'verified')?.length || 0}
+        totalHours={learningPath?.total_estimated_hours || 64}
+      />
+
+      <CodePlaygroundModal
+        isOpen={isPlaygroundOpen}
+        onClose={() => setIsPlaygroundOpen(false)}
+        skillName={playgroundSkillName}
+        onCodePassed={(skName) => setAdaptiveNotice(`🎉 Practical workbench exercise verified for ${skName}! (+50 XP)`)}
+      />
+
+      <SlackIntegrationModal
+        isOpen={isSlackOpen}
+        onClose={() => setIsSlackOpen(false)}
+        learnerName={selectedPersona?.name}
+        targetRoleTitle={learningPath?.target_role_title}
+      />
+
+      <LeaderboardModal
+        isOpen={isLeaderboardOpen}
+        onClose={() => setIsLeaderboardOpen(false)}
+        currentUser={selectedPersona}
       />
 
       {/* Toast Notice */}
