@@ -62,7 +62,7 @@ export default function DailyChallengeWidget({ streakDays = 8, onStreakUp }) {
             </div>
             <p className="text-xs text-slate-600 mt-0.5">
               {isCompletedToday 
-                ? '✅ Daily micro-drill completed! Streak secured for today.' 
+                ? 'Daily micro-drill completed! Streak secured for today.' 
                 : 'Complete today\'s 60-second micro-challenge to extend your streak.'}
             </p>
           </div>
@@ -153,7 +153,7 @@ export default function DailyChallengeWidget({ streakDays = 8, onStreakUp }) {
               {submitted && (
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1">
                   <div className="font-bold text-slate-900">
-                    {selectedIdx === DAILY_DRILL.correctIdx ? '🎉 Correct Answer!' : '💡 Explanation:'}
+                    {selectedIdx === DAILY_DRILL.correctIdx ? 'Correct Answer!' : 'Explanation:'}
                   </div>
                   <p className="text-[11px] leading-relaxed">{DAILY_DRILL.explanation}</p>
                 </div>

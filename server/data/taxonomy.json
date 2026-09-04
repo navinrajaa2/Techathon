@@ -190,7 +190,7 @@
     },
     {
       "id": "lead_ai_eng",
-      "title": "Lead AI / LLM Engineer",
+      "title": "AI Engineer",
       "track": "data_ai",
       "description": "Architects production LLM applications, RAG pipelines, multi-agent systems, and custom model evaluation frameworks.",
       "required_skills": [
@@ -198,6 +198,18 @@
         { "skill_id": "llm_engineering", "min_level": 4 },
         { "skill_id": "sql_mastery", "min_level": 3 },
         { "skill_id": "node_express", "min_level": 3 }
+      ]
+    },
+    {
+      "id": "data_engineer",
+      "title": "Data Engineer",
+      "track": "data_ai",
+      "description": "Builds robust real-time batch & streaming ETL pipelines, data warehouse schemas, and distributed data infrastructure.",
+      "required_skills": [
+        { "skill_id": "sql_mastery", "min_level": 4 },
+        { "skill_id": "python_analytics", "min_level": 4 },
+        { "skill_id": "docker_k8s", "min_level": 3 },
+        { "skill_id": "system_design", "min_level": 3 }
       ]
     },
     {

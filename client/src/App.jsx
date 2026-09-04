@@ -15,9 +15,10 @@ import PromotionPitchModal from './components/PromotionPitchModal';
 import CodePlaygroundModal from './components/CodePlaygroundModal';
 import SlackIntegrationModal from './components/SlackIntegrationModal';
 import LeaderboardModal from './components/LeaderboardModal';
+import ProjectChallengeModal from './components/ProjectChallengeModal';
 
-import { 
-  fetchTaxonomy, fetchPersonas, calculateGapAnalysis, generatePath, replanPath 
+import {
+  fetchTaxonomy, fetchPersonas, calculateGapAnalysis, generatePath, replanPath
 } from './services/api';
 
 // Fallback taxonomy data in case backend is loading
@@ -71,7 +72,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('roadmap'); // 'roadmap' | 'gap' | 'simulator' | 'manager'
   const [personas, setPersonas] = useState(FALLBACK_PERSONAS);
   const [selectedPersona, setSelectedPersona] = useState(FALLBACK_PERSONAS[0]);
-  
+
   const [taxonomy, setTaxonomy] = useState({ skills: [], roles: [] });
   const [currentSkills, setCurrentSkills] = useState(FALLBACK_PERSONAS[0].current_skills);
   const [targetRoleId, setTargetRoleId] = useState(FALLBACK_PERSONAS[0].target_role_id);
@@ -90,12 +91,27 @@ export default function App() {
   const [isMentorshipOpen, setIsMentorshipOpen] = useState(false);
   const [isRoleplayOpen, setIsRoleplayOpen] = useState(false);
   const [isPromotionMemoOpen, setIsPromotionMemoOpen] = useState(false);
-  
+
   // Powerhouse Modals
   const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
   const [playgroundSkillName, setPlaygroundSkillName] = useState('SQL & Data Warehousing');
   const [isSlackOpen, setIsSlackOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+
+  // Real-World Project Challenge Modal & Skill Verification State
+  const [isProjectChallengeOpen, setIsProjectChallengeOpen] = useState(false);
+  const [activeProjectSkill, setActiveProjectSkill] = useState({
+    id: 'sql_mastery',
+    name: 'SQL & Data Warehousing',
+    currentLevel: 2,
+    targetLevel: 4
+  });
+
+  // AI Learning Memory (Remembers learning progress, quiz mistakes, verified projects)
+  const [learningMemory, setLearningMemory] = useState({
+    recentQuizMistakes: ['Struggled with PARTITION BY syntax in SQL assessment'],
+    verifiedProjects: []
+  });
 
   // Initialize Taxonomy & Personas
   useEffect(() => {
@@ -169,8 +185,73 @@ export default function App() {
   };
 
 
+  // Handle Opening Real-World Project Challenge
+  const handleOpenProjectChallenge = (skillObj) => {
+    const skId = skillObj?.id || 'sql_mastery';
+    setActiveProjectSkill({
+      id: skId,
+      name: skillObj?.name || 'SQL & Data Warehousing',
+      currentLevel: currentSkills[skId] || 2,
+      targetLevel: skillObj?.targetLevel || 4
+    });
+    setIsProjectChallengeOpen(true);
+  };
+
+  // Handle Real-World Project Verification & Readiness Score Recalculation
+  const handleProjectVerified = async ({ skillId, skillName, newVerifiedLevel, readinessIncrease, score }) => {
+    // 1. Upgrade skill proficiency level
+    const updatedSkills = {
+      ...currentSkills,
+      [skillId]: Math.max(newVerifiedLevel, (currentSkills[skillId] || 2) + 2)
+    };
+    setCurrentSkills(updatedSkills);
+
+    // 2. Mark corresponding roadmap step as project_verified
+    if (learningPath && learningPath.roadmap_steps) {
+      const updatedSteps = learningPath.roadmap_steps.map(s => {
+        if (s.skill_id === skillId) {
+          return { ...s, status: 'project_verified' };
+        }
+        return s;
+      });
+
+      const updatedPhases = (learningPath.phases || []).map(phase => ({
+        ...phase,
+        steps: phase.steps.map(s => s.skill_id === skillId ? { ...s, status: 'project_verified' } : s)
+      }));
+
+      setLearningPath({
+        ...learningPath,
+        roadmap_steps: updatedSteps,
+        phases: updatedPhases
+      });
+    }
+
+    // 3. Record in AI learning memory so mentor remembers hands-on mastery
+    setLearningMemory(prev => ({
+      ...prev,
+      verifiedProjects: [
+        ...prev.verifiedProjects,
+        { skillId, skillName, verifiedLevel: newVerifiedLevel, score, timestamp: new Date().toISOString() }
+      ]
+    }));
+
+    setAdaptiveNotice(`Real-World Project Verified (${score}/100)! Competency for '${skillName}' upgraded to Level ${newVerifiedLevel}/5. Target Role Readiness boosted (+${readinessIncrease}%)!`);
+  };
+
   // Handle Quiz Completion & Adaptive Path Re-planning
-  const handleQuizCompleted = async ({ skillId, passed, scorePercent }) => {
+  const handleQuizCompleted = async ({ skillId, skillName, passed, scorePercent, incorrectConcepts = [] }) => {
+    // Track weak concepts in learning memory
+    if (incorrectConcepts && incorrectConcepts.length > 0) {
+      setLearningMemory(prev => ({
+        ...prev,
+        recentQuizMistakes: [
+          `Struggled with ${incorrectConcepts[0]} in ${skillName || skillId} assessment`,
+          ...prev.recentQuizMistakes.slice(0, 3)
+        ]
+      }));
+    }
+
     if (passed) {
       // 1. Update current skill level in local state (+1 or +2 levels)
       const currentLvl = currentSkills[skillId] || 1;
@@ -188,15 +269,15 @@ export default function App() {
         }
       }
 
-      setAdaptiveNotice(`🎉 Verification Passed (${scorePercent}%)! Mastery confirmed for '${skillId}'. Remaining roadmap adaptively updated.`);
+      setAdaptiveNotice(`Verification Passed (${scorePercent}%)! Mastery confirmed for '${skillId}'. Remaining roadmap adaptively updated.`);
     } else {
-      setAdaptiveNotice(`⚠️ Assessment score was ${scorePercent}%. Path refreshed with helpful remedial modules for '${skillId}'.`);
+      setAdaptiveNotice(`Assessment score was ${scorePercent}%. Path refreshed with helpful remedial modules for '${skillId}'.`);
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col selection:bg-blue-600 selection:text-white">
-      
+
       {/* Header */}
       <Header
         activeTab={activeTab}
@@ -209,13 +290,14 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         <div key={activeTab} className="page-transition">
           {activeTab === 'roadmap' && (
             <RoadmapView
               learningPath={learningPath}
               learnerName={selectedPersona?.name}
               onStartQuiz={handleStartQuiz}
+              onOpenProjectChallenge={handleOpenProjectChallenge}
               onOpenMentor={handleOpenMentor}
               onOpenCertificate={() => setIsCertificateOpen(true)}
               onOpenMentorship={() => setIsMentorshipOpen(true)}
@@ -232,6 +314,7 @@ export default function App() {
             <GapAnalysisView
               gapAnalysis={gapAnalysis}
               onGeneratePathClick={() => setActiveTab('roadmap')}
+              onOpenProjectChallenge={handleOpenProjectChallenge}
             />
           )}
 
@@ -239,6 +322,7 @@ export default function App() {
             <CareerSimulatorView
               currentSkills={currentSkills}
               taxonomy={taxonomy}
+              currentRole={selectedPersona?.role}
               onSelectTargetRole={(roleId) => setTargetRoleId(roleId)}
               onNavigateToRoadmap={() => setActiveTab('roadmap')}
             />
@@ -257,9 +341,6 @@ export default function App() {
           <div className="flex items-center space-x-2">
             <span className="font-bold text-blue-600 font-outfit text-sm">PathCraft AI</span>
             <span>— Enterprise Adaptive Upskilling & Internal Mobility</span>
-          </div>
-          <div className="text-slate-400">
-            Powered by React, Tailwind CSS, Recharts, Google Gemini AI & MongoDB Atlas
           </div>
         </div>
       </footer>
@@ -289,6 +370,19 @@ export default function App() {
         onClose={() => setIsMentorOpen(false)}
         contextSkill={mentorContextSkill}
         targetRoleTitle={learningPath?.target_role_title}
+        learnerProfile={selectedPersona}
+        learningMemory={learningMemory}
+      />
+
+      <ProjectChallengeModal
+        isOpen={isProjectChallengeOpen}
+        onClose={() => setIsProjectChallengeOpen(false)}
+        skillId={activeProjectSkill?.id}
+        skillName={activeProjectSkill?.name}
+        targetRoleTitle={learningPath?.target_role_title}
+        currentLevel={activeProjectSkill?.currentLevel || 2}
+        targetLevel={activeProjectSkill?.targetLevel || 4}
+        onProjectVerified={handleProjectVerified}
       />
 
       <CertificateModal
@@ -328,7 +422,7 @@ export default function App() {
         isOpen={isPlaygroundOpen}
         onClose={() => setIsPlaygroundOpen(false)}
         skillName={playgroundSkillName}
-        onCodePassed={(skName) => setAdaptiveNotice(`🎉 Practical workbench exercise verified for ${skName}! (+50 XP)`)}
+        onCodePassed={(skName) => setAdaptiveNotice(`Practical workbench exercise verified for ${skName}! (+50 XP)`)}
       />
 
       <SlackIntegrationModal

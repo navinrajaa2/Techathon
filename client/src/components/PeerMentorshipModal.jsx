@@ -52,7 +52,7 @@ export default function PeerMentorshipModal({
     setBooked(true);
     setTimeout(() => {
       if (onBooked) {
-        onBooked(`🎉 30-min Coffee Chat scheduled with ${selectedMentor.name} for ${selectedMentor.availability}! Calendar invite sent.`);
+        onBooked(`30-min Coffee Chat scheduled with ${selectedMentor.name} for ${selectedMentor.availability}! Calendar invite sent.`);
       }
       onClose();
     }, 1500);

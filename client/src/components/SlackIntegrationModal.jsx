@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  X, MessageSquare, Bell, CheckCircle2, Send, Sparkles, Building, Users, Flame, ExternalLink 
+  X, MessageSquare, Bell, CheckCircle2, Send, Sparkles, Building, Users, Flame, ExternalLink, Award 
 } from 'lucide-react';
 
 export default function SlackIntegrationModal({ 
@@ -121,7 +121,7 @@ export default function SlackIntegrationModal({
             {activeChannel === 'team-kudos' && (
               <div className="flex items-start space-x-3 p-3 rounded-xl bg-amber-50/70 border border-amber-200 animate-fadeIn">
                 <div className="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 font-bold font-outfit text-xs">
-                  🎉
+                  <Award className="w-4 h-4 text-white" />
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">

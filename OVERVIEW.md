@@ -5,8 +5,23 @@
 - **Sliding Pill Navbar**: Hardware‑accelerated pill indicator with `active:scale-95` micro‑haptic feedback.
 - **`.page-transition` Animation**: Upward fade (`translateY(12px) scale(0.995) → translateY(0px) scale(1)`) applied to all major views (Roadmap, Skill Gaps, Career Simulator, Manager Heatmap).
 
+## 🚀 Powerhouse Innovations (New in v2.0)
+- **Career What-If Simulator 2.0 (Multi-Role Decision Engine)**:
+  - Compare multiple target careers side-by-side (e.g. *Senior Data Analyst* vs *AI Engineer* vs *Data Engineer*).
+  - Side-by-side Factor Decision Matrix: Current Skill Match %, Missing Skills count, Estimated Learning Time, Weekly Effort slider, Market Hiring Demand, and Open Internal Requisitions.
+  - **"Why this recommendation?" AI Synthesis Box**: Synthesizes fastest internal mobility paths vs highest growth ceilings with trade-off cards and Gemini-powered recommendations.
+- **Skill Gap → Real-World Project → Verified Skill**:
+  - Upgrades traditional course learning into demonstrated project competency.
+  - Practical enterprise project briefs (e.g., *Build an Enterprise Sales Analytics & Retention Dashboard using SQL*).
+  - Evaluated on a 4-pillar rubric: Window Functions, Complex JOINs & CTEs, Query Optimization, and Executive Business Insights.
+  - Interactive SQL/code workspace with pre-loaded solutions and AI evaluation to officially upgrade verified skill levels and recalculate Target Role Readiness in real-time.
+- **AI Learning Companion with Progress & Memory Retention**:
+  - Remembers learner context: current role, target role, current roadmap step, verified project submissions, and previous quiz mistakes (e.g. *struggled with PARTITION BY in last quiz*).
+  - Pedagogical companion that grounds every answer in the learner's journey: *"Since you are learning SQL for your Senior Data Analyst roadmap, let's use a sales-ranking example. You struggled with PARTITION BY in your last quiz. Let's practice that concept."*
+
 ## 🤖 Google Gemini Generative AI
 - **Live AI Mentor Co‑Pilot** (`gemini‑3.6‑flash`): Real‑time explanations, code snippets, production gotchas, and 5‑minute challenges.
+- **Hands-On Real Project Review & Verification**: Deep code and executive business memo evaluation with automated level progression.
 - **In‑Browser Code & SQL Playground**: Write/run Python/SQL, submit to Gemini for instant review & complexity analysis.
 - **Dynamic Scenario‑Based Quiz Generator**: Fresh workplace‑scenario questions on‑demand.
 - **"Day in the Life" Role‑Play Simulator**: Interactive decision‑making flow for target roles.

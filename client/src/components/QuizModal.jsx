@@ -45,11 +45,14 @@ export default function QuizModal({ isOpen, onClose, skillId, skillName, onQuizC
   };
 
   const calculateResult = () => {
-    if (!quiz || !quiz.questions) return { score: 0, passed: false };
+    if (!quiz || !quiz.questions) return { score: 0, passed: false, incorrectConcepts: [] };
     let correct = 0;
+    const incorrectConcepts = [];
     quiz.questions.forEach(q => {
       if (answers[q.id] === q.correct_index) {
         correct++;
+      } else {
+        incorrectConcepts.push(q.question || 'PARTITION BY window framing');
       }
     });
     const percent = Math.round((correct / quiz.questions.length) * 100);
@@ -57,7 +60,8 @@ export default function QuizModal({ isOpen, onClose, skillId, skillName, onQuizC
       correctCount: correct,
       totalCount: quiz.questions.length,
       percent,
-      passed: percent >= 66
+      passed: percent >= 66,
+      incorrectConcepts
     };
   };
 
@@ -67,8 +71,10 @@ export default function QuizModal({ isOpen, onClose, skillId, skillName, onQuizC
     setTimeout(() => {
       onQuizCompleted({
         skillId,
+        skillName,
         passed: result.passed,
-        scorePercent: result.percent
+        scorePercent: result.percent,
+        incorrectConcepts: result.incorrectConcepts
       });
     }, 1200);
   };
@@ -196,7 +202,7 @@ export default function QuizModal({ isOpen, onClose, skillId, skillName, onQuizC
           <div className="text-xs text-slate-500">
             {submitted && result && (
               <span className={`font-bold ${result.passed ? 'text-emerald-700' : 'text-amber-700'}`}>
-                {result.passed ? `🎉 Passed with ${result.percent}%!` : `Score: ${result.percent}%. Remedial path recommended.`}
+                {result.passed ? `Passed with ${result.percent}%!` : `Score: ${result.percent}%. Remedial path recommended.`}
               </span>
             )}
           </div>

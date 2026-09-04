@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import { Target, Layers, ArrowUpRight, AlertTriangle, CheckCircle, Sparkles, TrendingUp } from 'lucide-react';
 
-export default function GapAnalysisView({ gapAnalysis, onGeneratePathClick }) {
+export default function GapAnalysisView({ gapAnalysis, onGeneratePathClick, onOpenProjectChallenge }) {
   if (!gapAnalysis || !gapAnalysis.gaps) {
     return (
       <div className="p-12 text-center text-slate-500 bg-white border border-slate-200 shadow-sm rounded-2xl">
@@ -222,6 +222,26 @@ export default function GapAnalysisView({ gapAnalysis, onGeneratePathClick }) {
                           </span>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Hands-On Project Verification Action */}
+                  {!isMet && onOpenProjectChallenge && (
+                    <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        Bridge this gap with practical evidence:
+                      </span>
+                      <button
+                        onClick={() => onOpenProjectChallenge({
+                          id: gap.skill_id,
+                          name: gap.skill_name,
+                          currentLevel: gap.current_level,
+                          targetLevel: gap.required_level
+                        })}
+                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition active:scale-95"
+                      >
+                        <span>🚀 Verify via Real Project</span>
+                      </button>
                     </div>
                   )}
 

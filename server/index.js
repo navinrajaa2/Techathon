@@ -5,7 +5,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 import { connectDB, isDBConnected } from './db/connection.js';
 import User from './models/User.js';
@@ -21,11 +24,11 @@ import {
   generateMentorChat, 
   parseSkillsWithGemini, 
   generateDynamicQuiz, 
-  reviewCodeWithGemini 
+  reviewCodeWithGemini,
+  verifyProjectWithGemini,
+  generateCareerComparisonSynthesis
 } from './services/geminiService.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const taxonomyPath = path.join(__dirname, 'data/taxonomy.json');
 
 const app = express();
@@ -92,10 +95,10 @@ app.get('/api/personas', async (req, res) => {
   }
 });
 
-// AI Mentor Live Interactive Chat Endpoint (Powered by Gemini)
+// AI Mentor Live Interactive Chat Endpoint (Powered by Gemini with Memory & Journey Context)
 app.post('/api/mentor/chat', async (req, res) => {
   try {
-    const { query, skill_name, target_role_title, history } = req.body;
+    const { query, skill_name, target_role_title, learner_context, history } = req.body;
     if (!query) {
       return res.status(400).json({ error: 'query is required' });
     }
@@ -104,10 +107,58 @@ app.post('/api/mentor/chat', async (req, res) => {
       query,
       skillName: skill_name,
       targetRoleTitle: target_role_title,
+      learnerContext: learner_context || {},
       history: history || []
     });
 
     res.json({ reply });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Hands-On Real-World Project Verification (Powered by Gemini)
+app.post('/api/project/verify', async (req, res) => {
+  try {
+    const { 
+      skill_id, 
+      skill_name, 
+      target_role_title, 
+      current_level, 
+      target_level, 
+      code_submission, 
+      business_insights,
+      project_title
+    } = req.body;
+
+    const result = await verifyProjectWithGemini({
+      skillId: skill_id,
+      skillName: skill_name || 'SQL & Data Warehousing',
+      targetRoleTitle: target_role_title,
+      currentLevel: current_level || 2,
+      targetLevel: target_level || 4,
+      codeSubmission: code_submission || '',
+      businessInsights: business_insights || '',
+      projectTitle: project_title
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Career What-If Simulator 2.0 AI Synthesis Recommendation
+app.post('/api/career-simulator/recommendation', async (req, res) => {
+  try {
+    const { current_role_title, roles_data, current_skills } = req.body;
+    const recommendation = await generateCareerComparisonSynthesis({
+      currentRoleTitle: current_role_title,
+      rolesData: roles_data || [],
+      currentSkills: current_skills || {}
+    });
+
+    res.json(recommendation);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -341,13 +392,34 @@ app.get('/api/learning-paths/:userId?', async (req, res) => {
 app.get('/api/manager/heatmap', async (req, res) => {
   try {
     const data = loadTaxonomyData();
+    const rawHeatmap = data.team_heatmap || [];
+    
+    const enrichedHeatmap = rawHeatmap.map((member, idx) => {
+      const name = member.name || member.employee_name || `Employee ${idx + 1}`;
+      const targetRole = member.target_role_title || member.target_role || 'Target Role';
+      const email = member.email || `${name.toLowerCase().replace(/\s+/g, '.')}@enterprise.com`;
+      const avatar = member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`;
+
+      return {
+        ...member,
+        name,
+        employee_name: name,
+        target_role_title: targetRole,
+        target_role: targetRole,
+        email,
+        avatar
+      };
+    });
+
+    const avgReadiness = enrichedHeatmap.length > 0 
+      ? Math.round(enrichedHeatmap.reduce((acc, curr) => acc + (curr.readiness_percent || 0), 0) / enrichedHeatmap.length)
+      : 0;
+
     res.json({
-      team_heatmap: data.team_heatmap,
+      team_heatmap: enrichedHeatmap,
       summary: {
-        total_reports: data.team_heatmap.length,
-        avg_readiness: Math.round(
-          data.team_heatmap.reduce((acc, curr) => acc + curr.readiness_percent, 0) / data.team_heatmap.length
-        ),
+        total_reports: enrichedHeatmap.length,
+        avg_readiness: avgReadiness,
         critical_org_gaps: [
           { skill_name: "LLM & RAG Application Building", missing_count: 4, severity: "High" },
           { skill_name: "Statistical Modeling & A/B Testing", missing_count: 3, severity: "Medium" },
