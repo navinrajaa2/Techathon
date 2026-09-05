@@ -259,7 +259,7 @@
       "duration_hrs": 12,
       "rating": 4.9,
       "enrolled_count": 34200,
-      "source_url": "https://www.coursera.org/learn/analytics-sql",
+      "source_url": "https://www.coursera.org/",
       "format": "Interactive Exercises + Real DB Queries",
       "key_takeaways": "Master Window Functions (RANK, NTILE, LAG), Common Table Expressions, indexing, and query execution plan analysis."
     },
