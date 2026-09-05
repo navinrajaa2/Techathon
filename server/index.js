@@ -34,13 +34,31 @@ const taxonomyPath = path.join(__dirname, 'data/taxonomy.json');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Dynamic CORS configuration for local development and production (Render/Vercel)
+const allowedOrigins = process.env.CLIENT_URL || process.env.CORS_ORIGIN;
+app.use(cors({
+  origin: allowedOrigins ? allowedOrigins.split(',').map(o => o.trim()) : '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json({ limit: '10mb' }));
 
 function loadTaxonomyData() {
   const raw = fs.readFileSync(taxonomyPath, 'utf8');
   return JSON.parse(raw);
 }
+
+// Root endpoint for Render deployment verification
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'PathCraft AI Learning Platform API',
+    message: 'PathCraft AI Express Server is live on Render',
+    healthCheck: '/api/health',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -436,8 +454,8 @@ app.get('/api/manager/heatmap', async (req, res) => {
 async function startServer() {
   await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(`🚀 PathCraft AI Express Server listening on http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 PathCraft AI Express Server listening on port ${PORT} (bound to 0.0.0.0 for Render environment)`);
   });
 }
 

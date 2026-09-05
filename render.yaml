@@ -1,0 +1,25 @@
+# Render Deployment Blueprint Configuration for PathCraft AI Backend
+# Learn more: https://render.com/docs/blueprint-spec
+
+services:
+  # PathCraft AI Express Backend Web Service
+  - type: web
+    name: pathcraft-ai-backend
+    env: node
+    region: singapore # Options: oregon, frankfurt, singapore, ohio
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false # Set in Render Dashboard secrets
+      - key: GEMINI_API_KEY
+        sync: false # Set in Render Dashboard secrets
+      - key: CLIENT_URL
+        sync: false # e.g. https://your-frontend-app.onrender.com or Vercel URL
