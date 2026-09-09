@@ -353,10 +353,6 @@ export default function ManagerDashboard() {
 
             <span>AI-Powered Team Insights</span>
           </h2>
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center gap-1">
-
-            AI
-          </span>
         </div>
 
         {aiSuggestionsLoading ? (
