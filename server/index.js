@@ -482,22 +482,86 @@ app.get('/api/manager/heatmap', async (req, res) => {
       ? Math.round(enrichedHeatmap.reduce((acc, curr) => acc + (curr.readiness_percent || 0), 0) / enrichedHeatmap.length)
       : 0;
 
+    // Dynamic critical gaps: calculate from actual team skill data
+    const skillCounts = {};
+    const allSkillNames = {
+      sql_mastery: 'SQL & Data Warehousing',
+      python_analytics: 'Python & Analytics',
+      tableau_bi: 'Tableau & BI Visualization',
+      stat_modeling: 'Statistical Modeling & A/B Testing',
+      react_frontend: 'React & Frontend Engineering',
+      node_express: 'Node.js & Express Backend',
+      system_design: 'System Design & Distributed Architecture',
+      docker_k8s: 'Docker & Kubernetes',
+      cicd_terraform: 'CI/CD & Infrastructure as Code',
+      llm_engineering: 'LLM & RAG Application Building',
+      product_discovery: 'Product Discovery & Strategy',
+      ai_product_strategy: 'AI Product Strategy'
+    };
+
+    // Collect all unique skills across the team
+    enrichedHeatmap.forEach(member => {
+      const skills = member.skills || {};
+      Object.entries(skills).forEach(([skillId, level]) => {
+        if (!skillCounts[skillId]) {
+          skillCounts[skillId] = { total: 0, belowL3: 0 };
+        }
+        skillCounts[skillId].total++;
+        if (level < 3) {
+          skillCounts[skillId].belowL3++;
+        }
+      });
+      // Also count skills that members DON'T have (missing entirely)
+      Object.keys(allSkillNames).forEach(skillId => {
+        if (!(skillId in skills)) {
+          if (!skillCounts[skillId]) {
+            skillCounts[skillId] = { total: 0, belowL3: 0 };
+          }
+          skillCounts[skillId].belowL3++;
+        }
+      });
+    });
+
+    const criticalGaps = Object.entries(skillCounts)
+      .filter(([, counts]) => counts.belowL3 >= 2)
+      .sort((a, b) => b[1].belowL3 - a[1].belowL3)
+      .slice(0, 5)
+      .map(([skillId, counts]) => ({
+        skill_id: skillId,
+        skill_name: allSkillNames[skillId] || skillId.replace(/_/g, ' '),
+        missing_count: counts.belowL3,
+        severity: counts.belowL3 >= 4 ? 'High' : counts.belowL3 >= 3 ? 'Medium' : 'Low',
+        affected_members: enrichedHeatmap
+          .filter(m => !(m.skills || {})[skillId] || (m.skills || {})[skillId] < 3)
+          .map(m => m.name)
+      }));
+
     res.json({
       team_heatmap: enrichedHeatmap,
       summary: {
         total_reports: enrichedHeatmap.length,
         avg_readiness: avgReadiness,
-        critical_org_gaps: [
-          { skill_name: "LLM & RAG Application Building", missing_count: 4, severity: "High" },
-          { skill_name: "Statistical Modeling & A/B Testing", missing_count: 3, severity: "Medium" },
-          { skill_name: "System Design & Distributed Architecture", missing_count: 3, severity: "Medium" }
-        ]
+        critical_org_gaps: criticalGaps
       }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+// AI Team Suggestions endpoint for Manager Heatmap
+app.post('/api/manager/suggestions', async (req, res) => {
+  try {
+    const { team_heatmap, critical_gaps } = req.body;
+    const { generateTeamAISuggestions } = await import('./services/geminiService.js');
+    const suggestions = await generateTeamAISuggestions(team_heatmap || [], critical_gaps || []);
+    res.json({ suggestions });
+  } catch (err) {
+    console.warn('AI team suggestions error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 // Connect to MongoDB and start server
 async function startServer() {

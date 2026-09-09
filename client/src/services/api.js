@@ -187,9 +187,9 @@ export const DEFAULT_MANAGER_HEATMAP = {
     total_reports: 5,
     avg_readiness: 66,
     critical_org_gaps: [
-      { skill_name: "LLM & RAG Application Building", missing_count: 4, severity: "High" },
-      { skill_name: "Statistical Modeling & A/B Testing", missing_count: 3, severity: "Medium" },
-      { skill_name: "System Design & Distributed Architecture", missing_count: 3, severity: "Medium" }
+      { skill_id: 'llm_engineering', skill_name: "LLM & RAG Application Building", missing_count: 4, severity: "High", affected_members: ['Priya Sharma', 'Marcus Chen', 'Sarah Jenkins', 'David Kim'] },
+      { skill_id: 'stat_modeling', skill_name: "Statistical Modeling & A/B Testing", missing_count: 3, severity: "Medium", affected_members: ['Marcus Chen', 'David Kim', 'Elena Rostova'] },
+      { skill_id: 'system_design', skill_name: "System Design & Distributed Architecture", missing_count: 3, severity: "Medium", affected_members: ['Priya Sharma', 'Sarah Jenkins', 'Elena Rostova'] }
     ]
   }
 };
@@ -211,6 +211,28 @@ export async function fetchManagerHeatmap() {
   } catch (err) {
     console.warn('Backend heatmap endpoint notice, using local fallback:', err);
     return DEFAULT_MANAGER_HEATMAP;
+  }
+}
+
+export async function fetchManagerAISuggestions(teamHeatmap, criticalGaps) {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    const res = await fetch(`${API_BASE}/manager/suggestions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team_heatmap: teamHeatmap, critical_gaps: criticalGaps }),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+    return data.suggestions || [];
+  } catch (err) {
+    console.warn('Backend AI suggestions notice, using local fallback:', err);
+    return null;
   }
 }
 

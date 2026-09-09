@@ -822,4 +822,120 @@ Return JSON format:
   };
 }
 
+/**
+ * AI Team Suggestions for Manager Heatmap — Gemini-powered analysis of team skill data
+ */
+export async function generateTeamAISuggestions(teamHeatmap, criticalGaps) {
+  const genAI = getGenAI();
 
+  const teamSummary = teamHeatmap.map(m => ({
+    name: m.name,
+    current_role: m.current_role,
+    target_role: m.target_role_title || m.target_role,
+    readiness: m.readiness_percent,
+    skills: m.skills
+  }));
+
+  const prompt = `You are an enterprise L&D AI advisor. Analyze this team's skill data and generate exactly 4 actionable suggestions for the manager.
+
+Team Data: ${JSON.stringify(teamSummary)}
+Critical Org Gaps: ${JSON.stringify(criticalGaps)}
+
+Return a valid JSON array of exactly 4 suggestion objects. Each object must have:
+- "icon": one of "promotion", "upskill", "cohort", "risk"
+- "title": short action title (max 8 words)
+- "description": 1-2 sentence actionable recommendation mentioning specific team member names
+- "priority": "high", "medium", or "low"
+- "members": array of team member names this applies to
+
+Return ONLY the JSON array, no markdown or extra text.`;
+
+  if (!genAI) {
+    return fallbackTeamSuggestions(teamHeatmap, criticalGaps);
+  }
+
+  for (const modelName of SUPPORTED_MODELS) {
+    try {
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text().trim();
+      
+      const jsonMatch = text.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.slice(0, 4);
+        }
+      }
+    } catch (err) {
+      console.warn(`Gemini team suggestions (${modelName}) notice:`, err.message);
+      if (err.message?.includes('API_KEY_INVALID')) break;
+    }
+  }
+
+  return fallbackTeamSuggestions(teamHeatmap, criticalGaps);
+}
+
+function fallbackTeamSuggestions(teamHeatmap, criticalGaps) {
+  const suggestions = [];
+  const sorted = [...teamHeatmap].sort((a, b) => (b.readiness_percent || 0) - (a.readiness_percent || 0));
+  const topReady = sorted[0];
+  const atRisk = sorted.filter(m => (m.readiness_percent || 0) < 55);
+  const developing = sorted.filter(m => (m.readiness_percent || 0) >= 55 && (m.readiness_percent || 0) < 75);
+
+  if (topReady) {
+    suggestions.push({
+      icon: 'promotion',
+      title: `Fast-track ${topReady.name} for Promotion`,
+      description: `${topReady.name} is at ${topReady.readiness_percent}% readiness for ${topReady.target_role_title || topReady.target_role}. Initiate internal mobility review and schedule a career conversation this quarter.`,
+      priority: 'high',
+      members: [topReady.name]
+    });
+  }
+
+  if (atRisk.length > 0) {
+    suggestions.push({
+      icon: 'risk',
+      title: `Address At-Risk Team Members`,
+      description: `${atRisk.map(m => m.name).join(' and ')} ${atRisk.length === 1 ? 'is' : 'are'} below 55% readiness. Assign dedicated mentorship and prioritize foundational skill modules to prevent attrition.`,
+      priority: 'high',
+      members: atRisk.map(m => m.name)
+    });
+  }
+
+  if (criticalGaps && criticalGaps.length > 0) {
+    const topGap = criticalGaps[0];
+    suggestions.push({
+      icon: 'cohort',
+      title: `Launch ${topGap.skill_name} Cohort`,
+      description: `${topGap.missing_count} team members lack competency in ${topGap.skill_name}. Create a shared learning cohort to close this critical org gap and reduce external hiring dependency.`,
+      priority: 'high',
+      members: teamHeatmap.filter(m => {
+        const skills = m.skills || {};
+        return Object.values(skills).some(v => v <= 1);
+      }).map(m => m.name).slice(0, topGap.missing_count)
+    });
+  }
+
+  if (developing.length > 0) {
+    suggestions.push({
+      icon: 'upskill',
+      title: `Accelerate Developing Talent`,
+      description: `${developing.map(m => m.name).join(', ')} ${developing.length === 1 ? 'is' : 'are'} in the 55-75% readiness zone. Assign stretch assignments and peer mentorship to push them over the promotion threshold.`,
+      priority: 'medium',
+      members: developing.map(m => m.name)
+    });
+  }
+
+  while (suggestions.length < 4) {
+    suggestions.push({
+      icon: 'upskill',
+      title: 'Schedule Quarterly Skill Review',
+      description: 'Run a team-wide capability assessment to update skill levels and realign learning roadmaps with evolving business priorities.',
+      priority: 'low',
+      members: teamHeatmap.map(m => m.name)
+    });
+  }
+
+  return suggestions.slice(0, 4);
+}
