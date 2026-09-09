@@ -229,3 +229,103 @@
   background: #94a3b8;
 }
 
+/* ==========================================================================
+   Responsive Media Queries & Cross-Device Optimizations
+   ========================================================================== */
+
+/* Mobile Devices (< 640px) */
+@media (max-width: 639px) {
+  body {
+    font-size: 13.5px;
+  }
+  
+  h1 {
+    font-size: 1.375rem !important;
+    line-height: 1.75rem !important;
+  }
+
+  h2 {
+    font-size: 1.1875rem !important;
+    line-height: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.0625rem !important;
+    line-height: 1.375rem !important;
+  }
+
+  /* Responsive Card Padding & Radius */
+  .responsive-card {
+    padding: 1rem !important;
+    border-radius: 0.875rem !important;
+  }
+
+  /* Responsive Touch Targets */
+  button, input, select {
+    min-height: 36px;
+  }
+
+  /* Horizontal Auto-Scroll Containers for Mobile Tables & Tabs */
+  .responsive-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Tablet Screens (640px - 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .responsive-card {
+    padding: 1.25rem !important;
+  }
+  
+  .responsive-grid-2col {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Large Desktop Screens (>= 1024px) */
+@media (min-width: 1024px) {
+  .responsive-card {
+    padding: 1.5rem !important;
+  }
+}
+
+/* Ultra-Wide Displays (>= 1536px) */
+@media (min-width: 1536px) {
+  .max-w-7xl {
+    max-width: 90rem !important;
+  }
+}
+
+/* Touch Devices (Smartphones & Tablets) */
+@media (hover: none) and (pointer: coarse) {
+  .active\:scale-95:active {
+    transform: scale(0.97) !important;
+  }
+}
+
+/* Print Optimization */
+@media print {
+  header, nav, .print\:hidden {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .glass-card, .glass-panel, .card-mint, .card-rose, .card-sky, .card-amber {
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+}
+
+

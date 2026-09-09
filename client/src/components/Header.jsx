@@ -70,7 +70,7 @@ export default function Header({
           </div>
 
           {/* ── Navigation Tabs ── */}
-          <nav className="relative flex items-center p-1 rounded-xl flex-shrink-0 bg-zinc-900 border border-zinc-800">
+          <nav className="relative flex items-center p-1 rounded-xl flex-shrink-0 bg-zinc-900 border border-zinc-800 overflow-x-auto no-scrollbar max-w-full">
 
             {/* Sliding pill */}
             <span
