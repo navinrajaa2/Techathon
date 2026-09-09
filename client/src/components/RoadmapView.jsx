@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import React, { useState } from 'react';
 import {
   Sparkles, Calendar, Clock, BookOpen, ExternalLink, CheckCircle2, Award, ArrowRight,
   ShieldCheck, PlayCircle, RotateCw, Lightbulb, Bot, Download, Coffee, FileCheck,
-  Volume2, VolumeX, Zap, FileText, Code2, MessageSquare, Trophy, Rocket, UserCheck, Headphones, PieChart as PieIcon
+  Volume2, VolumeX, Zap, FileText, Code2, MessageSquare, Trophy, Rocket, UserCheck, Headphones
 } from 'lucide-react';
 import { generateAndDownloadICS } from '../utils/calendarUtils';
 import { speakText, stopSpeaking, isSpeaking } from '../utils/speechUtils';
@@ -54,17 +53,6 @@ export default function RoadmapView({
   // Quiz/project verified completion on top of readiness
   const verifiedPercent = Math.round((completedCount / (roadmap_steps.length || 1)) * 100);
   const progressPercent = Math.max(readinessPercent, verifiedPercent);
-
-  const roadmapPieData = useMemo(() => {
-    const verified = completedCount;
-    const inProg = roadmap_steps.filter(s => s.status === 'in_progress').length || (verified < roadmap_steps.length ? 1 : 0);
-    const remaining = Math.max(0, roadmap_steps.length - verified - inProg);
-    return [
-      { name: 'Verified', value: verified, color: '#10b981' },
-      { name: 'In Progress', value: inProg, color: '#3b82f6' },
-      { name: 'Upcoming', value: remaining, color: '#94a3b8' }
-    ].filter(d => d.value > 0);
-  }, [completedCount, roadmap_steps]);
 
   const handleDownloadCalendar = () => {
     generateAndDownloadICS({
@@ -244,37 +232,6 @@ export default function RoadmapView({
                 <span>Mastered</span>
               </div>
               <div className="text-lg font-black text-blue-700 font-outfit mt-0.5">{completedCount}/{roadmap_steps.length} Skills</div>
-            </div>
-
-            {/* Donut Chart Card */}
-            <div className="px-3 py-2 rounded-xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-2">
-              <div className="w-14 h-14">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={roadmapPieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={14}
-                      outerRadius={24}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {roadmapPieData.map((entry, index) => (
-                        <Cell key={`roadmap-cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '6px', border: 'none', color: '#fff', fontSize: '10px' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="text-[10px] space-y-0.5 font-semibold text-slate-600">
-                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Verified</div>
-                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Active</div>
-                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-400"></span> Upcoming</div>
-              </div>
             </div>
           </div>
 

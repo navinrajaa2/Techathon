@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import {
-  X, MessageSquare, Star, ShieldCheck, Award, CheckCircle2,
+import { 
+  X, MessageSquare, Star, ShieldCheck, Award, CheckCircle2, 
   Send, ThumbsUp, Sparkles, Filter, User, Lightbulb
 } from 'lucide-react';
 
@@ -79,7 +79,7 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
       <div className="bg-white border border-slate-200 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
-
+        
         {/* Header - Light Theme */}
         <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 p-6 border-b border-indigo-100 relative">
           <button
@@ -111,27 +111,30 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
 
         {/* Content Body */}
         <div className="p-6 space-y-6 flex-1">
-
+          
           {/* Navigation Tabs */}
           <div className="flex rounded-xl bg-slate-100 p-1 border border-slate-200">
             <button
               onClick={() => setActiveTab('all')}
-              className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${activeTab === 'all' ? 'bg-white text-purple-900 shadow-xs border border-slate-200' : 'text-slate-600 hover:text-slate-900'
-                }`}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${
+                activeTab === 'all' ? 'bg-white text-purple-900 shadow-xs border border-slate-200' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
               All Feedback Items
             </button>
             <button
               onClick={() => setActiveTab('project')}
-              className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${activeTab === 'project' ? 'bg-white text-purple-900 shadow-xs border border-slate-200' : 'text-slate-600 hover:text-slate-900'
-                }`}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${
+                activeTab === 'project' ? 'bg-white text-purple-900 shadow-xs border border-slate-200' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
               AI Project Reviews
             </button>
             <button
               onClick={() => setActiveTab('submit')}
-              className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${activeTab === 'submit' ? 'bg-white text-purple-900 shadow-xs border border-slate-200' : 'text-slate-600 hover:text-slate-900'
-                }`}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition ${
+                activeTab === 'submit' ? 'bg-white text-purple-900 shadow-xs border border-slate-200' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
               Submit Platform Feedback
             </button>
@@ -142,7 +145,7 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
             <div className="space-y-4">
               {STORED_FEEDBACK_ITEMS.map((item) => (
                 <div key={item.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs space-y-3">
-
+                  
                   <div className="flex items-start justify-between">
                     <div>
                       <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200">
@@ -184,7 +187,7 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
 
                   {item.senior_tip && (
                     <div className="p-3 rounded-xl bg-slate-900 text-slate-100 text-xs flex items-start space-x-2">
-
+                      <Sparkles className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-purple-300">Senior Architect Tip: </span>
                         <span>{item.senior_tip}</span>
@@ -200,7 +203,7 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
           {/* Tab 2: Submit New Feedback Form */}
           {activeTab === 'submit' && (
             <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
-
+              
               <div className="space-y-1">
                 <h3 className="text-base font-bold text-slate-900 font-outfit">
                   Submit Feedback & Feature Experience
@@ -218,7 +221,7 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
               )}
 
               <form onSubmit={handleSubmitUserFeedback} className="space-y-4">
-
+                
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-1">
                     Feedback Target Area
@@ -249,10 +252,11 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
                         className="p-1.5 transition transform active:scale-95"
                       >
                         <Star
-                          className={`w-6 h-6 ${star <= rating
+                          className={`w-6 h-6 ${
+                            star <= rating
                               ? 'text-amber-400 fill-amber-400'
                               : 'text-slate-300'
-                            }`}
+                          }`}
                         />
                       </button>
                     ))}

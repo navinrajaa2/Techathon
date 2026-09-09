@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer, Tooltip,
-  PieChart, Pie, Cell
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer, Tooltip
 } from 'recharts';
 import {
   Target, Layers, ArrowUpRight, AlertTriangle, CheckCircle, Sparkles, TrendingUp,
@@ -50,12 +49,6 @@ export default function GapAnalysisView({
   const criticalGapsCount = gaps.filter(g => g.gap_score >= 3).length;
   const moderateGapsCount = gaps.filter(g => g.gap_score >= 1 && g.gap_score < 3).length;
   const metSkillsCount = gaps.filter(g => g.gap_score === 0).length;
-
-  const statusPieData = useMemo(() => [
-    { name: 'Met Baseline', value: metSkillsCount, color: '#10b981' },
-    { name: 'Moderate Gap', value: moderateGapsCount, color: '#f59e0b' },
-    { name: 'Critical Gap', value: criticalGapsCount, color: '#f43f5e' }
-  ].filter(d => d.value > 0), [metSkillsCount, moderateGapsCount, criticalGapsCount]);
 
   // Filter & Sort gaps
   const filteredGaps = gaps
@@ -299,52 +292,6 @@ export default function GapAnalysisView({
                   <Legend wrapperStyle={{ paddingTop: '12px', fontSize: '11px', color: '#475569' }} />
                 </RadarChart>
               </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Donut Chart: Competency Breakdown */}
-          <div className="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
-            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
-              <span>Competency Breakdown</span>
-              <span className="text-[10px] text-slate-500 font-normal">{gaps.length} Total Skills</span>
-            </div>
-            <div className="grid grid-cols-12 gap-2 items-center">
-              <div className="col-span-5 h-24 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={statusPieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={20}
-                      outerRadius={34}
-                      paddingAngle={3}
-                      dataKey="value"
-                    >
-                      {statusPieData.map((entry, index) => (
-                        <Cell key={`status-cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '8px', border: 'none', color: '#fff', fontSize: '11px' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="col-span-7 text-[11px] space-y-1.5 font-semibold text-slate-700">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Met Baseline</span>
-                  <span className="font-bold text-slate-900">{metSkillsCount}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Moderate Gap</span>
-                  <span className="font-bold text-slate-900">{moderateGapsCount}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Critical Gap</span>
-                  <span className="font-bold text-slate-900">{criticalGapsCount}</span>
-                </div>
-              </div>
             </div>
           </div>
 
