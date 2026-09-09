@@ -390,8 +390,16 @@ export default function App() {
           {activeTab === 'gap' && (
             <GapAnalysisView
               gapAnalysis={gapAnalysis}
+              roles={taxonomy.roles || []}
+              onSelectTargetRole={(roleId) => setTargetRoleId(roleId)}
               onGeneratePathClick={() => setActiveTab('roadmap')}
               onOpenProjectChallenge={handleOpenProjectChallenge}
+              onStartQuiz={handleStartQuiz}
+              onOpenPlayground={handleOpenPlayground}
+              onOpenMentorship={() => setIsMentorshipOpen(true)}
+              onOpenPromotionMemo={() => setIsPromotionMemoOpen(true)}
+              onOpenSlack={() => setIsSlackOpen(true)}
+              onRequestManagerReview={(gap) => setAdaptiveNotice(`Manager endorsement request logged for '${gap.skill_name}'.`)}
             />
           )}
 
