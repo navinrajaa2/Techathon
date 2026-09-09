@@ -2,8 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Users, AlertTriangle, ShieldCheck, TrendingUp, Download, Building, Search, ArrowUpRight,
   FileText, Sparkles, ChevronDown, ChevronUp, Filter, SortAsc, X, Zap, Target, UserCheck,
-  BookOpen, ArrowRight, Eye
+  BookOpen, ArrowRight, Eye, PieChart as PieIcon
 } from 'lucide-react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchManagerHeatmap, fetchManagerAISuggestions, DEFAULT_MANAGER_HEATMAP } from '../services/api';
 import PromotionPitchModal from './PromotionPitchModal';
 
@@ -116,6 +117,21 @@ export default function ManagerDashboard() {
       Object.keys(m.skills || {}).forEach(s => skillSet.add(s));
     });
     return Array.from(skillSet);
+  }, [team_heatmap]);
+
+  const tierData = useMemo(() => {
+    let ready = 0, developing = 0, atRisk = 0;
+    team_heatmap.forEach(m => {
+      const r = m.readiness_percent || 0;
+      if (r >= 75) ready++;
+      else if (r >= 55) developing++;
+      else atRisk++;
+    });
+    return [
+      { name: 'Ready (≥75%)', value: ready, color: '#10b981' },
+      { name: 'Developing (55-74%)', value: developing, color: '#f59e0b' },
+      { name: 'At Risk (<55%)', value: atRisk, color: '#f43f5e' }
+    ].filter(d => d.value > 0);
   }, [team_heatmap]);
 
   // Filtered + sorted team members
@@ -314,8 +330,8 @@ export default function ManagerDashboard() {
           </div>
         </div>
 
-        {/* Executive Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-200/80">
+        {/* Executive Summary Cards & Donut Chart */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-200/80">
           <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Direct Reports</div>
             <div className="text-2xl font-black text-slate-900 font-outfit mt-1">{summary.total_reports || team_heatmap.length} Team Members</div>
@@ -340,6 +356,42 @@ export default function ManagerDashboard() {
             <div className="text-2xl font-black text-rose-600 font-outfit mt-1">{criticalGaps.length} Gaps</div>
             <div className="text-[11px] text-rose-700 font-semibold mt-1">High priority for upskilling</div>
           </div>
+
+          {/* Interactive Donut Pie Chart */}
+          <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs flex flex-col justify-between">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+              <span>Readiness Distribution</span>
+              <PieIcon className="w-3.5 h-3.5 text-blue-600" />
+            </div>
+            <div className="h-24 w-full my-1 flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={tierData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={24}
+                    outerRadius={38}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {tierData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '8px', border: 'none', color: '#fff', fontSize: '11px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex items-center justify-around text-[10px] font-semibold text-slate-600">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Ready</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Dev</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Risk</span>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -353,10 +405,7 @@ export default function ManagerDashboard() {
 
             <span>AI-Powered Team Insights</span>
           </h2>
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center gap-1">
 
-            AI
-          </span>
         </div>
 
         {aiSuggestionsLoading ? (
@@ -410,10 +459,10 @@ export default function ManagerDashboard() {
             <span>Skill Competency Heatmap</span>
           </h2>
           <div className="flex items-center space-x-3 text-[10px] font-semibold text-slate-500">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-rose-100 border border-rose-300"></span> L1</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300"></span> L2</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-100 border border-blue-300"></span> L3</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300"></span> L4+</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-rose-100 border border-rose-300"></span> Lvl 1</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300"></span> Lvl 2</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-100 border border-blue-300"></span> Lvl 3</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300"></span> Lvl 4+</span>
             <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-50 border border-slate-100"></span> N/A</span>
           </div>
         </div>
@@ -528,8 +577,8 @@ export default function ManagerDashboard() {
                   key={opt.value}
                   onClick={() => setFilterTier(opt.value)}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition ${filterTier === opt.value
-                      ? 'bg-blue-50 border-blue-300 text-blue-700'
-                      : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                    ? 'bg-blue-50 border-blue-300 text-blue-700'
+                    : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
                     }`}
                 >
                   {opt.label}
@@ -733,8 +782,8 @@ export default function ManagerDashboard() {
                   <div className="flex items-start justify-between">
                     <div className="font-bold text-slate-900 text-xs">{gap.skill_name}</div>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${gap.severity === 'High'
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : 'bg-amber-50 text-amber-800 border-amber-200'
+                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                      : 'bg-amber-50 text-amber-800 border-amber-200'
                       }`}>
                       {gap.severity}
                     </span>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   Sparkles, TrendingUp, Compass, ArrowRight, CheckCircle2, Clock, DollarSign, Award,
-  Layers, Zap, AlertCircle, Building, BarChart3, RefreshCw, ChevronRight, HelpCircle, Briefcase
+  Layers, Zap, AlertCircle, Building, BarChart3, RefreshCw, ChevronRight, HelpCircle, Briefcase, PieChart as PieIcon
 } from 'lucide-react';
 import { fetchCareerComparisonRecommendation } from '../services/api';
 
@@ -472,23 +473,50 @@ export default function CareerSimulatorView({
 
               {/* Factor: Current Skill Match */}
               <tr className="hover:bg-slate-50/70 transition">
-                <td className="py-4 px-6 font-bold text-slate-700 flex items-center space-x-2">
-                  <span>Current Skill Match</span>
+                <td className="py-4 px-6 font-bold text-slate-700">
+                  <div className="flex items-center space-x-2">
+                    <PieIcon className="w-4 h-4 text-blue-600" />
+                    <span>Skill Overlap & Gaps</span>
+                  </div>
                 </td>
-                {comparedRoles.map((item) => (
-                  <td key={item.role.id} className="py-4 px-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-1 bg-slate-200 rounded-full h-2.5 max-w-[120px] overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${item.overlapPercent >= 60 ? 'bg-emerald-500' : item.overlapPercent >= 45 ? 'bg-blue-600' : 'bg-amber-500'
-                            }`}
-                          style={{ width: `${item.overlapPercent}%` }}
-                        />
+                {comparedRoles.map((item) => {
+                  const pieData = [
+                    { name: 'Transferable Overlap', value: item.overlapPercent, color: '#10b981' },
+                    { name: 'Skill Gap', value: Math.max(0, 100 - item.overlapPercent), color: '#f59e0b' }
+                  ];
+                  return (
+                    <td key={item.role.id} className="py-4 px-6">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 shrink-0">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={pieData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={10}
+                                outerRadius={18}
+                                paddingAngle={2}
+                                dataKey="value"
+                              >
+                                {pieData.map((entry, index) => (
+                                  <Cell key={`role-cell-${index}`} fill={entry.color} />
+                                ))}
+                              </Pie>
+                              <Tooltip
+                                contentStyle={{ backgroundColor: '#0f172a', borderRadius: '6px', border: 'none', color: '#fff', fontSize: '10px' }}
+                              />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-extrabold text-sm text-slate-900 font-outfit">{item.overlapPercent}% Overlap</div>
+                          <div className="text-[10px] text-slate-500 font-medium">({100 - item.overlapPercent}% Gap)</div>
+                        </div>
                       </div>
-                      <span className="font-extrabold text-sm text-slate-900 font-outfit">{item.overlapPercent}%</span>
-                    </div>
-                  </td>
-                ))}
+                    </td>
+                  );
+                })}
               </tr>
 
               {/* Factor: Missing Skills */}
