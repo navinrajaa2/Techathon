@@ -70,7 +70,7 @@ export default function Header({
           </div>
 
           {/* ── Navigation Tabs ── */}
-          <nav className="relative flex items-center p-1 rounded-xl flex-shrink-0 bg-zinc-900 border border-zinc-800 overflow-x-auto no-scrollbar max-w-full">
+          <nav className="relative flex items-center p-1 rounded-xl flex-shrink-0 bg-zinc-900 border border-zinc-800">
 
             {/* Sliding pill */}
             <span
@@ -140,10 +140,6 @@ export default function Header({
                     className="w-7 h-7 rounded-full object-cover border border-zinc-700"
                   />
                   <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-black bg-emerald-500" />
-                </div>
-                <div className="text-left hidden lg:block">
-                  <div className="text-xs font-bold text-zinc-100 leading-none">{selectedPersona?.name || 'Priya Sharma'}</div>
-                  <div className="text-[10px] text-zinc-400 leading-tight mt-0.5 truncate max-w-[100px]">{selectedPersona?.role}</div>
                 </div>
                 <ChevronDown className="w-3.5 h-3.5 text-zinc-400 transition-transform duration-200"
                   style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
