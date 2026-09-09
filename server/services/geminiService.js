@@ -477,7 +477,7 @@ function fallbackMentorResponse(query, skillName, role, context = {}) {
       ? `You struggled with **PARTITION BY** in your last quiz. Let's practice that concept directly!`
       : `Since window functions are a core requirement for ${targetRole}, let's build an intuitive mental model.`;
 
-    return `💡 **Mastering Window Functions for ${targetRole}**
+    return `**Mastering Window Functions for ${targetRole}**
 
 Since you are currently learning **SQL** for your **${targetRole}** roadmap (moving from ${currentRole}), let's use a sales-ranking example.
 
@@ -509,22 +509,22 @@ Would you like to try this in the **Code Workbench** or run through another prac
   }
 
   if (qLower.includes('eli5') || qLower.includes('simply') || qLower.includes('analogy')) {
-    return `💡 **Intuitive Analogy for ${skillName}**:\n\nThink of **${skillName}** like building an organized kitchen in a busy restaurant. Rather than scrambling around finding ingredients one by one, it gives you standardized recipes and indexed stations so orders flow instantly without bottlenecks.\n\nIn **${targetRole}**, this allows your team to deliver robust systems with zero guesswork.`;
+    return `**Intuitive Analogy for ${skillName}**:\n\nThink of **${skillName}** like building an organized kitchen in a busy restaurant. Rather than scrambling around finding ingredients one by one, it gives you standardized recipes and indexed stations so orders flow instantly without bottlenecks.\n\nIn **${targetRole}**, this allows your team to deliver robust systems with zero guesswork.`;
   }
 
   if (qLower.includes('challenge') || qLower.includes('5-minute') || qLower.includes('practice')) {
-    return `🎯 **5-Minute Practice Challenge for ${skillName}**:\n\n**Scenario**: A production service is processing queries with high latency.\n**Task**: \n1. Identify the unindexed filter key causing full scans.\n2. Refactor the logic using batch vectorization or cached memoization.\n\n**Hint**: Focus on isolating I/O bound queries first! Try writing down pseudo-code in 3 lines.`;
+    return `**5-Minute Practice Challenge for ${skillName}**:\n\n**Scenario**: A production service is processing queries with high latency.\n**Task**: \n1. Identify the unindexed filter key causing full scans.\n2. Refactor the logic using batch vectorization or cached memoization.\n\n**Hint**: Focus on isolating I/O bound queries first! Try writing down pseudo-code in 3 lines.`;
   }
 
   if (qLower.includes('production') || qLower.includes('real-world') || qLower.includes('scale')) {
-    return `💼 **How ${skillName} is Used in Top Tech Companies**:\n\nIn companies like Stripe, Netflix, and Google, **${skillName}** is utilized to:\n- Automate real-time event telemetry pipelines\n- Guard against regression with automated CI testing suites\n- Ensure high availability across multi-region clusters.\n\nMastering this elevates you directly into senior architectural discussions for ${targetRole}.`;
+    return `**How ${skillName} is Used in Top Tech Companies**:\n\nIn companies like Stripe, Netflix, and Google, **${skillName}** is utilized to:\n- Automate real-time event telemetry pipelines\n- Guard against regression with automated CI testing suites\n- Ensure high availability across multi-region clusters.\n\nMastering this elevates you directly into senior architectural discussions for ${targetRole}.`;
   }
 
   if (qLower.includes('mistake') || qLower.includes('gotcha') || qLower.includes('struggle')) {
-    return `⚠️ **Top 3 Common Mistakes to Avoid with ${skillName}**:\n\n1. **Over-engineering early**: Building generic abstractions before understanding the specific domain requirements.\n2. **Ignoring edge cases**: Not testing for empty payloads, timeout thresholds, and rate limits.\n3. **Skipping monitoring**: Deploying without observability metrics and alerting dashboards.`;
+    return `**Top 3 Common Mistakes to Avoid with ${skillName}**:\n\n1. **Over-engineering early**: Building generic abstractions before understanding the specific domain requirements.\n2. **Ignoring edge cases**: Not testing for empty payloads, timeout thresholds, and rate limits.\n3. **Skipping monitoring**: Deploying without observability metrics and alerting dashboards.`;
   }
 
-  return `✨ Great question regarding **${skillName}**!
+  return `Great question regarding **${skillName}**!
 
 Since you are transitioning from **${currentRole}** to **${targetRole}**, prioritizing hands-on execution is the fastest way to verify mastery:
 

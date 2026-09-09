@@ -91,7 +91,7 @@ export default function YearHeatmap({ learnerName }) {
 
   return (
     <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
-      
+
       {/* Header & Stats Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
         <div>
@@ -114,7 +114,7 @@ export default function YearHeatmap({ learnerName }) {
             <Flame className="w-4 h-4 text-orange-500 fill-orange-400" />
             <div className="text-left">
               <div className="text-[9px] font-bold uppercase text-orange-600 leading-none">Streak</div>
-              <div className="text-xs font-black text-orange-800">{stats.currentStreak} Days 🔥</div>
+              <div className="text-xs font-black text-orange-800">{stats.currentStreak} Days</div>
             </div>
           </div>
 
@@ -139,7 +139,7 @@ export default function YearHeatmap({ learnerName }) {
       {/* Grid Container */}
       <div className="overflow-x-auto pb-2">
         <div className="min-w-[680px]">
-          
+
           {/* Months Row */}
           <div className="flex justify-between text-[10px] font-bold text-slate-400 pl-6 pr-2 mb-1">
             {months.map((m, idx) => (
@@ -149,7 +149,7 @@ export default function YearHeatmap({ learnerName }) {
 
           {/* Grid with Weekday Labels */}
           <div className="flex items-start space-x-1">
-            
+
             {/* Weekdays Labels */}
             <div className="flex flex-col space-y-1.5 text-[9px] font-bold text-slate-400 pr-1 pt-0.5">
               <span>Mon</span>
@@ -186,12 +186,12 @@ export default function YearHeatmap({ learnerName }) {
 
       {/* Footer Legend & Tooltip readout */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
-        
+
         {/* Dynamic Tooltip Info */}
         <div className="text-slate-600 font-medium text-xs min-h-[20px] flex items-center space-x-1.5">
           {hoveredDay ? (
             <span className="text-blue-900 font-semibold animate-fadeIn">
-              📅 <strong>{hoveredDay.formattedDate}</strong>: {hoveredDay.hours > 0 ? `${hoveredDay.hours} hours logged (${hoveredDay.activities.join(', ')})` : 'No study activity'}
+              <strong>{hoveredDay.formattedDate}</strong>: {hoveredDay.hours > 0 ? `${hoveredDay.hours} hours logged (${hoveredDay.activities.join(', ')})` : 'No study activity'}
             </span>
           ) : (
             <span className="text-slate-400 text-[11px]">Hover over any square to inspect daily study history</span>

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Sparkles, TrendingUp, Compass, ArrowRight, CheckCircle2, Clock, DollarSign, Award, 
-  Layers, Zap, AlertCircle, Building, BarChart3, RefreshCw, ChevronRight, HelpCircle, Briefcase 
+import {
+  Sparkles, TrendingUp, Compass, ArrowRight, CheckCircle2, Clock, DollarSign, Award,
+  Layers, Zap, AlertCircle, Building, BarChart3, RefreshCw, ChevronRight, HelpCircle, Briefcase
 } from 'lucide-react';
 import { fetchCareerComparisonRecommendation } from '../services/api';
 
-export default function CareerSimulatorView({ 
-  currentSkills = {}, 
-  taxonomy = {}, 
+export default function CareerSimulatorView({
+  currentSkills = {},
+  taxonomy = {},
   currentRole = 'Junior Data Analyst',
-  onSelectTargetRole, 
-  onNavigateToRoadmap 
+  onSelectTargetRole,
+  onNavigateToRoadmap
 }) {
   const roles = taxonomy?.roles || [];
-  
+
   // Available current roles to simulate from
   const currentRoleOptions = [
     'Junior Data Analyst',
@@ -102,7 +102,7 @@ export default function CareerSimulatorView({
       },
       lead_ai_eng: {
         marketDemand: 'Very High',
-        demandBadge: '🔥 Very High (4.9x)',
+        demandBadge: 'Very High (4.9x)',
         internalJobs: 1,
         salaryGrowth: '+42%',
         benchmark: '$175k - $210k',
@@ -126,7 +126,7 @@ export default function CareerSimulatorView({
       },
       lead_ai_pm: {
         marketDemand: 'Very High',
-        demandBadge: '🔥 Very High (4.5x)',
+        demandBadge: 'Very High (4.5x)',
         internalJobs: 1,
         salaryGrowth: '+38%',
         benchmark: '$165k - $195k',
@@ -215,7 +215,7 @@ export default function CareerSimulatorView({
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      
+
       {/* Header Banner */}
       <div className="bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/60 rounded-3xl p-6 sm:p-8 border border-blue-200/80 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16"></div>
@@ -224,7 +224,7 @@ export default function CareerSimulatorView({
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200 flex items-center space-x-1.5 shadow-2xs">
               <Zap className="w-3.5 h-3.5 text-blue-600" />
-              <span>Career What-If Simulator 2.0</span>
+              <span>Career What-If Simulator</span>
             </span>
             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
               Enterprise Mobility Decision Engine
@@ -263,7 +263,7 @@ export default function CareerSimulatorView({
             className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-blue-600 ${loadingAi ? 'animate-spin' : ''}`} />
-            <span>Re-Analyze with Gemini</span>
+            <span>Re-Analyze</span>
           </button>
         </div>
       </div>
@@ -290,9 +290,8 @@ export default function CareerSimulatorView({
                 <button
                   key={h}
                   onClick={() => setWeeklyHoursA(h)}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                    weeklyHoursA === h ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${weeklyHoursA === h ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
                 >
                   {h}h
                 </button>
@@ -321,9 +320,8 @@ export default function CareerSimulatorView({
                 <button
                   key={h}
                   onClick={() => setWeeklyHoursB(h)}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                    weeklyHoursB === h ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${weeklyHoursB === h ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
                 >
                   {h}h
                 </button>
@@ -352,9 +350,8 @@ export default function CareerSimulatorView({
                 <button
                   key={h}
                   onClick={() => setWeeklyHoursC(h)}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                    weeklyHoursC === h ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${weeklyHoursC === h ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
                 >
                   {h}h
                 </button>
@@ -365,76 +362,70 @@ export default function CareerSimulatorView({
       </div>
 
       {/* "Why this recommendation?" AI Synthesis Decision Card */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center space-x-3">
 
-        <div className="relative z-10 space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center space-x-2">
-              <span className="w-8 h-8 rounded-xl bg-blue-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/30">
-                <Sparkles className="w-4 h-4" />
-              </span>
-              <div>
-                <h3 className="text-base sm:text-lg font-black font-outfit text-white">
-                  Why this recommendation?
-                </h3>
-                <p className="text-[11px] text-blue-200">
-                  AI Talent Mobility Synthesis (Powered by Gemini AI)
+            <div>
+              <h3 className="text-base sm:text-lg font-bold font-outfit text-slate-900">
+                Why this recommendation?
+              </h3>
+              <p className="text-xs text-slate-500">
+                AI Talent Mobility Synthesis
+              </p>
+            </div>
+          </div>
+
+          <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center space-x-1.5">
+
+            <span>Live Decision Matrix</span>
+          </span>
+        </div>
+
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-sm leading-relaxed text-slate-700 font-normal">
+          {loadingAi ? (
+            <div className="flex items-center space-x-2 text-slate-500 text-xs py-2">
+              <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
+              <span>Evaluating skill overlap, internal requisition signals, and career ceilings...</span>
+            </div>
+          ) : (
+            <p>
+              {aiRecommendation?.narrative ||
+                "Senior Data Analyst is your fastest internal mobility path because you already have strong SQL and Python foundations. AI Engineer offers higher growth potential but requires additional ML and LLM skills. Data Engineer provides a balanced infrastructure pathway."}
+            </p>
+          )}
+        </div>
+
+        {/* Tradeoff Pills */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+          {comparedRoles.map((item) => {
+            const isFastest = item.overlapPercent === Math.max(...comparedRoles.map(r => r.overlapPercent));
+            const isHighestComp = item.comp.salaryGrowth.includes('42');
+            const badgeLabel = isFastest
+              ? "Fastest Internal Mobility"
+              : isHighestComp
+                ? "Highest Growth Potential"
+                : "Balanced Systems Track";
+
+            return (
+              <div key={item.role.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-900 font-outfit">{item.role.title}</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${isFastest ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-blue-100 text-blue-800 border border-blue-200'
+                    }`}>
+                    {badgeLabel}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-snug">
+                  {isFastest
+                    ? "Direct progression utilizing your existing analytical foundation. 3 open internal jobs."
+                    : isHighestComp
+                      ? "Maximum market demand (+42% salary growth), requiring stretch effort in LLMs."
+                      : "Synergistic path expanding data storage, containerization, and distributed pipelines."}
                 </p>
               </div>
-            </div>
-
-            <span className="px-3 py-1 rounded-full bg-blue-800/80 text-blue-200 border border-blue-700 text-xs font-bold flex items-center space-x-1">
-              <span>⚡ Live Decision Matrix</span>
-            </span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-sm sm:text-base leading-relaxed text-blue-50 font-normal">
-            {loadingAi ? (
-              <div className="flex items-center space-x-2 text-blue-200 text-xs py-2">
-                <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
-                <span>Evaluating skill overlap, internal requisition signals, and career ceilings...</span>
-              </div>
-            ) : (
-              <p>
-                {aiRecommendation?.narrative || 
-                  "Senior Data Analyst is your fastest internal mobility path because you already have strong SQL and Python foundations. AI Engineer offers higher growth potential but requires additional ML and LLM skills. Data Engineer provides a balanced infrastructure pathway."}
-              </p>
-            )}
-          </div>
-
-          {/* Tradeoff Pills */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-            {comparedRoles.map((item) => {
-              const isFastest = item.overlapPercent === Math.max(...comparedRoles.map(r => r.overlapPercent));
-              const isHighestComp = item.comp.salaryGrowth.includes('42');
-              const badge = isFastest 
-                ? "⚡ Fastest Internal Mobility" 
-                : isHighestComp 
-                  ? "🚀 Highest Growth Potential" 
-                  : "🏗️ Balanced Systems Track";
-
-              return (
-                <div key={item.role.id} className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-white font-outfit">{item.role.title}</span>
-                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${
-                      isFastest ? 'bg-emerald-400/20 text-emerald-300 border border-emerald-400/30' : 'bg-blue-400/20 text-blue-300 border border-blue-400/30'
-                    }`}>
-                      {badge}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-blue-200/90 leading-snug">
-                    {isFastest 
-                      ? "Direct progression utilizing your existing analytical foundation. 3 open internal jobs."
-                      : isHighestComp
-                        ? "Maximum market demand (+42% salary growth), requiring stretch effort in LLMs."
-                        : "Synergistic path expanding data storage, containerization, and distributed pipelines."}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+            );
+          })}
         </div>
       </div>
 
@@ -478,7 +469,7 @@ export default function CareerSimulatorView({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 text-xs">
-              
+
               {/* Factor: Current Skill Match */}
               <tr className="hover:bg-slate-50/70 transition">
                 <td className="py-4 px-6 font-bold text-slate-700 flex items-center space-x-2">
@@ -488,10 +479,9 @@ export default function CareerSimulatorView({
                   <td key={item.role.id} className="py-4 px-6">
                     <div className="flex items-center space-x-3">
                       <div className="flex-1 bg-slate-200 rounded-full h-2.5 max-w-[120px] overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full ${
-                            item.overlapPercent >= 60 ? 'bg-emerald-500' : item.overlapPercent >= 45 ? 'bg-blue-600' : 'bg-amber-500'
-                          }`}
+                        <div
+                          className={`h-full rounded-full ${item.overlapPercent >= 60 ? 'bg-emerald-500' : item.overlapPercent >= 45 ? 'bg-blue-600' : 'bg-amber-500'
+                            }`}
                           style={{ width: `${item.overlapPercent}%` }}
                         />
                       </div>
@@ -561,11 +551,10 @@ export default function CareerSimulatorView({
                 </td>
                 {comparedRoles.map((item) => (
                   <td key={item.role.id} className="py-4 px-6">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                      item.comp.marketDemand === 'Very High'
-                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                        : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                    }`}>
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold ${item.comp.marketDemand === 'Very High'
+                      ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                      }`}>
                       {item.comp.demandBadge}
                     </span>
                   </td>
@@ -635,22 +624,21 @@ export default function CareerSimulatorView({
           const isBestMatch = overlapPercent === Math.max(...comparedRoles.map(r => r.overlapPercent));
 
           return (
-            <div 
+            <div
               key={role.id}
-              className={`bg-white rounded-3xl p-6 border transition flex flex-col justify-between relative shadow-sm ${
-                isBestMatch 
-                  ? 'border-blue-500 ring-2 ring-blue-500/20' 
-                  : 'border-slate-200 hover:border-blue-300'
-              }`}
+              className={`bg-white rounded-3xl p-6 border transition flex flex-col justify-between relative shadow-sm ${isBestMatch
+                ? 'border-blue-500 ring-2 ring-blue-500/20'
+                : 'border-slate-200 hover:border-blue-300'
+                }`}
             >
               {isBestMatch && (
                 <div className="absolute -top-3.5 right-6 px-3.5 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-[10px] uppercase tracking-wider rounded-full shadow-md">
-                  ⚡ Highest Transferable Fit
+                  Highest Transferable Fit
                 </div>
               )}
 
               <div className="space-y-4">
-                
+
                 <div>
                   <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 uppercase">
                     {role.track?.replace(/_/g, ' ') || 'Engineering Track'}
@@ -666,10 +654,9 @@ export default function CareerSimulatorView({
                     <span className="text-blue-700 text-sm font-black font-outfit">{overlapPercent}%</span>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-700 ${
-                        overlapPercent >= 60 ? 'bg-emerald-500' : overlapPercent >= 45 ? 'bg-blue-600' : 'bg-amber-500'
-                      }`}
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${overlapPercent >= 60 ? 'bg-emerald-500' : overlapPercent >= 45 ? 'bg-blue-600' : 'bg-amber-500'
+                        }`}
                       style={{ width: `${overlapPercent}%` }}
                     />
                   </div>

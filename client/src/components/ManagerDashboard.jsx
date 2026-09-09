@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Users, AlertTriangle, ShieldCheck, TrendingUp, Download, Building, Search, ArrowUpRight, 
-  FileText, Sparkles, ChevronDown, ChevronUp, Filter, SortAsc, X, Zap, Target, UserCheck, 
+import {
+  Users, AlertTriangle, ShieldCheck, TrendingUp, Download, Building, Search, ArrowUpRight,
+  FileText, Sparkles, ChevronDown, ChevronUp, Filter, SortAsc, X, Zap, Target, UserCheck,
   BookOpen, ArrowRight, Eye
 } from 'lucide-react';
 import { fetchManagerHeatmap, fetchManagerAISuggestions, DEFAULT_MANAGER_HEATMAP } from '../services/api';
@@ -180,19 +180,21 @@ export default function ManagerDashboard() {
 
   const getSuggestionBg = (icon) => {
     switch (icon) {
-      case 'promotion': return 'bg-emerald-50 border-emerald-200';
-      case 'risk': return 'bg-rose-50 border-rose-200';
-      case 'cohort': return 'bg-blue-50 border-blue-200';
-      case 'upskill': return 'bg-amber-50 border-amber-200';
-      default: return 'bg-indigo-50 border-indigo-200';
+      case 'promotion': return 'card-mint';
+      case 'risk': return 'card-rose';
+      case 'cohort': return 'card-sky';
+      case 'upskill': return 'card-amber';
+      default: return 'card-sky';
     }
   };
 
-  const getPriorityBadge = (priority) => {
-    switch (priority) {
-      case 'high': return 'bg-rose-100 text-rose-700 border-rose-200';
-      case 'medium': return 'bg-amber-100 text-amber-700 border-amber-200';
-      default: return 'bg-slate-100 text-slate-600 border-slate-200';
+  const getPriorityBadge = (icon, priority) => {
+    switch (icon) {
+      case 'promotion': return 'pill-badge-mint';
+      case 'risk': return 'pill-badge-rose';
+      case 'cohort': return 'pill-badge-sky';
+      case 'upskill': return 'pill-badge-amber';
+      default: return 'pill-badge-sky';
     }
   };
 
@@ -271,7 +273,7 @@ export default function ManagerDashboard() {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      
+
       {/* Header Banner */}
       <div className="bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/50 rounded-2xl p-6 sm:p-8 border border-blue-200/80 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
@@ -295,14 +297,14 @@ export default function ManagerDashboard() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <button 
+            <button
               onClick={() => setSelectedMemberForMemo(team_heatmap[0])}
               className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-xs font-bold text-white flex items-center space-x-2 shadow-xs transition"
             >
               <FileText className="w-4 h-4" />
               <span>Generate Promotion Pitch</span>
             </button>
-            <button 
+            <button
               onClick={handleExportReport}
               className="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 flex items-center space-x-2 shadow-xs transition"
             >
@@ -325,7 +327,7 @@ export default function ManagerDashboard() {
             <div className="text-2xl font-black text-blue-700 font-outfit mt-1">{summary.avg_readiness || 66}%</div>
             <div className="flex items-center gap-2 mt-1">
               <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                <div 
+                <div
                   className="bg-blue-600 h-full rounded-full transition-all duration-1000 ease-out"
                   style={{ width: animateReady ? `${summary.avg_readiness || 66}%` : '0%' }}
                 />
@@ -345,23 +347,21 @@ export default function ManagerDashboard() {
       {/* AI-Powered Suggestions Panel */}
       <div className="bg-gradient-to-br from-indigo-50/80 via-white to-violet-50/50 rounded-2xl p-5 sm:p-6 border border-indigo-200/80 shadow-sm relative overflow-hidden">
         <div className="absolute -top-8 -right-8 w-32 h-32 bg-indigo-400/10 rounded-full blur-2xl pointer-events-none"></div>
-        
+
         <div className="flex items-center justify-between mb-4 relative z-10">
           <h2 className="text-base font-bold text-slate-900 font-outfit flex items-center space-x-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-white" />
-            </div>
+
             <span>AI-Powered Team Insights</span>
           </h2>
           <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center gap-1">
-            <Zap className="w-3 h-3" />
-            Gemini AI
+
+            AI
           </span>
         </div>
 
         {aiSuggestionsLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {[1,2,3,4].map(i => (
+            {[1, 2, 3, 4].map(i => (
               <div key={i} className="p-4 rounded-xl bg-white/60 border border-slate-200 animate-pulse">
                 <div className="h-3 bg-slate-200 rounded w-2/3 mb-3"></div>
                 <div className="h-2 bg-slate-100 rounded w-full mb-2"></div>
@@ -370,27 +370,27 @@ export default function ManagerDashboard() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {aiSuggestions.map((suggestion, idx) => (
-              <div 
-                key={idx} 
-                className={`p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-default ${getSuggestionBg(suggestion.icon)}`}
+              <div
+                key={idx}
+                className={`p-4 transition-all duration-200 hover:shadow-sm cursor-default ${getSuggestionBg(suggestion.icon)}`}
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-white/80 border border-white flex items-center justify-center shadow-xs">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="icon-chip">
                     {getSuggestionIcon(suggestion.icon)}
                   </div>
-                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${getPriorityBadge(suggestion.priority)}`}>
+                  <span className={getPriorityBadge(suggestion.icon, suggestion.priority)}>
                     {suggestion.priority}
                   </span>
                 </div>
-                <div className="font-bold text-xs text-slate-900 mb-1 leading-snug">{suggestion.title}</div>
-                <p className="text-[11px] text-slate-600 leading-relaxed">{suggestion.description}</p>
+                <div className="font-bold text-sm text-slate-900 mb-1.5 leading-snug">{suggestion.title}</div>
+                <p className="text-xs text-slate-600 leading-relaxed">{suggestion.description}</p>
                 {suggestion.members && suggestion.members.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1">
+                  <div className="mt-3 flex flex-wrap gap-1.5">
                     {suggestion.members.slice(0, 3).map((name, i) => (
-                      <span key={i} className="px-1.5 py-0.5 rounded-full bg-white/80 text-[9px] font-semibold text-slate-600 border border-slate-200">
+                      <span key={i} className="pill-tag-white">
                         {name.split(' ')[0]}
                       </span>
                     ))}
@@ -437,10 +437,10 @@ export default function ManagerDashboard() {
                   <tr key={member.id || idx} className="hover:bg-blue-50/20 transition">
                     <td className="py-2.5 px-3 sticky left-0 bg-white z-10">
                       <div className="flex items-center space-x-2">
-                        <img 
-                          src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`} 
-                          alt={name} 
-                          className="w-6 h-6 rounded-full object-cover ring-1 ring-slate-200" 
+                        <img
+                          src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`}
+                          alt={name}
+                          className="w-6 h-6 rounded-full object-cover ring-1 ring-slate-200"
                         />
                         <span className="font-bold text-slate-800 text-[11px] whitespace-nowrap">{name}</span>
                       </div>
@@ -477,10 +477,10 @@ export default function ManagerDashboard() {
 
       {/* Main Grid: Team Table + Critical Org Warnings */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
+
         {/* Left: Team Matrix Table with Filters (8 cols) */}
         <div className="lg:col-span-8 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
-          
+
           {/* Search + Filter Bar */}
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-base font-bold text-slate-900 font-outfit flex items-center space-x-2">
@@ -505,7 +505,7 @@ export default function ManagerDashboard() {
                 )}
               </div>
               {/* Filter Toggle */}
-              <button 
+              <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`p-1.5 rounded-lg border text-xs transition ${showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}
               >
@@ -520,18 +520,17 @@ export default function ManagerDashboard() {
               <span className="text-[10px] font-bold text-slate-400 uppercase">Tier:</span>
               {[
                 { value: 'all', label: 'All' },
-                { value: 'ready', label: '🟢 Ready' },
-                { value: 'developing', label: '🟡 Developing' },
-                { value: 'at_risk', label: '🔴 At Risk' }
+                { value: 'ready', label: 'Ready' },
+                { value: 'developing', label: 'Developing' },
+                { value: 'at_risk', label: 'At Risk' }
               ].map(opt => (
                 <button
                   key={opt.value}
                   onClick={() => setFilterTier(opt.value)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition ${
-                    filterTier === opt.value 
-                      ? 'bg-blue-50 border-blue-300 text-blue-700' 
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition ${filterTier === opt.value
+                      ? 'bg-blue-50 border-blue-300 text-blue-700'
                       : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-                  }`}
+                    }`}
                 >
                   {opt.label}
                 </button>
@@ -572,7 +571,7 @@ export default function ManagerDashboard() {
 
                   return (
                     <React.Fragment key={member.id || member._id || idx}>
-                      <tr 
+                      <tr
                         className={`transition cursor-pointer ${isExpanded ? 'bg-blue-50/40' : 'hover:bg-blue-50/30'}`}
                         onClick={() => setExpandedMember(isExpanded ? null : (member.id || idx))}
                       >
@@ -604,13 +603,13 @@ export default function ManagerDashboard() {
                         <td className="py-3 px-3">
                           <div className="flex items-center space-x-2">
                             <div className="w-16 bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
-                              <div 
+                              <div
                                 className="h-full rounded-full transition-all duration-1000 ease-out"
-                                style={{ 
+                                style={{
                                   width: animateReady ? `${member.readiness_percent}%` : '0%',
-                                  background: member.readiness_percent >= 75 ? 'linear-gradient(90deg, #10b981, #059669)' 
-                                    : member.readiness_percent >= 55 ? 'linear-gradient(90deg, #f59e0b, #d97706)' 
-                                    : 'linear-gradient(90deg, #f43f5e, #e11d48)'
+                                  background: member.readiness_percent >= 75 ? 'linear-gradient(90deg, #10b981, #059669)'
+                                    : member.readiness_percent >= 55 ? 'linear-gradient(90deg, #f59e0b, #d97706)'
+                                      : 'linear-gradient(90deg, #f43f5e, #e11d48)'
                                 }}
                               ></div>
                             </div>
@@ -628,7 +627,7 @@ export default function ManagerDashboard() {
                               <FileText className="w-3 h-3 text-blue-600" />
                               <span>Pitch</span>
                             </button>
-                            <button 
+                            <button
                               onClick={(e) => { e.stopPropagation(); setExpandedMember(isExpanded ? null : (member.id || idx)); }}
                               className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 transition"
                             >
@@ -653,9 +652,9 @@ export default function ManagerDashboard() {
                                   <div key={skId} className="flex items-center gap-2">
                                     <span className="text-[10px] font-semibold text-slate-600 w-20 truncate">{SKILL_LABELS[skId] || skId.replace(/_/g, ' ')}</span>
                                     <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                      <div 
+                                      <div
                                         className="h-full rounded-full transition-all duration-700"
-                                        style={{ 
+                                        style={{
                                           width: `${(lvl / 5) * 100}%`,
                                           background: lvl >= 4 ? '#10b981' : lvl === 3 ? '#3b82f6' : lvl === 2 ? '#f59e0b' : '#f43f5e'
                                         }}
@@ -709,7 +708,7 @@ export default function ManagerDashboard() {
 
         {/* Right: Critical Org Gaps + Cohort Builder (4 cols) */}
         <div className="lg:col-span-4 space-y-4">
-          
+
           {/* Critical Org Gaps */}
           <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
@@ -726,18 +725,17 @@ export default function ManagerDashboard() {
 
             <div className="space-y-3">
               {criticalGaps.map((gap, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition cursor-pointer"
                   onClick={() => setShowCohortModal(showCohortModal === i ? null : i)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="font-bold text-slate-900 text-xs">{gap.skill_name}</div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                      gap.severity === 'High' 
-                        ? 'bg-rose-50 text-rose-700 border-rose-200' 
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${gap.severity === 'High'
+                        ? 'bg-rose-50 text-rose-700 border-rose-200'
                         : 'bg-amber-50 text-amber-800 border-amber-200'
-                    }`}>
+                      }`}>
                       {gap.severity}
                     </span>
                   </div>
@@ -807,7 +805,7 @@ export default function ManagerDashboard() {
                 <div key={i} className="flex items-center gap-2">
                   <span className="text-[10px] font-semibold text-slate-600 w-28">{tier.label}</span>
                   <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div 
+                    <div
                       className={`${tier.color} h-full rounded-full transition-all duration-1000 ease-out`}
                       style={{ width: animateReady ? `${(tier.count / tier.total) * 100}%` : '0%' }}
                     />

@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { 
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer, Tooltip 
+import {
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer, Tooltip
 } from 'recharts';
-import { 
+import {
   Target, Layers, ArrowUpRight, AlertTriangle, CheckCircle, Sparkles, TrendingUp,
   Clock, Filter, Search, Download, Users, ShieldCheck, ChevronRight, Code,
   Award, BookOpen, MessageSquare, Zap, ExternalLink, RefreshCw, BarChart2
 } from 'lucide-react';
 
-export default function GapAnalysisView({ 
-  gapAnalysis, 
-  roles = [], 
-  onSelectTargetRole, 
-  onGeneratePathClick, 
+export default function GapAnalysisView({
+  gapAnalysis,
+  roles = [],
+  onSelectTargetRole,
+  onGeneratePathClick,
   onOpenProjectChallenge,
   onStartQuiz,
   onOpenPlayground,
@@ -99,27 +99,25 @@ export default function GapAnalysisView({
 
   return (
     <div className="space-y-6 animate-fadeIn print:space-y-4 print:p-0">
-      
+
       {/* Target Role & Readiness Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl border border-blue-950">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
-        
+      <div className="relative overflow-hidden bg-white rounded-2xl p-6 sm:p-8 text-slate-900 shadow-sm border border-slate-200">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
           <div className="space-y-3 max-w-2xl">
             <div className="flex items-center flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30 uppercase tracking-wider flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-blue-400" />
-                Skill Gap Vector Engine v2.4
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+
+                Skill Gap Vector Engine
               </span>
-              <span className="text-xs font-medium text-slate-300 flex items-center gap-1">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
                 +12% Readiness vs Last Quarter
               </span>
             </div>
 
             {/* Role Title with Interactive "What-If" Role Switcher */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-black font-outfit text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-extrabold font-outfit text-slate-900 tracking-tight">
                 Target Goal:
               </h1>
               {roles && roles.length > 0 ? (
@@ -127,53 +125,53 @@ export default function GapAnalysisView({
                   <select
                     value={target_role.id || ''}
                     onChange={(e) => onSelectTargetRole && onSelectTargetRole(e.target.value)}
-                    className="bg-slate-800/90 text-white font-extrabold text-lg sm:text-xl px-4 py-2 rounded-xl border border-blue-400/40 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer hover:bg-slate-800 transition"
+                    className="bg-slate-50 text-slate-900 font-bold text-lg sm:text-xl px-4 py-2 rounded-xl border border-slate-300 shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer hover:bg-slate-100 transition"
                   >
                     {roles.map(r => (
-                      <option key={r.id} value={r.id} className="bg-slate-900 text-white font-medium text-sm">
-                        🎯 {r.title} ({r.department || 'Engineering'})
+                      <option key={r.id} value={r.id} className="bg-white text-slate-900 font-medium text-sm">
+                        {r.title} ({r.department || 'Engineering'})
                       </option>
                     ))}
                   </select>
                 </div>
               ) : (
-                <span className="text-2xl sm:text-3xl font-extrabold text-blue-300 font-outfit">
+                <span className="text-2xl sm:text-3xl font-extrabold text-blue-700 font-outfit">
                   {target_role.title}
                 </span>
               )}
             </div>
 
-            <p className="text-sm text-slate-300 leading-relaxed font-normal">
+            <p className="text-sm text-slate-600 leading-relaxed font-normal">
               {target_role.description}
             </p>
 
             {/* Time-to-Readiness & Effort Estimator */}
-            <div className="pt-2 flex flex-wrap items-center gap-4 text-xs">
-              <div className="flex items-center space-x-1.5 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-xs border border-white/10 text-slate-200">
-                <Clock className="w-4 h-4 text-amber-400" />
-                <span>Est. Effort: <strong className="text-white">{totalEstimatedHours} Hours</strong> (~{estimatedWeeks} wks @ 8h/wk)</span>
+            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs">
+              <div className="flex items-center space-x-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
+                <Clock className="w-4 h-4 text-amber-600" />
+                <span>Est. Effort: <strong className="text-slate-900">{totalEstimatedHours} Hours</strong> (~{estimatedWeeks} wks @ 8h/wk)</span>
               </div>
-              <div className="flex items-center space-x-1.5 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-xs border border-white/10 text-slate-200">
-                <AlertTriangle className="w-4 h-4 text-rose-400" />
-                <span>Critical Gaps: <strong className="text-white">{criticalGapsCount} High Leverage</strong></span>
+              <div className="flex items-center space-x-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
+                <AlertTriangle className="w-4 h-4 text-rose-600" />
+                <span>Critical Gaps: <strong className="text-slate-900">{criticalGapsCount} High Leverage</strong></span>
               </div>
             </div>
           </div>
 
           {/* Readiness Metric Circle & Export Actions */}
           <div className="flex flex-col items-end gap-3 self-stretch md:self-auto justify-between">
-            <div className="flex items-center space-x-4 bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 shadow-lg backdrop-blur-sm w-full sm:w-auto">
+            <div className="flex items-center space-x-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-2xs w-full sm:w-auto">
               <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                   <path
-                    className="text-slate-700"
+                    className="text-slate-200"
                     strokeWidth="3.5"
                     stroke="currentColor"
                     fill="none"
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
                   <path
-                    className="text-blue-400 transition-all duration-1000 ease-out"
+                    className="text-blue-600 transition-all duration-1000 ease-out"
                     strokeDasharray={`${readiness_percent}, 100`}
                     strokeWidth="3.5"
                     strokeLinecap="round"
@@ -182,18 +180,18 @@ export default function GapAnalysisView({
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
                 </svg>
-                <span className="absolute text-lg font-black text-white font-outfit">{readiness_percent}%</span>
+                <span className="absolute text-lg font-black text-slate-900 font-outfit">{readiness_percent}%</span>
               </div>
 
               <div>
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Role Match</div>
-                <div className="text-sm font-bold text-blue-300">
+                <div className="text-sm font-bold text-blue-700">
                   {readiness_percent >= 80 ? 'Promotable / Ready' : readiness_percent >= 50 ? 'Moderate Growth Gap' : 'Emerging Trajectory'}
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <button
                     onClick={onGeneratePathClick}
-                    className="text-xs font-bold px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center space-x-1 shadow-md transition"
+                    className="text-xs font-bold px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-1 shadow-2xs transition"
                   >
                     <span>View Roadmap</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -230,7 +228,7 @@ export default function GapAnalysisView({
 
       {/* Main Grid: Radar Chart + Gap Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
+
         {/* Left Column: Interactive Radar Chart & Benchmark Toggle (5 cols) */}
         <div className="lg:col-span-5 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
           <div>
@@ -243,11 +241,10 @@ export default function GapAnalysisView({
               {/* Peer Benchmark Overlay Toggle */}
               <button
                 onClick={() => setShowTeamBenchmark(!showTeamBenchmark)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition flex items-center space-x-1.5 ${
-                  showTeamBenchmark 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                    : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-                }`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition flex items-center space-x-1.5 ${showTeamBenchmark
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                  }`}
               >
                 <Users className="w-3.5 h-3.5" />
                 <span>{showTeamBenchmark ? 'Peer Baseline ON' : '+ Peer Baseline'}</span>
@@ -258,13 +255,13 @@ export default function GapAnalysisView({
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="#e2e8f0" strokeDasharray="3 3" />
-                  <PolarAngleAxis 
-                    dataKey="skill" 
-                    stroke="#64748b" 
-                    tick={{ fill: '#475569', fontSize: 11, fontWeight: 500 }} 
+                  <PolarAngleAxis
+                    dataKey="skill"
+                    stroke="#64748b"
+                    tick={{ fill: '#475569', fontSize: 11, fontWeight: 500 }}
                   />
                   <PolarRadiusAxis angle={30} domain={[0, 5]} stroke="#cbd5e1" />
-                  
+
                   <Radar
                     name="Your Current Skills"
                     dataKey="current"
@@ -308,10 +305,10 @@ export default function GapAnalysisView({
 
         {/* Right Column: Interactive Filter/Search + Prioritized Gap Cards (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
-          
+
           {/* Controls Bar: Search, Category Pills, Criticality Filter & Sort */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3 print:hidden">
-            
+
             {/* Top Row: Search + Sort */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="relative w-full sm:w-64">
@@ -342,38 +339,34 @@ export default function GapAnalysisView({
 
             {/* Bottom Row: Category & Criticality Filters */}
             <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
-              
+
               {/* Criticality Filters */}
               <div className="flex items-center space-x-1">
                 <button
                   onClick={() => setCriticalityFilter('ALL')}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
-                    criticalityFilter === 'ALL' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${criticalityFilter === 'ALL' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
                 >
                   All ({gaps.length})
                 </button>
                 <button
                   onClick={() => setCriticalityFilter('CRITICAL')}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
-                    criticalityFilter === 'CRITICAL' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${criticalityFilter === 'CRITICAL' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                    }`}
                 >
                   Critical ({criticalGapsCount})
                 </button>
                 <button
                   onClick={() => setCriticalityFilter('MODERATE')}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
-                    criticalityFilter === 'MODERATE' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${criticalityFilter === 'MODERATE' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
+                    }`}
                 >
                   Moderate ({moderateGapsCount})
                 </button>
                 <button
                   onClick={() => setCriticalityFilter('MET')}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
-                    criticalityFilter === 'MET' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${criticalityFilter === 'MET' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                    }`}
                 >
                   Met ({metSkillsCount})
                 </button>
@@ -386,9 +379,8 @@ export default function GapAnalysisView({
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-semibold whitespace-nowrap transition ${
-                        selectedCategory === cat ? 'bg-blue-100 text-blue-800 border border-blue-300' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                      }`}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-semibold whitespace-nowrap transition ${selectedCategory === cat ? 'bg-blue-100 text-blue-800 border border-blue-300' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        }`}
                     >
                       {cat}
                     </button>
@@ -419,15 +411,14 @@ export default function GapAnalysisView({
                 const isRequested = requestedEndorsements[gap.skill_id];
 
                 return (
-                  <div 
+                  <div
                     key={gap.skill_id}
-                    className={`p-4 sm:p-5 rounded-2xl transition bg-white border ${
-                      isMet 
-                        ? 'border-slate-200/90 shadow-2xs' 
-                        : gap.gap_score >= 3
+                    className={`p-4 sm:p-5 rounded-2xl transition bg-white border ${isMet
+                      ? 'border-slate-200/90 shadow-2xs'
+                      : gap.gap_score >= 3
                         ? 'border-rose-200 shadow-xs hover:border-rose-300'
                         : 'border-blue-200/80 shadow-xs hover:border-blue-300'
-                    }`}
+                      }`}
                   >
                     {/* Header: Skill Name, Category, Gap Badge & Validation Status */}
                     <div className="flex items-start justify-between gap-3">
@@ -438,7 +429,7 @@ export default function GapAnalysisView({
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
                             {gap.category || 'General'}
                           </span>
-                          
+
                           {/* Validation Badge */}
                           {gap.current_level >= 3 ? (
                             <span className="inline-flex items-center space-x-1 text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200" title="Assessment Verified">
@@ -462,11 +453,10 @@ export default function GapAnalysisView({
                             <span>Met Benchmark</span>
                           </span>
                         ) : (
-                          <span className={`inline-flex items-center space-x-1 text-xs font-bold px-2.5 py-1 rounded-lg border ${
-                            gap.gap_score >= 3 
-                              ? 'bg-rose-50 text-rose-700 border-rose-200' 
-                              : 'bg-blue-50 text-blue-700 border-blue-200'
-                          }`}>
+                          <span className={`inline-flex items-center space-x-1 text-xs font-bold px-2.5 py-1 rounded-lg border ${gap.gap_score >= 3
+                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            : 'bg-blue-50 text-blue-700 border-blue-200'
+                            }`}>
                             <AlertTriangle className="w-3.5 h-3.5" />
                             <span>-{gap.gap_score} Level Gap</span>
                           </span>
@@ -499,11 +489,10 @@ export default function GapAnalysisView({
                         <div className="flex items-center flex-wrap gap-1.5">
                           {gap.prerequisites.map((p, pIdx) => (
                             <React.Fragment key={p.skill_id || pIdx}>
-                              <span className={`px-2 py-0.5 rounded text-xs font-semibold border flex items-center space-x-1 ${
-                                p.current_level >= (p.required_level || 2) 
-                                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
-                                  : 'bg-amber-50 text-amber-800 border-amber-200'
-                              }`}>
+                              <span className={`px-2 py-0.5 rounded text-xs font-semibold border flex items-center space-x-1 ${p.current_level >= (p.required_level || 2)
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                : 'bg-amber-50 text-amber-800 border-amber-200'
+                                }`}>
                                 <span>{p.name}</span>
                                 <span className="text-[10px] opacity-75">(Lvl {p.current_level})</span>
                               </span>
@@ -525,9 +514,8 @@ export default function GapAnalysisView({
                           <button
                             onClick={() => handleRequestEndorsement(gap)}
                             disabled={isRequested}
-                            className={`text-[11px] font-semibold underline transition ${
-                              isRequested ? 'text-emerald-600 cursor-default' : 'text-slate-500 hover:text-blue-600'
-                            }`}
+                            className={`text-[11px] font-semibold underline transition ${isRequested ? 'text-emerald-600 cursor-default' : 'text-slate-500 hover:text-blue-600'
+                              }`}
                           >
                             {isRequested ? '✓ Manager Review Requested' : '+ Request Endorsement'}
                           </button>
@@ -581,7 +569,7 @@ export default function GapAnalysisView({
                               })}
                               className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition active:scale-95"
                             >
-                              <span>🚀 Verify Project</span>
+                              <span> Verify Project</span>
                             </button>
                           )}
                         </div>

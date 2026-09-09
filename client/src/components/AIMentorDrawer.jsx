@@ -8,22 +8,22 @@ import { fetchMentorChat } from '../services/api';
 const PRESET_PROMPTS = [
   { 
     id: 'window_fn', 
-    label: '💡 Explain window functions', 
+    label: 'Explain window functions', 
     prompt: 'Explain window functions.' 
   },
   { 
     id: 'weak_spot', 
-    label: '🎯 Practice my quiz weak spot', 
+    label: 'Practice quiz weak spot', 
     prompt: 'Can we practice the concept I struggled with in my last quiz?' 
   },
   { 
     id: 'eli5', 
-    label: '👶 Explain simply (ELI5)', 
+    label: 'Explain simply (ELI5)', 
     prompt: 'Can you explain this skill simply with an intuitive real-world analogy?' 
   },
   { 
     id: 'prod', 
-    label: '💼 Real-world Production Use', 
+    label: 'Real-world Production Use', 
     prompt: 'How is this specific skill applied in high-scale industry projects for my target role?' 
   }
 ];
@@ -55,7 +55,7 @@ export default function AIMentorDrawer({
         {
           id: 'welcome',
           sender: 'ai',
-          text: `👋 Hi ${learnerProfile?.name ? learnerProfile.name.split(' ')[0] : 'there'}! I'm your **PathCraft AI Learning Companion** (powered by Gemini).
+          text: `Hi ${learnerProfile?.name ? learnerProfile.name.split(' ')[0] : 'there'}! I'm your **PathCraft AI Learning Companion** (powered by Gemini).
 
 I'm continuously tracking your journey from **${currentRole}** → **${targetRoleTitle}**. 
 
@@ -136,7 +136,7 @@ Click **"Explain window functions"** below or ask me any question about your act
     const qLower = query.toLowerCase();
 
     if (qLower.includes('window function') || qLower.includes('explain window')) {
-      return `💡 **Mastering Window Functions for ${role}**
+      return `**Mastering Window Functions for ${role}**
 
 Since you are currently learning **SQL** for your **${role}** roadmap, let's use a sales-ranking example.
 
@@ -167,7 +167,7 @@ FROM enterprise_sales;
     }
 
     if (qLower.includes('quiz') || qLower.includes('weak spot') || qLower.includes('struggle')) {
-      return `🎯 **Addressing Your Recent Assessment Point**:
+      return `**Addressing Your Recent Assessment Point**:
 
 In your last quiz, you missed the question regarding **PARTITION BY vs GROUP BY** performance.
 
@@ -178,7 +178,7 @@ Remember:
 Would you like to write a quick query to test this in the **Code Workbench**?`;
     }
 
-    return `✨ Great question regarding **${skillName}** for your **${role}** path!
+    return `Great question regarding **${skillName}** for your **${role}** path!
 
 Because you are advancing from **${currentRole}**, focusing on end-to-end practical execution is key. I recommend completing the Hands-On Project Challenge for this module to verify your mastery and boost your Target Role Readiness score!`;
   };
@@ -188,17 +188,17 @@ Because you are advancing from **${currentRole}**, focusing on end-to-end practi
       <div className="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col border-l border-slate-200 animate-slideLeft">
         
         {/* Header */}
-        <div className="p-4 border-b border-slate-200 bg-gradient-to-r from-blue-50 via-indigo-50 to-white flex items-center justify-between">
+        <div className="p-4 border-b border-zinc-800 bg-black text-white flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
-              <Bot className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-700 text-white flex items-center justify-center shadow-md">
+              <Bot className="w-5 h-5 text-sky-400" />
             </div>
             <div>
               <div className="flex items-center space-x-1.5">
-                <h3 className="font-extrabold text-slate-900 font-outfit text-sm">PathCraft AI Mentor</h3>
+                <h3 className="font-extrabold text-white font-outfit text-sm">PathCraft AI Mentor</h3>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               </div>
-              <p className="text-[11px] text-slate-500 truncate max-w-[240px]">
+              <p className="text-[11px] text-zinc-400 truncate max-w-[240px]">
                 Active Companion for {currentRole} → {targetRoleTitle}
               </p>
             </div>
@@ -207,14 +207,14 @@ Because you are advancing from **${currentRole}**, focusing on end-to-end practi
           <div className="flex items-center space-x-1">
             <button
               onClick={() => setShowMemoryDetails(!showMemoryDetails)}
-              className="p-1.5 rounded-lg text-blue-700 hover:bg-blue-100/60 transition text-xs flex items-center space-x-1 font-bold"
+              className="p-1.5 rounded-lg text-zinc-300 hover:bg-zinc-800 transition text-xs flex items-center space-x-1 font-bold"
               title="View learner context and memory retained by AI"
             >
-              <Brain className="w-4 h-4 text-blue-600" />
+              <Brain className="w-4 h-4 text-sky-400" />
             </button>
             <button 
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
             >
               <X className="w-5 h-5" />
             </button>

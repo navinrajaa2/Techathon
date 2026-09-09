@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  X, Sparkles, UserCheck, Code2, Cpu, Mic, MicOff, Volume2, VolumeX, 
+import {
+  X, Sparkles, UserCheck, Code2, Cpu, Mic, MicOff, Volume2, VolumeX,
   CheckCircle2, AlertCircle, ArrowRight, Award, RefreshCw, HelpCircle, ChevronRight, FileText
 } from 'lucide-react';
 import { fetchAIInterviewQuestion, evaluateAIInterviewResponse } from '../services/api';
@@ -139,7 +139,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
       <div className="bg-white border border-slate-200/90 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
-        
+
         {/* Header - Clean Light Theme */}
         <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 p-6 border-b border-emerald-100/80 relative">
           <button
@@ -171,16 +171,15 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
 
         {/* Body Content */}
         <div className="p-6 space-y-6 flex-1">
-          
+
           {/* Mode Selector Tabs */}
           <div className="flex rounded-xl bg-slate-100 p-1 border border-slate-200">
             <button
               onClick={() => setMode('technical')}
-              className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition ${
-                mode === 'technical'
+              className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition ${mode === 'technical'
                   ? 'bg-white text-emerald-800 shadow-xs border border-slate-200/60'
                   : 'text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               <Code2 className="w-3.5 h-3.5" />
               <span>Technical & SQL</span>
@@ -188,11 +187,10 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
 
             <button
               onClick={() => setMode('system_design')}
-              className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition ${
-                mode === 'system_design'
+              className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition ${mode === 'system_design'
                   ? 'bg-white text-emerald-800 shadow-xs border border-slate-200/60'
                   : 'text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               <Cpu className="w-3.5 h-3.5" />
               <span>System Architecture</span>
@@ -200,11 +198,10 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
 
             <button
               onClick={() => setMode('behavioral')}
-              className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition ${
-                mode === 'behavioral'
+              className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition ${mode === 'behavioral'
                   ? 'bg-white text-emerald-800 shadow-xs border border-slate-200/60'
                   : 'text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               <UserCheck className="w-3.5 h-3.5" />
               <span>Behavioral (STAR)</span>
@@ -223,14 +220,13 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
                 <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                   {questionObj.skill_name || 'Technical Domain'}
                 </span>
-                
+
                 <button
                   onClick={handleToggleAudio}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold border flex items-center space-x-1.5 transition ${
-                    isPlayingAudio
+                  className={`px-3 py-1 rounded-lg text-xs font-bold border flex items-center space-x-1.5 transition ${isPlayingAudio
                       ? 'bg-emerald-600 text-white border-emerald-700 animate-pulse'
                       : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200 shadow-2xs'
-                  }`}
+                    }`}
                 >
                   {isPlayingAudio ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-600" />}
                   <span>{isPlayingAudio ? 'Stop Audio' : 'Listen Question'}</span>
@@ -283,7 +279,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
                   onClick={handlePrefillSample}
                   className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
                 >
-                  ⚡ Prefill Sample Answer
+                  Prefill Sample Answer
                 </button>
               </div>
 
@@ -334,7 +330,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
           {/* AI Evaluation & Scorecard - Light Theme */}
           {evaluation && (
             <div className="space-y-5 animate-fadeIn">
-              
+
               {/* Score Header Card */}
               <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md flex items-center justify-between">
                 <div>
@@ -381,7 +377,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
 
               {/* Strengths & Improvements Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
+
                 <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-2">
                   <h4 className="text-xs font-bold text-emerald-900 flex items-center space-x-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />

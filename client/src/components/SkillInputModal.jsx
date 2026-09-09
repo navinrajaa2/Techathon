@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { 
-  X, Sparkles, Sliders, CheckCircle2, Clock, Target, AlertCircle, UploadCloud, FileText, Check 
+import {
+  X, Sparkles, Sliders, CheckCircle2, Clock, Target, AlertCircle, UploadCloud, FileText, Check
 } from 'lucide-react';
 import { parseSkillsFreeText } from '../services/api';
 
-export default function SkillInputModal({ 
-  isOpen, 
-  onClose, 
-  skills, 
-  roles, 
-  currentSkills, 
-  targetRoleId, 
-  weeklyHours, 
-  onSave 
+export default function SkillInputModal({
+  isOpen,
+  onClose,
+  skills,
+  roles,
+  currentSkills,
+  targetRoleId,
+  weeklyHours,
+  onSave
 }) {
   const [activeMode, setActiveMode] = useState('resume'); // 'resume' | 'freeText' | 'sliders'
   const [freeText, setFreeText] = useState("I know basic Python scripting, have written complex SQL JOINs, built interactive Tableau dashboards, and ran some basic A/B test experiments.");
@@ -92,7 +92,7 @@ export default function SkillInputModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
       <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
-        
+
         {/* Modal Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/70">
           <div className="flex items-center space-x-3">
@@ -104,8 +104,8 @@ export default function SkillInputModal({
               <p className="text-xs text-slate-500">Auto-scan resume, describe background, or adjust manual skill levels</p>
             </div>
           </div>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition"
           >
             <X className="w-5 h-5" />
@@ -114,7 +114,7 @@ export default function SkillInputModal({
 
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
-          
+
           {/* Target Role & Weekly Hours Selector */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-blue-50/60 p-4 rounded-xl border border-blue-100">
             <div>
@@ -161,33 +161,30 @@ export default function SkillInputModal({
           <div className="flex items-center space-x-2 border-b border-slate-200 pb-3">
             <button
               onClick={() => setActiveMode('resume')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${
-                activeMode === 'resume'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${activeMode === 'resume'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
             >
               <UploadCloud className="w-3.5 h-3.5" />
-              <span>📄 Resume / PDF Auto-Scanner</span>
+              <span> Resume / PDF Auto-Scanner</span>
             </button>
             <button
               onClick={() => setActiveMode('freeText')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${
-                activeMode === 'freeText'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${activeMode === 'freeText'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>AI Free-Text Extraction</span>
             </button>
             <button
               onClick={() => setActiveMode('sliders')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${
-                activeMode === 'sliders'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${activeMode === 'sliders'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
             >
               <Sliders className="w-3.5 h-3.5" />
               <span>Manual Skill Sliders</span>
@@ -197,14 +194,14 @@ export default function SkillInputModal({
           {/* Mode 1: Resume Upload / PDF Drop */}
           {activeMode === 'resume' && (
             <div className="space-y-4 animate-fadeIn">
-              
+
               {/* Dropzone */}
               <label className="border-2 border-dashed border-blue-200 hover:border-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-blue-50/40 hover:bg-blue-50/80 transition text-center space-y-2">
-                <input 
-                  type="file" 
-                  accept=".txt,.json,.pdf,.doc,.docx" 
-                  onChange={handleFileUpload} 
-                  className="hidden" 
+                <input
+                  type="file"
+                  accept=".txt,.json,.pdf,.doc,.docx"
+                  onChange={handleFileUpload}
+                  className="hidden"
                 />
                 <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
                   <UploadCloud className="w-6 h-6" />
@@ -231,13 +228,13 @@ export default function SkillInputModal({
                   onClick={() => handleDemoResumeLoad('data')}
                   className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 text-[11px] font-semibold transition"
                 >
-                  📊 Data Analyst Resume
+                  Data Analyst Resume
                 </button>
                 <button
                   onClick={() => handleDemoResumeLoad('software')}
                   className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 text-[11px] font-semibold transition"
                 >
-                  💻 Fullstack Dev Resume
+                  Fullstack Dev Resume
                 </button>
               </div>
 
@@ -323,9 +320,8 @@ export default function SkillInputModal({
                     <div key={sk.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-slate-800 truncate max-w-[180px]">{sk.name}</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                          currentVal >= 3 ? 'bg-blue-100 text-blue-700' : currentVal > 0 ? 'bg-slate-200 text-slate-700' : 'bg-slate-100 text-slate-400'
-                        }`}>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${currentVal >= 3 ? 'bg-blue-100 text-blue-700' : currentVal > 0 ? 'bg-slate-200 text-slate-700' : 'bg-slate-100 text-slate-400'
+                          }`}>
                           {currentVal === 0 ? 'No Exp' : `Lvl ${currentVal}`}
                         </span>
                       </div>

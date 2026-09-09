@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  Sparkles, Calendar, Clock, BookOpen, ExternalLink, CheckCircle2, Award, ArrowRight, 
-  ShieldCheck, PlayCircle, RotateCw, Lightbulb, Bot, Download, Coffee, FileCheck, 
+import {
+  Sparkles, Calendar, Clock, BookOpen, ExternalLink, CheckCircle2, Award, ArrowRight,
+  ShieldCheck, PlayCircle, RotateCw, Lightbulb, Bot, Download, Coffee, FileCheck,
   Volume2, VolumeX, Zap, FileText, Code2, MessageSquare, Trophy, Rocket, UserCheck, Headphones
 } from 'lucide-react';
 import { generateAndDownloadICS } from '../utils/calendarUtils';
@@ -9,12 +9,12 @@ import { speakText, stopSpeaking, isSpeaking } from '../utils/speechUtils';
 import YearHeatmap from './YearHeatmap';
 import DailyChallengeWidget from './DailyChallengeWidget';
 
-export default function RoadmapView({ 
-  learningPath, 
-  onStartQuiz, 
+export default function RoadmapView({
+  learningPath,
+  onStartQuiz,
   onOpenProjectChallenge,
-  onOpenMentor, 
-  onOpenCertificate, 
+  onOpenMentor,
+  onOpenCertificate,
   onOpenMentorship,
   onOpenRoleplay,
   onOpenPromotionMemo,
@@ -77,7 +77,7 @@ export default function RoadmapView({
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      
+
       {/* Daily Challenge & Streak Widget */}
       <DailyChallengeWidget streakDays={8} />
 
@@ -86,11 +86,11 @@ export default function RoadmapView({
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16"></div>
 
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
-          
+
           <div className="space-y-2.5 max-w-3xl">
             <div className="flex items-center space-x-2">
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200 flex items-center space-x-1.5 shadow-2xs">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+
                 <span>AI Adaptive Career Roadmap</span>
               </span>
               <span className="text-xs font-medium text-slate-500 bg-white/80 px-2.5 py-0.5 rounded-full border border-slate-200">
@@ -99,7 +99,7 @@ export default function RoadmapView({
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-outfit">
-              Learning Roadmap for <span className="gradient-text">{target_role_title}</span>
+              Learning Roadmap for <span className="text-sky-700">{target_role_title}</span>
             </h1>
             <p className="text-sm text-slate-600 leading-relaxed font-normal">
               {ai_summary_narrative}
@@ -109,19 +109,19 @@ export default function RoadmapView({
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 pt-2">
               <button
                 onClick={onOpenAIInterviewer}
-                className="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition active:scale-95"
+                className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition active:scale-95"
                 title="Practice real-time technical & behavioral mock interview questions"
               >
-                <UserCheck className="w-3.5 h-3.5 text-emerald-200 shrink-0" />
+                <UserCheck className="w-3.5 h-3.5 text-white shrink-0" />
                 <span>AI Interviewer</span>
               </button>
 
               <button
                 onClick={() => onOpenSummaryPodcast && onOpenSummaryPodcast('SQL & Data Warehousing')}
-                className="px-3 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition active:scale-95"
+                className="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition active:scale-95"
                 title="Listen to 2-person host AI podcast summaries explaining core module concepts"
               >
-                <Headphones className="w-3.5 h-3.5 text-indigo-200 shrink-0" />
+                <Headphones className="w-3.5 h-3.5 text-white shrink-0" />
                 <span>Summary Podcast</span>
               </button>
 
@@ -287,7 +287,7 @@ export default function RoadmapView({
       <div className="space-y-8">
         {phases.map((phase, pIndex) => (
           <div key={phase.phase_number} className="space-y-4">
-            
+
             {/* Phase Banner */}
             <div className="flex items-center space-x-3 pb-2 border-b border-slate-200">
               <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold font-outfit text-sm shadow-sm shadow-blue-500/20">
@@ -307,25 +307,23 @@ export default function RoadmapView({
                 const isThisStepSpeaking = activeSpeakingStep === step.step_number;
 
                 return (
-                  <div 
+                  <div
                     key={step.step_number}
-                    className={`relative p-5 sm:p-6 rounded-2xl transition bg-white border ${
-                      isVerified
-                        ? 'border-emerald-200 shadow-sm shadow-emerald-900/5 ring-1 ring-emerald-400/20'
-                        : 'border-slate-200 shadow-sm hover:border-blue-300 hover:shadow-md'
-                    }`}
+                    className={`relative p-5 sm:p-6 rounded-2xl transition bg-white border ${isVerified
+                      ? 'border-emerald-200 shadow-sm shadow-emerald-900/5 ring-1 ring-emerald-400/20'
+                      : 'border-slate-200 shadow-sm hover:border-blue-300 hover:shadow-md'
+                      }`}
                   >
                     {/* Step Timeline dot */}
-                    <div className={`absolute -left-[23px] top-7 w-3 h-3 rounded-full border-2 ${
-                      isVerified 
-                        ? 'bg-emerald-500 border-white shadow-md ring-2 ring-emerald-200' 
-                        : 'bg-blue-600 border-white ring-2 ring-blue-100'
-                    }`} />
+                    <div className={`absolute -left-[23px] top-7 w-3 h-3 rounded-full border-2 ${isVerified
+                      ? 'bg-emerald-500 border-white shadow-md ring-2 ring-emerald-200'
+                      : 'bg-blue-600 border-white ring-2 ring-blue-100'
+                      }`} />
 
                     <div className="flex flex-col lg:flex-row items-start justify-between gap-5">
-                      
+
                       <div className="space-y-3.5 flex-1">
-                        
+
                         {/* Tags Header */}
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
@@ -338,7 +336,7 @@ export default function RoadmapView({
                             <span>★</span>
                             <span>{course.rating || 4.8}</span>
                           </span>
-                          
+
                           {step.status === 'project_verified' ? (
                             <span className="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center space-x-1 shadow-2xs">
                               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
@@ -354,11 +352,10 @@ export default function RoadmapView({
                           {/* Voice Narration Button */}
                           <button
                             onClick={() => handleToggleVoice(step)}
-                            className={`px-2 py-0.5 rounded-md text-[11px] font-bold border flex items-center space-x-1 transition ${
-                              isThisStepSpeaking
-                                ? 'bg-indigo-600 text-white border-indigo-700 animate-pulse'
-                                : 'bg-white hover:bg-slate-100 text-slate-600 border-slate-200'
-                            }`}
+                            className={`px-2 py-0.5 rounded-md text-[11px] font-bold border flex items-center space-x-1 transition ${isThisStepSpeaking
+                              ? 'bg-indigo-600 text-white border-indigo-700 animate-pulse'
+                              : 'bg-white hover:bg-slate-100 text-slate-600 border-slate-200'
+                              }`}
                             title="Listen to 1-minute voice audio summary of this module"
                           >
                             {isThisStepSpeaking ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3 text-blue-600" />}
@@ -448,11 +445,10 @@ export default function RoadmapView({
                             currentLevel: step.current_level,
                             targetLevel: step.required_level
                           })}
-                          className={`w-full px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition shadow-xs active:scale-95 ${
-                            step.status === 'project_verified'
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-default'
-                              : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-emerald-500/20'
-                          }`}
+                          className={`w-full px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition shadow-xs active:scale-95 ${step.status === 'project_verified'
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-default'
+                            : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-emerald-500/20'
+                            }`}
                           title="Demonstrate skill with a real-world project, reviewed by Gemini AI"
                         >
                           {step.status === 'project_verified'
@@ -466,11 +462,10 @@ export default function RoadmapView({
                         <button
                           onClick={() => onStartQuiz(step.skill_id, step.skill_name)}
                           disabled={isVerified}
-                          className={`w-full px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition shadow-xs active:scale-95 ${
-                            isVerified
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 opacity-90 cursor-default'
-                              : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20'
-                          }`}
+                          className={`w-full px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition shadow-xs active:scale-95 ${isVerified
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 opacity-90 cursor-default'
+                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20'
+                            }`}
                         >
                           <Award className="w-3.5 h-3.5 shrink-0" />
                           <span>{isVerified ? 'Verified' : 'Take Quiz'}</span>

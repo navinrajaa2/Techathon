@@ -45,8 +45,8 @@ export default function SummaryPodcastModal({ isOpen, onClose, moduleTitle, skil
         formatted_duration: "03:30",
         summary: `Join Alex and Dr. Maya as they break down the core concepts, common pitfalls, and production best practices for ${modName} on the path to ${targetRoleTitle || 'Senior Role'}.`,
         hosts: [
-          { name: "Alex", role: "Co-Host & Tech Journalist", avatar: "🎙️" },
-          { name: "Dr. Maya", role: "Senior Staff Enterprise Specialist", avatar: "👩‍💻" }
+          { name: "Alex", role: "Co-Host & Tech Journalist", avatar: "A" },
+          { name: "Dr. Maya", role: "Senior Staff Enterprise Specialist", avatar: "M" }
         ],
         chapters: [
           { time: "00:00", title: "Welcome & High-Level Problem Statement" },
