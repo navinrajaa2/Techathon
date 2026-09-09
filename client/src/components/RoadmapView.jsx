@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Sparkles, Calendar, Clock, BookOpen, ExternalLink, CheckCircle2, Award, ArrowRight, 
   ShieldCheck, PlayCircle, RotateCw, Lightbulb, Bot, Download, Coffee, FileCheck, 
-  Volume2, VolumeX, Zap, FileText, Code2, MessageSquare, Trophy, Rocket
+  Volume2, VolumeX, Zap, FileText, Code2, MessageSquare, Trophy, Rocket, UserCheck, Headphones
 } from 'lucide-react';
 import { generateAndDownloadICS } from '../utils/calendarUtils';
 import { speakText, stopSpeaking, isSpeaking } from '../utils/speechUtils';
@@ -21,6 +21,8 @@ export default function RoadmapView({
   onOpenPlayground,
   onOpenSlack,
   onOpenLeaderboard,
+  onOpenAIInterviewer,
+  onOpenSummaryPodcast,
   learnerName
 }) {
   const [activeSpeakingStep, setActiveSpeakingStep] = useState(null);
@@ -103,21 +105,39 @@ export default function RoadmapView({
               {ai_summary_narrative}
             </p>
 
-            {/* Quick Action Pills — clean grid, no emojis */}
+            {/* Quick Action Pills — clean light theme grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 pt-2">
               <button
-                onClick={() => onOpenProjectChallenge && onOpenProjectChallenge({ id: 'sql_mastery', name: 'SQL & Data Warehousing' })}
+                onClick={onOpenAIInterviewer}
                 className="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition active:scale-95"
+                title="Practice real-time technical & behavioral mock interview questions"
               >
-                <Rocket className="w-3.5 h-3.5 text-emerald-200 shrink-0" />
+                <UserCheck className="w-3.5 h-3.5 text-emerald-200 shrink-0" />
+                <span>AI Interviewer</span>
+              </button>
+
+              <button
+                onClick={() => onOpenSummaryPodcast && onOpenSummaryPodcast('SQL & Data Warehousing')}
+                className="px-3 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition active:scale-95"
+                title="Listen to 2-person host AI podcast summaries explaining core module concepts"
+              >
+                <Headphones className="w-3.5 h-3.5 text-indigo-200 shrink-0" />
+                <span>Summary Podcast</span>
+              </button>
+
+              <button
+                onClick={() => onOpenProjectChallenge && onOpenProjectChallenge({ id: 'sql_mastery', name: 'SQL & Data Warehousing' })}
+                className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold flex items-center justify-center space-x-1.5 shadow-2xs transition active:scale-95"
+              >
+                <Rocket className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Project Challenge</span>
               </button>
 
               <button
                 onClick={() => onOpenPlayground('SQL & Data Warehousing')}
-                className="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center justify-center space-x-1.5 shadow-xs transition active:scale-95"
+                className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold flex items-center justify-center space-x-1.5 shadow-2xs transition active:scale-95"
               >
-                <Code2 className="w-3.5 h-3.5 shrink-0" />
+                <Code2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                 <span>Code Playground</span>
               </button>
 
@@ -386,6 +406,16 @@ export default function RoadmapView({
                         >
                           <Code2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                           <span>Code Workbench</span>
+                        </button>
+
+                        {/* Summary Podcast */}
+                        <button
+                          onClick={() => onOpenSummaryPodcast && onOpenSummaryPodcast(step.skill_name || course.title)}
+                          className="w-full px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-xs font-bold text-purple-800 border border-purple-200 flex items-center justify-center space-x-1.5 transition active:scale-95"
+                          title="Listen to 2-person host AI podcast breakdown of this module"
+                        >
+                          <Headphones className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                          <span>Summary Podcast</span>
                         </button>
 
                         {/* Ask AI Mentor */}

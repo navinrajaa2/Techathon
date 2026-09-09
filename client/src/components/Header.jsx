@@ -2,17 +2,28 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Compass, Users, Sparkles, SlidersHorizontal, Layers, ChevronDown, Zap, Bell } from 'lucide-react';
 
 const NAV_TABS = [
-  { id: 'roadmap',   label: 'Adaptive Roadmap', shortLabel: 'Roadmap',   icon: Sparkles, color: 'from-violet-500 to-purple-600' },
-  { id: 'gap',       label: 'Skill Gaps',        shortLabel: 'Gaps',      icon: Layers,   color: 'from-sky-500 to-blue-600'    },
-  { id: 'simulator', label: 'Career Simulator',  shortLabel: 'Simulator', icon: Zap,      color: 'from-amber-400 to-orange-500'},
-  { id: 'manager',   label: 'Manager Heatmap',   shortLabel: 'Team',      icon: Users,    color: 'from-emerald-400 to-teal-600'},
+  { id: 'roadmap', label: 'Adaptive Roadmap', shortLabel: 'Roadmap', icon: Sparkles, color: 'from-violet-500 to-purple-600' },
+  { id: 'gap', label: 'Skill Gaps', shortLabel: 'Gaps', icon: Layers, color: 'from-sky-500 to-blue-600' },
+  { id: 'simulator', label: 'Career Simulator', shortLabel: 'Simulator', icon: Zap, color: 'from-amber-400 to-orange-500' },
+  { id: 'manager', label: 'Manager Heatmap', shortLabel: 'Team', icon: Users, color: 'from-emerald-400 to-teal-600' },
 ];
 
-export default function Header({ activeTab, setActiveTab, selectedPersona, personas, onSelectPersona, onOpenSkillModal }) {
+export default function Header({
+  activeTab,
+  setActiveTab,
+  selectedPersona,
+  personas,
+  onSelectPersona,
+  onOpenSkillModal,
+  unreadCount = 3,
+  onOpenNotifications,
+  isNotificationOpen = false,
+  onOpenFeedback
+}) {
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, height: 0, opacity: 0 });
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const tabRefs   = useRef({});
-  const dropRef   = useRef(null);
+  const tabRefs = useRef({});
+  const dropRef = useRef(null);
 
   // Sliding pill calculation
   useEffect(() => {
@@ -81,11 +92,11 @@ export default function Header({ activeTab, setActiveTab, selectedPersona, perso
             <span
               className="absolute rounded-lg pointer-events-none transition-all duration-300"
               style={{
-                left:    `${pillStyle.left}px`,
-                top:     `${pillStyle.top}px`,
-                width:   `${pillStyle.width}px`,
-                height:  `${pillStyle.height}px`,
-                opacity:  pillStyle.opacity,
+                left: `${pillStyle.left}px`,
+                top: `${pillStyle.top}px`,
+                width: `${pillStyle.width}px`,
+                height: `${pillStyle.height}px`,
+                opacity: pillStyle.opacity,
                 background: 'linear-gradient(135deg,rgba(99,102,241,.25),rgba(6,182,212,.18))',
                 border: '1px solid rgba(99,102,241,.35)',
                 boxShadow: '0 0 16px rgba(99,102,241,.2)',
@@ -115,18 +126,34 @@ export default function Header({ activeTab, setActiveTab, selectedPersona, perso
           {/* ── Right Controls ── */}
           <div className="flex items-center gap-2 flex-shrink-0">
 
+            {/* Feedback & Review Area Button */}
+            <button
+              onClick={onOpenFeedback}
+              title="Central Feedback & Evaluation Area"
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all duration-200 active:scale-95 whitespace-nowrap"
+              style={{
+                background: 'rgba(168,85,247,0.12)',
+                border: '1px solid rgba(168,85,247,0.3)',
+                color: '#e9d5ff'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.22)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.12)'; }}
+            >
+              <span>Feedback Hub</span>
+            </button>
+
             {/* Edit Skills */}
             <button
               onClick={onOpenSkillModal}
               title="Edit skills, scan resume, or use AI free-text parser"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 active:scale-95 whitespace-nowrap"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 active:scale-95 whitespace-nowrap"
               style={{
                 background: 'rgba(255,255,255,0.06)',
                 border: '1px solid rgba(255,255,255,0.1)',
                 color: 'rgba(203,213,225,.85)'
               }}
-              onMouseEnter={e => { e.currentTarget.style.background='rgba(99,102,241,.18)'; e.currentTarget.style.borderColor='rgba(99,102,241,.4)'; e.currentTarget.style.color='#c7d2fe'; }}
-              onMouseLeave={e => { e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; e.currentTarget.style.color='rgba(203,213,225,.85)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,.18)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,.4)'; e.currentTarget.style.color = '#c7d2fe'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(203,213,225,.85)'; }}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" style={{ color: '#818cf8' }} />
               <span className="hidden sm:inline">Profile &amp; Skills</span>
@@ -187,8 +214,8 @@ export default function Header({ activeTab, setActiveTab, selectedPersona, perso
                           background: isSel ? 'rgba(99,102,241,.15)' : 'transparent',
                           border: isSel ? '1px solid rgba(99,102,241,.3)' : '1px solid transparent',
                         }}
-                        onMouseEnter={e => { if (!isSel) { e.currentTarget.style.background = 'rgba(255,255,255,.05)'; }}}
-                        onMouseLeave={e => { if (!isSel) { e.currentTarget.style.background = 'transparent'; }}}
+                        onMouseEnter={e => { if (!isSel) { e.currentTarget.style.background = 'rgba(255,255,255,.05)'; } }}
+                        onMouseLeave={e => { if (!isSel) { e.currentTarget.style.background = 'transparent'; } }}
                       >
                         <div className="relative flex-shrink-0">
                           <img src={p.avatar} alt={p.name} className="w-10 h-10 rounded-full object-cover"
@@ -217,6 +244,31 @@ export default function Header({ activeTab, setActiveTab, selectedPersona, perso
                 </div>
               )}
             </div>
+
+            {/* Stored Notification Stream Bell Button (Right of all) */}
+            <button
+              onClick={onOpenNotifications}
+              title="Stored Notifications & AI Feedback Stream"
+              className={`relative p-2 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center ${isNotificationOpen ? 'ring-2 ring-indigo-400/60 shadow-lg shadow-indigo-500/25' : ''
+                }`}
+              style={{
+                background: isNotificationOpen ? 'rgba(99,102,241,0.22)' : 'rgba(255,255,255,0.06)',
+                border: isNotificationOpen ? '1px solid rgba(99,102,241,0.5)' : '1px solid rgba(255,255,255,0.1)',
+                color: isNotificationOpen ? '#e0e7ff' : '#c7d2fe'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,.24)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,.5)'; }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = isNotificationOpen ? 'rgba(99,102,241,0.22)' : 'rgba(255,255,255,0.06)';
+                e.currentTarget.style.borderColor = isNotificationOpen ? '1px solid rgba(99,102,241,0.5)' : '1px solid rgba(255,255,255,0.1)';
+              }}
+            >
+              <Bell className={`w-4 h-4 ${isNotificationOpen ? 'text-indigo-200 animate-pulse' : 'text-indigo-300'}`} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 text-[9px] font-black rounded-full bg-rose-500 text-white border border-[#0f0f1a] shadow-sm animate-pulse">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
           </div>
 
         </div>

@@ -332,4 +332,60 @@ export async function fetchDynamicQuiz(skillName, currentLevel, targetRoleTitle,
   }
 }
 
+export async function fetchAIInterviewQuestion({ targetRoleTitle, mode = 'technical', skillName = 'SQL & Data Warehousing' }) {
+  try {
+    const res = await fetch(`${API_BASE}/ai-interview/question`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        target_role_title: targetRoleTitle,
+        mode,
+        skill_name: skillName
+      })
+    });
+    if (!res.ok) throw new Error('API error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend interview question notice:', err);
+    return null;
+  }
+}
 
+export async function evaluateAIInterviewResponse({ questionObj, candidateAnswer, targetRoleTitle, mode }) {
+  try {
+    const res = await fetch(`${API_BASE}/ai-interview/evaluate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question_obj: questionObj,
+        candidate_answer: candidateAnswer,
+        target_role_title: targetRoleTitle,
+        mode
+      })
+    });
+    if (!res.ok) throw new Error('API error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend interview evaluate notice:', err);
+    return null;
+  }
+}
+
+export async function fetchLessonPodcast({ moduleTitle, skillName, targetRoleTitle }) {
+  try {
+    const res = await fetch(`${API_BASE}/podcast/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        module_title: moduleTitle,
+        skill_name: skillName,
+        target_role_title: targetRoleTitle
+      })
+    });
+    if (!res.ok) throw new Error('API error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend podcast endpoint notice:', err);
+    return null;
+  }
+}

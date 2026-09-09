@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
   body {
@@ -53,6 +51,60 @@
 
 .animate-slideLeft {
   animation: slideLeftEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Notification Drawer & Modal Minimal Animations */
+@keyframes notifFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes notifDrawerSlide {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes notifItemEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentleChime {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(14deg); }
+  40%  { transform: rotate(-10deg); }
+  60%  { transform: rotate(6deg); }
+  80%  { transform: rotate(-3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes toastSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-notifFadeIn {
+  animation: notifFadeIn 0.25s ease-out forwards;
+}
+
+.animate-notifDrawerSlide {
+  animation: notifDrawerSlide 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-toastSlideUp {
+  animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Custom Clean Glassmorphic & Human-Touch Utilities */

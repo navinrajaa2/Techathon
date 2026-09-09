@@ -16,6 +16,10 @@ import CodePlaygroundModal from './components/CodePlaygroundModal';
 import SlackIntegrationModal from './components/SlackIntegrationModal';
 import LeaderboardModal from './components/LeaderboardModal';
 import ProjectChallengeModal from './components/ProjectChallengeModal';
+import AIInterviewerModal from './components/AIInterviewerModal';
+import SummaryPodcastModal from './components/SummaryPodcastModal';
+import NotificationDrawer from './components/NotificationDrawer';
+import FeedbackAreaModal from './components/FeedbackAreaModal';
 
 import {
   fetchTaxonomy, fetchPersonas, calculateGapAnalysis, generatePath, replanPath
@@ -23,6 +27,22 @@ import {
 
 // Fallback taxonomy data in case backend is loading
 const FALLBACK_PERSONAS = [
+  {
+    id: "p_navin",
+    username: "navinrajaa",
+    name: "Navin Rajaa",
+    role: "Senior Tech Lead & AI Engineer",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    target_role_id: "lead_ai_eng",
+    weekly_hours: 8,
+    current_skills: {
+      sql_mastery: 4,
+      python_analytics: 4,
+      llm_engineering: 3,
+      node_express: 3,
+      system_design: 3
+    }
+  },
   {
     id: "p_priya",
     name: "Priya Sharma",
@@ -107,11 +127,62 @@ export default function App() {
     targetLevel: 4
   });
 
+  // AI Interviewer & Lesson Summary Podcast Modals
+  const [isAIInterviewerOpen, setIsAIInterviewerOpen] = useState(false);
+  const [isSummaryPodcastOpen, setIsSummaryPodcastOpen] = useState(false);
+  const [podcastModuleTitle, setPodcastModuleTitle] = useState('SQL & Data Warehousing');
+
+  // Notification Stream & Feedback Hub Modals
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+
+  // Stored Notification & Feedback Stream Array
+  const [notifications, setNotifications] = useState([
+    {
+      id: 'n_proj_1',
+      title: 'AI Project Challenge Verified (94/100)',
+      message: 'Your SQL & Data Warehousing submission passed window function rubric checks. Skill level upgraded to Level 4/5.',
+      time: '10:15 AM',
+      type: 'project_verified',
+      read: false
+    },
+    {
+      id: 'n_pod_1',
+      title: 'New AI Summary Podcast Ready',
+      message: 'Listen to the 2-host audio breakdown for Window Functions & CTEs on your roadmap.',
+      time: '09:30 AM',
+      type: 'podcast',
+      read: false
+    },
+    {
+      id: 'n_quiz_1',
+      title: 'Adaptive Re-planning Notice',
+      message: 'Competency verified for SQL Window Partitioning. Remaining roadmap adaptively updated.',
+      time: 'Yesterday',
+      type: 'quiz',
+      read: true
+    }
+  ]);
+
   // AI Learning Memory (Remembers learning progress, quiz mistakes, verified projects)
   const [learningMemory, setLearningMemory] = useState({
     recentQuizMistakes: ['Struggled with PARTITION BY syntax in SQL assessment'],
     verifiedProjects: []
   });
+
+  const handleOpenSummaryPodcast = (modTitle) => {
+    const valid = (typeof modTitle === 'string' && modTitle.trim()) ? modTitle : 'SQL & Data Warehousing';
+    setPodcastModuleTitle(valid);
+    setIsSummaryPodcastOpen(true);
+  };
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const handleClearNotifications = () => {
+    setNotifications([]);
+  };
 
   // Initialize Taxonomy & Personas
   useEffect(() => {
@@ -286,6 +357,10 @@ export default function App() {
         personas={personas}
         onSelectPersona={handleSelectPersona}
         onOpenSkillModal={() => setIsSkillModalOpen(true)}
+        unreadCount={notifications.filter(n => !n.read).length}
+        onOpenNotifications={() => setIsNotificationOpen(true)}
+        isNotificationOpen={isNotificationOpen}
+        onOpenFeedback={() => setIsFeedbackOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -306,6 +381,8 @@ export default function App() {
               onOpenPlayground={handleOpenPlayground}
               onOpenSlack={() => setIsSlackOpen(true)}
               onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+              onOpenAIInterviewer={() => setIsAIInterviewerOpen(true)}
+              onOpenSummaryPodcast={handleOpenSummaryPodcast}
               onReplanClick={() => generatePath(currentSkills, targetRoleId, weeklyHours)}
             />
           )}
@@ -436,6 +513,49 @@ export default function App() {
         isOpen={isLeaderboardOpen}
         onClose={() => setIsLeaderboardOpen(false)}
         currentUser={selectedPersona}
+      />
+
+      <AIInterviewerModal
+        isOpen={isAIInterviewerOpen}
+        onClose={() => setIsAIInterviewerOpen(false)}
+        targetRoleTitle={learningPath?.target_role_title}
+        learnerName={selectedPersona?.name}
+      />
+
+      <SummaryPodcastModal
+        isOpen={isSummaryPodcastOpen}
+        onClose={() => setIsSummaryPodcastOpen(false)}
+        moduleTitle={podcastModuleTitle}
+        skillName={podcastModuleTitle}
+        targetRoleTitle={learningPath?.target_role_title}
+      />
+
+      <NotificationDrawer
+        isOpen={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+        notifications={notifications}
+        onMarkAllAsRead={handleMarkAllAsRead}
+        onClearAll={handleClearNotifications}
+        onOpenFeedback={() => setIsFeedbackOpen(true)}
+      />
+
+      <FeedbackAreaModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+        learnerName={selectedPersona?.name}
+        onFeedbackSubmitted={(fbObj) => {
+          setNotifications(prev => [
+            {
+              id: fbObj.id,
+              title: `New Feedback Recorded (${fbObj.category})`,
+              message: fbObj.comment,
+              time: 'Just now',
+              type: 'feedback',
+              read: false
+            },
+            ...prev
+          ]);
+        }}
       />
 
       {/* Toast Notice */}

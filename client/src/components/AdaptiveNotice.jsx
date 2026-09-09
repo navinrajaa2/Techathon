@@ -5,9 +5,9 @@ export default function AdaptiveNotice({ message, onClose }) {
   if (!message) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-md bg-white border border-blue-200 rounded-2xl p-4 shadow-xl animate-bounce-short flex items-start space-x-3 text-slate-800">
-      <div className="p-2 rounded-xl bg-blue-100 text-blue-700 shrink-0 border border-blue-200">
-        <Sparkles className="w-5 h-5 text-blue-600" />
+    <div className="fixed bottom-6 right-6 z-50 max-w-md bg-white border border-indigo-200/90 rounded-2xl p-4 shadow-xl shadow-indigo-950/10 animate-toastSlideUp flex items-start space-x-3 text-slate-800 transition-all">
+      <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700 shrink-0 border border-indigo-200/80">
+        <Sparkles className="w-5 h-5 text-indigo-600 animate-pulse" />
       </div>
       
       <div className="flex-1 space-y-0.5">

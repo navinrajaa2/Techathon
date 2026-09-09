@@ -479,6 +479,24 @@
         "tableau_bi": 2
       },
       "bio": "Sarah manages traditional feature backlog sprints. She wants to transition into AI Product Management to spearhead LLM-driven features and AI product metrics."
+    },
+    {
+      "id": "p_navin",
+      "username": "navinrajaa",
+      "password": "navin@komabi",
+      "name": "Navin Rajaa",
+      "role": "Senior Tech Lead & AI Engineer",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      "target_role_id": "lead_ai_eng",
+      "weekly_hours": 8,
+      "current_skills": {
+        "sql_mastery": 4,
+        "python_analytics": 4,
+        "llm_engineering": 3,
+        "node_express": 3,
+        "system_design": 3
+      },
+      "bio": "Navin leads enterprise data & AI initiatives. He aims to advance to Lead AI Engineer to architect high-scale LLM & agentic frameworks."
     }
   ],
   "team_heatmap": [

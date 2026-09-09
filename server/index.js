@@ -26,7 +26,10 @@ import {
   generateDynamicQuiz, 
   reviewCodeWithGemini,
   verifyProjectWithGemini,
-  generateCareerComparisonSynthesis
+  generateCareerComparisonSynthesis,
+  generateAIInterviewQuestion,
+  evaluateAIInterviewAnswer,
+  generateLessonPodcast
 } from './services/geminiService.js';
 
 const taxonomyPath = path.join(__dirname, 'data/taxonomy.json');
@@ -198,6 +201,52 @@ app.post('/api/code/review', async (req, res) => {
     });
 
     res.json(review);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// AI Interviewer Question Generator Endpoint
+app.post('/api/ai-interview/question', async (req, res) => {
+  try {
+    const { target_role_title, mode, skill_name } = req.body;
+    const questionData = await generateAIInterviewQuestion({
+      targetRoleTitle: target_role_title,
+      mode: mode || 'technical',
+      skillName: skill_name
+    });
+    res.json(questionData);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// AI Interviewer Response Evaluator Endpoint
+app.post('/api/ai-interview/evaluate', async (req, res) => {
+  try {
+    const { question_obj, candidate_answer, target_role_title, mode } = req.body;
+    const evaluation = await evaluateAIInterviewAnswer({
+      questionObj: question_obj,
+      candidateAnswer: candidate_answer,
+      targetRoleTitle: target_role_title,
+      mode
+    });
+    res.json(evaluation);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// AI Lesson Summary Podcast Generator Endpoint
+app.post('/api/podcast/generate', async (req, res) => {
+  try {
+    const { module_title, skill_name, target_role_title } = req.body;
+    const podcastData = await generateLessonPodcast({
+      moduleTitle: module_title || 'SQL & Data Warehousing',
+      skillName: skill_name || 'SQL & Data Warehousing',
+      targetRoleTitle: target_role_title || 'Senior Data Analyst'
+    });
+    res.json(podcastData);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
