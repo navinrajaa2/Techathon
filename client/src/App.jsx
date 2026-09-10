@@ -21,6 +21,7 @@ import AIInterviewerModal from './components/AIInterviewerModal';
 import SummaryPodcastModal from './components/SummaryPodcastModal';
 import NotificationDrawer from './components/NotificationDrawer';
 import FeedbackAreaModal from './components/FeedbackAreaModal';
+import OrganisationPlan from './components/OrganisationPlan';
 
 import { CheckCircle2, Sparkles, Sliders, X, FileText } from 'lucide-react';
 import {
@@ -523,6 +524,10 @@ export default function App() {
 
           {activeTab === 'manager' && (
             <ManagerDashboard />
+          )}
+
+          {activeTab === 'orgPlan' && (
+            <OrganisationPlan />
           )}
         </div>
 

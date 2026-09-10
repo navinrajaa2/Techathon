@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Compass, Users, Sparkles, SlidersHorizontal, Layers, ChevronDown, Zap, Bell, LogOut } from 'lucide-react';
+import { Compass, Users, Sparkles, SlidersHorizontal, Layers, ChevronDown, Zap, Bell, LogOut, Building2 } from 'lucide-react';
 
 const NAV_TABS = [
   { id: 'roadmap', label: 'Adaptive Roadmap', shortLabel: 'Roadmap', icon: Sparkles },
   { id: 'gap', label: 'Skill Gaps', shortLabel: 'Gaps', icon: Layers },
   { id: 'simulator', label: 'Career Simulator', shortLabel: 'Simulator', icon: Zap },
   { id: 'manager', label: 'Manager Heatmap', shortLabel: 'Team', icon: Users },
+  { id: 'orgPlan', label: 'Org Training Plan', shortLabel: 'Org Plan', icon: Building2 },
 ];
 
 export default function Header({

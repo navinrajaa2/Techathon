@@ -948,3 +948,267 @@ function fallbackTeamSuggestions(teamHeatmap, criticalGaps) {
 
   return suggestions.slice(0, 4);
 }
+
+/**
+ * AI Organization Training Plan Generator powered by Gemini
+ * Custom list of skills, organization profile, and cohort training blueprint
+ */
+export async function generateOrgTrainingPlanWithGemini({
+  orgName = 'Enterprise Organization',
+  industry = 'Technology & Cloud Solutions',
+  department = 'Engineering & Data Science',
+  targetGoal = 'AI Transformation & Enterprise Upskilling',
+  headcount = 50,
+  weeklyHours = 6,
+  durationWeeks = 8,
+  customSkills = []
+}) {
+  const genAI = getGenAI();
+
+  const skillsListStr = Array.isArray(customSkills) && customSkills.length > 0
+    ? customSkills.map(s => `- Skill Name: ${s.name || s.id}, Category: ${s.category || 'General'}, Current Level: ${s.currentLevel || 2}/5, Target Level: ${s.targetLevel || 4}/5, Priority: ${s.priority || 'High'}, Tags: ${(s.tags || []).join(', ')}`).join('\n')
+    : `- Skill Name: Enterprise LLM & RAG, Category: AI Engineering, Current Level: 2/5, Target Level: 4/5, Priority: High\n- Skill Name: Distributed Microservices & K8s, Category: Cloud Architecture, Current Level: 2/5, Target Level: 4/5, Priority: High`;
+
+  const prompt = `You are a Senior Corporate Learning & Capability Strategist.
+Build a comprehensive, highly customized Organization Training Plan based on this corporate profile and custom list of skills:
+
+Organization: "${orgName}"
+Industry: "${industry}"
+Target Department: "${department}"
+Strategic Goal: "${targetGoal}"
+Target Headcount: ${headcount} employees
+Time Commitment: ${weeklyHours} hours/week over ${durationWeeks} weeks
+
+Custom List of Skills to Train:
+${skillsListStr}
+
+CRITICAL INSTRUCTIONS:
+1. You MUST explicitly map and create dedicated, detailed learning modules for EVERY SINGLE skill listed in the Custom List of Skills above.
+2. Use the EXACT skill names from the list above. Do NOT use generic placeholders like "Skill Name 1".
+3. For each custom skill, create realistic enterprise learning objectives, hands-on projects, and assessment criteria tailored to that specific skill and its target level gain.
+4. Return ONLY a strictly formatted JSON object with NO markdown enclosing, NO backticks.
+
+The JSON must follow this exact schema:
+{
+  "org_name": "${orgName}",
+  "executive_summary": "Detailed 2-3 sentence strategic summary outlining how this plan addresses capability gaps for ${orgName}.",
+  "target_goal": "${targetGoal}",
+  "total_duration_weeks": ${durationWeeks},
+  "weekly_hours": ${weeklyHours},
+  "headcount": ${headcount},
+  "total_modules": ${Math.max(4, customSkills.length)},
+  "projected_readiness_gain": 38,
+  "phases": [
+    {
+      "phase_number": 1,
+      "phase_name": "Phase 1: Core Competency & Foundational Architecture",
+      "weeks": "Weeks 1-${Math.max(1, Math.floor(durationWeeks / 2))}",
+      "objective": "Establish fundamental mastery across high-priority custom skills",
+      "modules": [
+        {
+          "id": "mod-1",
+          "title": "Enterprise Foundations & Hands-On Setup",
+          "custom_skills_covered": ["Exact Skill Name from list"],
+          "duration_hours": 12,
+          "format": "Interactive Workshop & Guided Code Sandbox",
+          "current_level_avg": 2,
+          "target_level": 4,
+          "learning_objectives": ["Objective 1 for this exact skill", "Objective 2", "Objective 3"],
+          "practical_project": "Build an initial prototype solution for this technology.",
+          "assessment_criteria": "Automated code benchmark pass rate >= 85% + peer architecture review",
+          "target_cohorts": ["Technical Leads", "Developers"]
+        }
+      ]
+    }
+  ],
+  "cohort_matrix": [
+    {
+      "cohort_name": "Technical Leads & Senior Engineers",
+      "headcount": ${Math.max(2, Math.round(headcount * 0.3))},
+      "primary_focus_skills": ["Exact Skill Name"],
+      "recommended_pathway": "Fast-tracked architecture & hands-on project verification"
+    }
+  ],
+  "governance_and_milestones": [
+    {
+      "milestone": "Mid-Program Capability Assessment",
+      "description": "Evaluate employee progress against target levels",
+      "deliverable": "Automated code benchmark + team gap analysis report"
+    }
+  ]
+}`;
+
+  if (genAI) {
+    for (const modelName of SUPPORTED_MODELS) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        const text = result.response.text().trim();
+        
+        const cleanJson = text.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/\s*```$/, '').trim();
+        const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed && parsed.phases && parsed.phases.length > 0) {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn(`Gemini Org Plan generator (${modelName}) notice:`, err.message);
+        if (err.message?.includes('API_KEY_INVALID')) break;
+      }
+    }
+  }
+
+  return fallbackOrgTrainingPlan({
+    orgName,
+    industry,
+    department,
+    targetGoal,
+    headcount,
+    weeklyHours,
+    durationWeeks,
+    customSkills
+  });
+}
+
+function fallbackOrgTrainingPlan({
+  orgName,
+  industry,
+  department,
+  targetGoal,
+  headcount,
+  weeklyHours,
+  durationWeeks,
+  customSkills
+}) {
+  const activeSkills = Array.isArray(customSkills) && customSkills.length > 0
+    ? customSkills
+    : [
+        { name: 'Enterprise LLM & RAG', category: 'AI Engineering', currentLevel: 2, targetLevel: 4, priority: 'Critical', tags: ['#AI', '#Core'] },
+        { name: 'Distributed Microservices & K8s', category: 'Cloud Architecture', currentLevel: 2, targetLevel: 4, priority: 'High', tags: ['#Cloud', '#Backend'] },
+        { name: 'Zero Trust Security & Compliance', category: 'Security Ops', currentLevel: 1, targetLevel: 3, priority: 'High', tags: ['#Security'] },
+        { name: 'Automated Pipeline Governance', category: 'DevOps', currentLevel: 2, targetLevel: 4, priority: 'Medium', tags: ['#CI/CD'] }
+      ];
+
+  const skillNames = activeSkills.map(s => s.name);
+  const midPoint = Math.ceil(activeSkills.length / 2);
+  const phase1List = activeSkills.slice(0, midPoint);
+  const phase2List = activeSkills.slice(midPoint);
+
+  const durationNumber = Number(durationWeeks) || 8;
+  const hoursNumber = Number(weeklyHours) || 6;
+  const totalHours = durationNumber * hoursNumber;
+
+  // Build tailored modules for EACH custom skill in Phase 1
+  const phase1Modules = phase1List.map((skill, idx) => ({
+    id: `mod-10${idx + 1}`,
+    title: `Mastery & Implementation: ${skill.name}`,
+    custom_skills_covered: [skill.name],
+    duration_hours: Math.max(4, Math.round(totalHours / (activeSkills.length || 1))),
+    format: "Interactive Workshop & Guided Code Labs",
+    current_level_avg: skill.currentLevel || 2,
+    target_level: skill.targetLevel || 4,
+    learning_objectives: [
+      `Master core enterprise patterns of ${skill.name} in ${skill.category || 'production'}`,
+      `Advance competency from Level ${skill.currentLevel || 2} to Level ${skill.targetLevel || 4}`,
+      `Implement automated testing and observability for ${skill.name}`
+    ],
+    practical_project: `Develop a production-grade component demonstrating end-to-end ${skill.name} functionality.`,
+    assessment_criteria: `Automated test suite pass rate >= 85% for ${skill.name} + senior code review`,
+    target_cohorts: [`${skill.category || 'Engineering'} Cohort`, "Technical Leads"]
+  }));
+
+  // Build tailored modules for EACH custom skill in Phase 2
+  const phase2Modules = phase2List.map((skill, idx) => ({
+    id: `mod-20${idx + 1}`,
+    title: `Advanced Scaling & Integration: ${skill.name}`,
+    custom_skills_covered: [skill.name],
+    duration_hours: Math.max(4, Math.round(totalHours / (activeSkills.length || 1))),
+    format: "Sprint-Based Technical Sandbox & Peer Review",
+    current_level_avg: skill.currentLevel || 2,
+    target_level: skill.targetLevel || 4,
+    learning_objectives: [
+      `Optimize ${skill.name} performance, security policies, and fault-tolerance`,
+      `Integrate ${skill.name} into enterprise continuous delivery pipelines`,
+      `Enforce corporate compliance and data governance standards`
+    ],
+    practical_project: `Refactor legacy enterprise workflows to leverage modern ${skill.name} architecture.`,
+    assessment_criteria: `Staging environment deployment with 0 security alerts + live demo`,
+    target_cohorts: ["All Software & Data Engineers"]
+  }));
+
+  // Capstone module combining custom skills
+  const capstoneModule = {
+    id: `mod-capstone`,
+    title: `Enterprise Capstone: Integrated ${skillNames.slice(0, 3).join(' & ')} Platform`,
+    custom_skills_covered: skillNames,
+    duration_hours: Math.max(6, Math.round(totalHours * 0.25)),
+    format: "Multi-Squad Capstone & Executive Review",
+    current_level_avg: 2,
+    target_level: 4,
+    learning_objectives: [
+      `Synthesize acquired custom skills (${skillNames.join(', ')}) into a unified platform`,
+      "Enforce zero-trust security, automated CI/CD, and high throughput scaling",
+      "Demonstrate measurable ROI and operational efficiency gain"
+    ],
+    practical_project: `Build and launch an end-to-end production capstone incorporating ${skillNames.join(', ')}.`,
+    assessment_criteria: "Live executive showcase presentation + production architecture sign-off",
+    target_cohorts: ["All Engineering & Analytics Cohorts"]
+  };
+
+  return {
+    org_name: orgName,
+    executive_summary: `This Organization Training Plan for ${orgName} delivers a tailored capability development program covering ${activeSkills.length} custom skill domains (${skillNames.join(', ')}) for ${headcount} team members in ${department}. Designed for ${durationWeeks} weeks at ${weeklyHours} hrs/week, it directly targets your goal '${targetGoal}'.`,
+    target_goal: targetGoal,
+    total_duration_weeks: durationNumber,
+    weekly_hours: hoursNumber,
+    headcount: Number(headcount) || 50,
+    total_modules: activeSkills.length + 1,
+    projected_readiness_gain: 38,
+    phases: [
+      {
+        phase_number: 1,
+        phase_name: "Phase 1: Core Competency & Foundational Labs",
+        weeks: `Weeks 1-${Math.max(1, Math.floor(durationNumber / 2))}`,
+        objective: `Establish baseline mastery across custom skills: ${phase1List.map(s => s.name).join(', ')}.`,
+        modules: phase1Modules.length > 0 ? phase1Modules : [capstoneModule]
+      },
+      {
+        phase_number: 2,
+        phase_name: "Phase 2: Enterprise Scaling, Governance & Capstone Delivery",
+        weeks: `Weeks ${Math.floor(durationNumber / 2) + 1}-${durationNumber}`,
+        objective: `Synthesize acquired skills into production-ready capstone systems backed by automated compliance.`,
+        modules: [...phase2Modules, capstoneModule]
+      }
+    ],
+    cohort_matrix: [
+      {
+        cohort_name: "Technical Leads & Senior Engineers",
+        headcount: Math.max(2, Math.round(headcount * 0.3)),
+        primary_focus_skills: skillNames.slice(0, Math.ceil(skillNames.length / 2)),
+        recommended_pathway: "Accelerated architecture track with peer mentorship & code reviews"
+      },
+      {
+        cohort_name: "Core Developers & Analysts",
+        headcount: Math.max(3, Math.round(headcount * 0.7)),
+        primary_focus_skills: skillNames,
+        recommended_pathway: "Hands-on lab track with weekly workshops and project verification"
+      }
+    ],
+    governance_and_milestones: [
+      {
+        milestone: `Mid-Program Capability Review (Week ${Math.max(1, Math.floor(durationNumber / 2))})`,
+        description: `Evaluate individual employee progress across ${skillNames.join(', ')} against target levels.`,
+        deliverable: "Mid-Point Capability Matrix & Adaptive Re-planning Report"
+      },
+      {
+        milestone: `Final Enterprise Capstone Showcase & Certification (Week ${durationNumber})`,
+        description: "Final evaluation of team capstone projects with department head validation.",
+        deliverable: "Org Capability Certification & Readiness Endorsement"
+      }
+    ]
+  };
+}
+
+
