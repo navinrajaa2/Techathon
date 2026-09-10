@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
-  X, Sparkles, Sliders, CheckCircle2, Clock, Target, AlertCircle, UploadCloud, FileText, Check
+  X, Sparkles, Sliders, CheckCircle2, Clock, Target, AlertCircle, UploadCloud, FileText, Check, Loader2
 } from 'lucide-react';
 import { parseSkillsFreeText } from '../services/api';
+import { extractResumeContent } from '../utils/resumeParser';
 
 export default function SkillInputModal({
   isOpen,
@@ -22,14 +23,14 @@ export default function SkillInputModal({
   const [isParsing, setIsParsing] = useState(false);
   const [extractedMentions, setExtractedMentions] = useState([]);
   const [uploadedFileName, setUploadedFileName] = useState(null);
+  const [extractedSummary, setExtractedSummary] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleParseText = async (textToParse) => {
-    const text = textToParse || freeText;
-    if (!text.trim()) return;
+  const handleParsePayload = async (payload) => {
     setIsParsing(true);
-    const res = await parseSkillsFreeText(text);
+    const res = await parseSkillsFreeText(payload);
     setIsParsing(false);
 
     if (res && res.parsed_skills) {
@@ -38,22 +39,60 @@ export default function SkillInputModal({
         ...res.parsed_skills
       }));
       setExtractedMentions(res.detected_mentions || []);
+      if (res.summary) {
+        setExtractedSummary(res.summary);
+      }
+    }
+  };
+
+  const handleParseText = async (textToParse) => {
+    const text = textToParse || freeText;
+    if (!text.trim()) return;
+    await handleParsePayload({ text });
+  };
+
+  const handleFileProcess = async (file) => {
+    if (!file) return;
+    setUploadedFileName(file.name);
+    setIsParsing(true);
+    setExtractedSummary('');
+
+    try {
+      const extracted = await extractResumeContent(file);
+      await handleParsePayload({
+        text: extracted.text,
+        base64: extracted.base64,
+        fileType: extracted.fileType
+      });
+    } catch (err) {
+      console.error('Error extracting resume content:', err);
+      setIsParsing(false);
     }
   };
 
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadedFileName(file.name);
+    if (file) handleFileProcess(file);
+  };
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const content = event.target?.result;
-      if (typeof content === 'string') {
-        await handleParseText(content);
-      }
-    };
-    reader.readAsText(file);
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFileProcess(file);
   };
 
   const handleDemoResumeLoad = async (presetName) => {
@@ -84,7 +123,10 @@ export default function SkillInputModal({
     onSave({
       skills: localSkills,
       targetRoleId: localRole,
-      weeklyHours: localHours
+      weeklyHours: localHours,
+      uploadedFileName,
+      extractedMentions,
+      extractedSummary
     });
     onClose();
   };
@@ -196,7 +238,18 @@ export default function SkillInputModal({
             <div className="space-y-4 animate-fadeIn">
 
               {/* Dropzone */}
-              <label className="border-2 border-dashed border-blue-200 hover:border-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-blue-50/40 hover:bg-blue-50/80 transition text-center space-y-2">
+              <label
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition text-center space-y-2 ${
+                  isDragging
+                    ? 'border-blue-600 bg-blue-100/80 scale-[1.01]'
+                    : isParsing
+                    ? 'border-blue-300 bg-blue-50/50'
+                    : 'border-blue-200 hover:border-blue-500 bg-blue-50/40 hover:bg-blue-50/80'
+                }`}
+              >
                 <input
                   type="file"
                   accept=".txt,.json,.pdf,.doc,.docx"
@@ -204,10 +257,18 @@ export default function SkillInputModal({
                   className="hidden"
                 />
                 <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                  <UploadCloud className="w-6 h-6" />
+                  {isParsing ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                  ) : (
+                    <UploadCloud className="w-6 h-6" />
+                  )}
                 </div>
                 <div className="text-xs font-bold text-slate-800">
-                  {uploadedFileName ? (
+                  {isParsing ? (
+                    <span className="text-blue-700 flex items-center justify-center space-x-1.5">
+                      <span>Analyzing resume structure & extracting skill levels...</span>
+                    </span>
+                  ) : uploadedFileName ? (
                     <span className="text-emerald-700 flex items-center justify-center space-x-1">
                       <FileText className="w-4 h-4" />
                       <span>Loaded: {uploadedFileName}</span>
@@ -238,17 +299,22 @@ export default function SkillInputModal({
                 </button>
               </div>
 
-              {/* Extracted Mentions Pill Breakdown */}
-              {extractedMentions.length > 0 && (
+              {/* Extracted Summary & Mentions Breakdown */}
+              {(extractedMentions.length > 0 || extractedSummary) && (
                 <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2 animate-fadeIn">
                   <div className="text-xs font-bold text-emerald-800 flex items-center space-x-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>Auto-Extracted Skills & Levels from Resume ({extractedMentions.length}):</span>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
+                  {extractedSummary && (
+                    <p className="text-xs text-emerald-900 bg-white/70 p-2.5 rounded-lg border border-emerald-100 italic">
+                      "{extractedSummary}"
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
                     {extractedMentions.map((m, i) => (
                       <span key={i} className="text-[11px] px-2.5 py-1 rounded-md bg-white text-emerald-800 font-bold border border-emerald-200 shadow-2xs">
-                        {m.skill_name}: <strong>Lvl {m.inferred_level}</strong>
+                        {m.skill_name}: <strong>Lvl {m.inferred_level || m.estimated_level}</strong>
                       </span>
                     ))}
                   </div>
@@ -278,7 +344,7 @@ export default function SkillInputModal({
                 <button
                   onClick={() => handleParseText(freeText)}
                   disabled={isParsing}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center space-x-2 shadow-xs transition disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center space-x-2 shadow-xs transition disabled:opacity-50"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>{isParsing ? 'Extracting Skills with NLP...' : 'Extract & Match Skills'}</span>

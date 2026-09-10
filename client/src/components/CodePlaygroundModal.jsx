@@ -120,52 +120,26 @@ export default function CodePlaygroundModal({
       <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[92vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-blue-50/60">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-500/25">
+            <div className="p-2 rounded-xl bg-blue-600 text-white shadow-xs">
               <Code2 className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="font-extrabold text-slate-900 font-outfit text-sm">
-                  Interactive In-Browser Code & SQL Playground
+                  Interactive Code Playground & AI Reviewer
                 </h3>
-                <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-blue-100 text-blue-700">
-                  Gemini Evaluated
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200">
+                  {skillName}
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
-                Practice practical exercises for <strong className="text-slate-800">{displayName}</strong>
-              </p>
-
+              <p className="text-xs text-slate-500">Practice live SQL queries or algorithms and get instant staff-level Gemini AI feedback</p>
             </div>
           </div>
-
-          <div className="flex items-center space-x-2">
-            {/* Language Switcher */}
-            <div className="flex items-center bg-white p-1 rounded-xl border border-slate-200 text-xs font-bold shadow-2xs">
-              <button
-                onClick={() => handleSwitchLang('sql')}
-                className={`px-3 py-1 rounded-lg transition ${
-                  selectedLang === 'sql' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                SQL
-              </button>
-              <button
-                onClick={() => handleSwitchLang('python')}
-                className={`px-3 py-1 rounded-lg transition ${
-                  selectedLang === 'python' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Python
-              </button>
-            </div>
-
-            <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Body */}
@@ -216,7 +190,7 @@ export default function CodePlaygroundModal({
               <button
                 onClick={handleAIReview}
                 disabled={isReviewing}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-xs transition disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-xs transition disabled:opacity-50 cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>{isReviewing ? 'Gemini Reviewing Code...' : '⚡ Gemini AI Code Review'}</span>
@@ -269,7 +243,7 @@ export default function CodePlaygroundModal({
 
           {/* Gemini AI Code Review Card */}
           {review && (
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50/90 to-indigo-50/80 border border-blue-200 shadow-2xs space-y-2 animate-fadeIn">
+            <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 shadow-2xs space-y-2 animate-fadeIn">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2 text-xs font-bold text-blue-900">
                   <Sparkles className="w-4 h-4 text-blue-600" />

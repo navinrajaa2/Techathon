@@ -217,7 +217,7 @@ export default function CareerSimulatorView({
     <div className="space-y-8 animate-fadeIn">
 
       {/* Header Banner */}
-      <div className="bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/60 rounded-3xl p-6 sm:p-8 border border-blue-200/80 shadow-sm relative overflow-hidden">
+      <div className="bg-blue-50/70 rounded-3xl p-6 sm:p-8 border border-blue-200/90 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16"></div>
 
         <div className="space-y-3 max-w-3xl relative z-10">
@@ -632,7 +632,7 @@ export default function CareerSimulatorView({
                 }`}
             >
               {isBestMatch && (
-                <div className="absolute -top-3.5 right-6 px-3.5 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-[10px] uppercase tracking-wider rounded-full shadow-md">
+                <div className="absolute -top-3.5 right-6 px-3.5 py-1 bg-blue-600 text-white font-bold text-[10px] uppercase tracking-wider rounded-full shadow-xs">
                   Highest Transferable Fit
                 </div>
               )}

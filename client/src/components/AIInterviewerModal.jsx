@@ -141,7 +141,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
       <div className="bg-white border border-slate-200/90 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
 
         {/* Header - Clean Light Theme */}
-        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 p-6 border-b border-emerald-100/80 relative">
+        <div className="bg-emerald-50/70 p-6 border-b border-emerald-100/90 relative">
           <button
             onClick={onClose}
             className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-white/80 transition"
@@ -150,7 +150,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
           </button>
 
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
               <UserCheck className="w-5 h-5" />
             </div>
             <div>
@@ -215,7 +215,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
               <p className="text-sm font-semibold text-slate-700">AI Interviewer is preparing your scenario question...</p>
             </div>
           ) : questionObj && (
-            <div className="p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-white border border-slate-200 shadow-xs space-y-4">
+            <div className="p-5 rounded-2xl bg-slate-50/60 border border-slate-200 shadow-xs space-y-4">
               <div className="flex items-center justify-between">
                 <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                   {questionObj.skill_name || 'Technical Domain'}
@@ -308,7 +308,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
                   <button
                     onClick={handleSubmitAnswer}
                     disabled={!candidateAnswer.trim() || isEvaluating}
-                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold transition shadow-md shadow-emerald-500/20 flex items-center space-x-1.5 disabled:opacity-50"
+                    className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
                   >
                     {isEvaluating ? (
                       <>
@@ -332,7 +332,7 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
             <div className="space-y-5 animate-fadeIn">
 
               {/* Score Header Card */}
-              <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md flex items-center justify-between">
+              <div className="p-5 rounded-2xl bg-emerald-700 text-white shadow-xs flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-100">
                     AI Evaluation Scorecard

@@ -218,9 +218,9 @@ Respond with a JSON object:
 /**
  * Deep semantic skill parser with Gemini
  */
-export async function parseSkillsWithGemini(text, validSkillIds = []) {
+export async function parseSkillsWithGemini(text, validSkillIds = [], pdfBase64 = null) {
   const genAI = getGenAI();
-  if (!genAI || !text) return null;
+  if (!genAI || (!text && !pdfBase64)) return null;
 
   const modelCandidates = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-flash'];
 
@@ -231,13 +231,8 @@ export async function parseSkillsWithGemini(text, validSkillIds = []) {
         generationConfig: { responseMimeType: 'application/json' }
       });
 
-      const prompt = `Analyze this resume/profile text and extract all technical skills and estimate proficiency level from 1 (novice) to 5 (master).
+      const promptText = `Analyze this resume document and extract all technical skills, programming languages, databases, tools, frameworks, and estimate proficiency level from 1 (novice) to 5 (master).
 Valid skill IDs to map to if applicable: ${JSON.stringify(validSkillIds)}
-
-Resume/Profile text:
-"""
-${text}
-"""
 
 Respond with a JSON object:
 {
@@ -245,10 +240,24 @@ Respond with a JSON object:
   "detected_mentions": [
     { "skill_id": "string", "skill_name": "string", "inferred_level": number, "confidence": 0.95 }
   ],
-  "summary": "Short 1-sentence career summary"
+  "summary": "Short 1-sentence career summary extracted from the resume"
 }`;
 
-      const result = await model.generateContent(prompt);
+      let contentParts = [];
+      if (pdfBase64) {
+        contentParts.push({
+          inlineData: {
+            data: pdfBase64,
+            mimeType: 'application/pdf'
+          }
+        });
+      }
+      if (text) {
+        contentParts.push(`Resume text:\n"""\n${text}\n"""`);
+      }
+      contentParts.push(promptText);
+
+      const result = await model.generateContent(contentParts);
       const jsonStr = result.response.text();
       return JSON.parse(jsonStr);
     } catch (err) {

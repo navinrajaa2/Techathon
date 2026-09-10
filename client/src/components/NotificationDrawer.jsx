@@ -46,11 +46,11 @@ export default function NotificationDrawer({
         onClick={(e) => e.stopPropagation()}
         className="bg-white border-l border-slate-200 w-full max-w-md h-full flex flex-col shadow-2xl animate-notifDrawerSlide overflow-hidden"
       >
-        {/* Top Accent Gradient Line */}
-        <div className="h-[2px] w-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-purple-500" />
+        {/* Top Accent Line */}
+        <div className="h-[2px] w-full bg-blue-600" />
 
         {/* Header */}
-        <div className="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+        <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div
               className="w-9 h-9 rounded-xl bg-indigo-600/40 border border-indigo-400/30 flex items-center justify-center relative shadow-sm"

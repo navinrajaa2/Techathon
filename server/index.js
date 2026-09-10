@@ -4,6 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -275,25 +278,39 @@ app.post('/api/quiz/generate-dynamic', async (req, res) => {
   }
 });
 
-// Free-text & Resume skill parsing endpoint (Powered by Gemini + Fallback NLP)
+// Free-text & Resume skill parsing endpoint (Powered by Gemini + pdf-parse + Fallback NLP)
 app.post('/api/parse-skills', async (req, res) => {
   try {
-    const { text } = req.body;
-    if (!text) {
+    let { text, base64, fileType } = req.body;
+
+    // If PDF base64 provided and text is missing or sparse, extract PDF text using pdf-parse
+    if (base64 && (fileType === 'pdf' || !text || text.length < 30)) {
+      try {
+        const buffer = Buffer.from(base64, 'base64');
+        const pdfData = await pdfParse(buffer);
+        if (pdfData && pdfData.text && pdfData.text.trim().length > 0) {
+          text = (text ? text + '\n' : '') + pdfData.text;
+        }
+      } catch (pdfErr) {
+        console.warn('Backend pdf-parse notice:', pdfErr.message);
+      }
+    }
+
+    if (!text && !base64) {
       return res.json({ parsed_skills: {}, detected_mentions: [] });
     }
 
     // Try Gemini Semantic Parser first
     const data = loadTaxonomyData();
     const validSkillIds = (data.skills || []).map(s => s.id);
-    const geminiResult = await parseSkillsWithGemini(text, validSkillIds);
+    const geminiResult = await parseSkillsWithGemini(text, validSkillIds, base64);
 
     if (geminiResult && Object.keys(geminiResult.parsed_skills || {}).length > 0) {
       return res.json(geminiResult);
     }
 
     // Fallback to regex/keyword rule parser
-    const fallbackResult = parseFreeTextSkills(text);
+    const fallbackResult = parseFreeTextSkills(text || '');
     res.json(fallbackResult);
   } catch (err) {
     res.status(500).json({ error: err.message });

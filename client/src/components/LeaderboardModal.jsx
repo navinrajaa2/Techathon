@@ -67,27 +67,19 @@ export default function LeaderboardModal({
       <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-amber-50 via-blue-50 to-indigo-50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-blue-50/70">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm shadow-amber-500/25">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
               <Trophy className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="font-extrabold text-slate-900 font-outfit text-sm">
-                  Global Leaderboard & Learning Circles
-                </h3>
-                <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-amber-100 text-amber-800">
-                  Sprint Season 3
-                </span>
-              </div>
-              <p className="text-xs text-slate-500">
-                Recognizing top active learners and department upskilling progress
-              </p>
+              <h3 className="font-extrabold text-slate-900 font-outfit text-sm">
+                Enterprise Learner Leaderboard & Mobility Rankings
+              </h3>
+              <p className="text-xs text-slate-500">Recognizing top upskilling consistency & verified skill milestones</p>
             </div>
           </div>
-
-          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -198,7 +190,7 @@ export default function LeaderboardModal({
 
                   <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
                     <div 
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 h-full rounded-full" 
+                      className="bg-blue-600 h-full rounded-full" 
                       style={{ width: `${dept.progress}%` }}
                     ></div>
                   </div>

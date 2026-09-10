@@ -81,7 +81,7 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
       <div className="bg-white border border-slate-200 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         
         {/* Header - Light Theme */}
-        <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 p-6 border-b border-indigo-100 relative">
+        <div className="bg-blue-50/70 p-6 border-b border-blue-100 relative">
           <button
             onClick={onClose}
             className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-white/80 transition"
@@ -90,20 +90,20 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
           </button>
 
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-purple-500/20">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-800 border border-purple-200 uppercase tracking-wide">
-                  Feedback & Review Hub
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200 uppercase tracking-wide">
+                  Feedback & Evaluation Hub
                 </span>
                 <span className="text-xs text-slate-500 font-medium">
                   Learner: {learnerName || 'Navin Rajaa'}
                 </span>
               </div>
-              <h2 className="text-xl font-bold text-slate-900 font-outfit mt-0.5">
-                Centralized Feedback & Evaluation Area
+              <h2 className="text-lg font-extrabold text-slate-900 font-outfit mt-0.5">
+                Central Learning Feedback & Support Stream
               </h2>
             </div>
           </div>
@@ -280,7 +280,7 @@ export default function FeedbackAreaModal({ isOpen, onClose, learnerName, onFeed
 
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-purple-500/20 transition flex items-center space-x-2"
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition flex items-center space-x-2 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Submit Feedback</span>

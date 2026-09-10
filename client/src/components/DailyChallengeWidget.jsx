@@ -46,17 +46,17 @@ export default function DailyChallengeWidget({ streakDays = 8, onStreakUp }) {
   return (
     <>
       {/* Top Bar Banner Widget */}
-      <div className="bg-gradient-to-r from-orange-50/90 via-amber-50/60 to-blue-50/80 border border-orange-200/80 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fadeIn">
+      <div className="bg-blue-50/80 border border-blue-200/90 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fadeIn">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 text-white flex items-center justify-center shadow-sm shadow-orange-500/30">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
             <Flame className="w-6 h-6 fill-white" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-black text-orange-900 uppercase tracking-wider font-outfit">
+              <span className="text-xs font-black text-blue-900 uppercase tracking-wider font-outfit">
                 {streakDays}-Day Learning Streak Active!
               </span>
-              <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+              <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
                 +25 XP Boost
               </span>
             </div>

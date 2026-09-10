@@ -273,9 +273,8 @@ export default function ManagerDashboard() {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-
       {/* Header Banner */}
-      <div className="bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/50 rounded-2xl p-6 sm:p-8 border border-blue-200/80 shadow-sm relative overflow-hidden">
+      <div className="bg-blue-50/70 rounded-2xl p-6 sm:p-8 border border-blue-200/90 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
@@ -299,7 +298,7 @@ export default function ManagerDashboard() {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setSelectedMemberForMemo(team_heatmap[0])}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-xs font-bold text-white flex items-center space-x-2 shadow-xs transition"
+              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white flex items-center space-x-2 shadow-xs transition"
             >
               <FileText className="w-4 h-4" />
               <span>Generate Promotion Pitch</span>
@@ -345,7 +344,7 @@ export default function ManagerDashboard() {
       </div>
 
       {/* AI-Powered Suggestions Panel */}
-      <div className="bg-gradient-to-br from-indigo-50/80 via-white to-violet-50/50 rounded-2xl p-5 sm:p-6 border border-indigo-200/80 shadow-sm relative overflow-hidden">
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs relative overflow-hidden">
         <div className="absolute -top-8 -right-8 w-32 h-32 bg-indigo-400/10 rounded-full blur-2xl pointer-events-none"></div>
 
         <div className="flex items-center justify-between mb-4 relative z-10">
@@ -353,6 +352,7 @@ export default function ManagerDashboard() {
 
             <span>AI-Powered Team Insights</span>
           </h2>
+
         </div>
 
         {aiSuggestionsLoading ? (
@@ -524,8 +524,8 @@ export default function ManagerDashboard() {
                   key={opt.value}
                   onClick={() => setFilterTier(opt.value)}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition ${filterTier === opt.value
-                      ? 'bg-blue-50 border-blue-300 text-blue-700'
-                      : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                    ? 'bg-blue-50 border-blue-300 text-blue-700'
+                    : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
                     }`}
                 >
                   {opt.label}
@@ -729,8 +729,8 @@ export default function ManagerDashboard() {
                   <div className="flex items-start justify-between">
                     <div className="font-bold text-slate-900 text-xs">{gap.skill_name}</div>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${gap.severity === 'High'
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : 'bg-amber-50 text-amber-800 border-amber-200'
+                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                      : 'bg-amber-50 text-amber-800 border-amber-200'
                       }`}>
                       {gap.severity}
                     </span>
@@ -765,7 +765,7 @@ export default function ManagerDashboard() {
                           );
                         })}
                       </div>
-                      <button className="mt-2 w-full py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[11px] font-bold flex items-center justify-center gap-1 hover:from-blue-700 hover:to-indigo-700 transition">
+                      <button className="mt-2 w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold flex items-center justify-center gap-1 transition">
                         <ArrowRight className="w-3 h-3" />
                         Launch Cohort Roadmap
                       </button>

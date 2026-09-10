@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
+import LoginPage from './components/LoginPage';
 import GapAnalysisView from './components/GapAnalysisView';
 import RoadmapView from './components/RoadmapView';
 import CareerSimulatorView from './components/CareerSimulatorView';
@@ -21,6 +22,7 @@ import SummaryPodcastModal from './components/SummaryPodcastModal';
 import NotificationDrawer from './components/NotificationDrawer';
 import FeedbackAreaModal from './components/FeedbackAreaModal';
 
+import { CheckCircle2, Sparkles, Sliders, X, FileText } from 'lucide-react';
 import {
   fetchTaxonomy, fetchPersonas, calculateGapAnalysis, generatePath, replanPath
 } from './services/api';
@@ -89,9 +91,27 @@ const FALLBACK_PERSONAS = [
 ];
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState('roadmap'); // 'roadmap' | 'gap' | 'simulator' | 'manager'
   const [personas, setPersonas] = useState(FALLBACK_PERSONAS);
   const [selectedPersona, setSelectedPersona] = useState(FALLBACK_PERSONAS[0]);
+
+  const handleLogin = (userData) => {
+    setCurrentUser(userData);
+    if (userData.persona) {
+      setSelectedPersona(userData.persona);
+      setCurrentSkills(userData.persona.current_skills || FALLBACK_PERSONAS[0].current_skills);
+      setTargetRoleId(userData.persona.target_role_id || FALLBACK_PERSONAS[0].target_role_id);
+    }
+    setIsAuthenticated(true);
+    setAdaptiveNotice(`Welcome back, ${userData.name}! Your career roadmap and skill matrix are ready.`);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+  };
 
   const [taxonomy, setTaxonomy] = useState({ skills: [], roles: [] });
   const [currentSkills, setCurrentSkills] = useState(FALLBACK_PERSONAS[0].current_skills);
@@ -229,12 +249,31 @@ export default function App() {
     setAdaptiveNotice(`Loaded learner profile for ${persona.name}. Gap analysis & roadmap updated.`);
   };
 
+  const [extractedResumeInfo, setExtractedResumeInfo] = useState(null);
+
   // Handle Skill Matrix Modal Save
-  const handleSaveSkillsAndGoal = ({ skills, targetRoleId: newRole, weeklyHours: newHours }) => {
+  const handleSaveSkillsAndGoal = ({
+    skills,
+    targetRoleId: newRole,
+    weeklyHours: newHours,
+    uploadedFileName,
+    extractedMentions,
+    extractedSummary
+  }) => {
     setCurrentSkills(skills);
     setTargetRoleId(newRole);
     setWeeklyHours(newHours);
-    setAdaptiveNotice(`Updated skill profile and target career goal. Recalculating roadmap...`);
+
+    if (uploadedFileName || (extractedMentions && extractedMentions.length > 0)) {
+      setExtractedResumeInfo({
+        fileName: uploadedFileName || 'Uploaded_Resume.pdf',
+        mentions: extractedMentions || [],
+        summary: extractedSummary || '',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+    }
+
+    setAdaptiveNotice(`Extracted resume skills & updated target career matrix. Roadmap recalculated!`);
   };
 
   // Handle Quiz Trigger
@@ -346,6 +385,10 @@ export default function App() {
     }
   };
 
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} personas={personas} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col selection:bg-blue-600 selection:text-white">
 
@@ -361,10 +404,75 @@ export default function App() {
         onOpenNotifications={() => setIsNotificationOpen(true)}
         isNotificationOpen={isNotificationOpen}
         onOpenFeedback={() => setIsFeedbackOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {/* Extracted Resume Capabilities Display Banner */}
+        {extractedResumeInfo && (
+          <div className="mb-6 p-5 rounded-2xl bg-white border border-blue-200/90 text-slate-800 shadow-sm relative overflow-hidden animate-fadeIn">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+              
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center space-x-2 flex-wrap gap-y-1">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100/80 text-emerald-800 border border-emerald-200 flex items-center space-x-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Resume Content Extracted & Active</span>
+                  </span>
+                  <span className="text-xs text-slate-600 flex items-center space-x-1">
+                    <FileText className="w-3.5 h-3.5 text-blue-600" />
+                    <span>File: <strong className="text-slate-900">{extractedResumeInfo.fileName}</strong></span>
+                  </span>
+                  <span className="text-xs text-slate-400">• Updated {extractedResumeInfo.timestamp}</span>
+                </div>
+
+                {extractedResumeInfo.summary && (
+                  <p className="text-xs text-slate-700 italic bg-blue-50/60 p-2.5 rounded-xl border border-blue-100">
+                    "{extractedResumeInfo.summary}"
+                  </p>
+                )}
+
+                {/* Extracted Skill Badges on Display */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {extractedResumeInfo.mentions.map((m, idx) => {
+                    const skillObj = (taxonomy.skills || []).find(s => s.id === (m.skill_id || m.id));
+                    const skillName = m.skill_name || skillObj?.name || m.skill_id;
+                    const level = m.inferred_level || m.estimated_level || currentSkills[m.skill_id] || 2;
+                    return (
+                      <div key={idx} className="flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-800 transition">
+                        <Sparkles className="w-3 h-3 text-blue-600" />
+                        <span>{skillName}:</span>
+                        <span className="text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded text-[10px]">
+                          Lvl {level}/5
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 self-start md:self-center shrink-0">
+                <button
+                  onClick={() => setIsSkillModalOpen(true)}
+                  className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-xs cursor-pointer"
+                >
+                  <Sliders className="w-3.5 h-3.5" />
+                  <span>Re-scan / Adjust Matrix</span>
+                </button>
+                <button
+                  onClick={() => setExtractedResumeInfo(null)}
+                  className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition cursor-pointer"
+                  title="Dismiss banner"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
 
         <div key={activeTab} className="page-transition">
           {activeTab === 'roadmap' && (

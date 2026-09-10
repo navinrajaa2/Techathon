@@ -165,7 +165,7 @@ export default function SummaryPodcastModal({ isOpen, onClose, moduleTitle, skil
       <div className="bg-white border border-slate-200/90 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         
         {/* Header - Clean Light Theme */}
-        <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50 p-6 border-b border-indigo-100/80 relative">
+        <div className="bg-blue-50/70 p-6 border-b border-blue-100 relative">
           <button
             onClick={() => { stopAudio(); onClose(); }}
             className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-white/80 transition"
@@ -174,7 +174,7 @@ export default function SummaryPodcastModal({ isOpen, onClose, moduleTitle, skil
           </button>
 
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
               <Headphones className="w-5 h-5" />
             </div>
             <div>
@@ -221,16 +221,16 @@ export default function SummaryPodcastModal({ isOpen, onClose, moduleTitle, skil
           ) : podcastData && (
             <>
               {/* Podcast Audio Player Card - Light Theme */}
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950 text-white shadow-lg space-y-5 relative overflow-hidden">
+              <div className="p-6 rounded-2xl bg-slate-900 text-white shadow-md space-y-5 relative overflow-hidden">
                 
                 {/* Background glow */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
                   <div className="space-y-1">
-                    <span className="text-[11px] font-bold text-indigo-300 uppercase tracking-widest flex items-center space-x-1.5">
-                      <Radio className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
-                      <span>TechCraft AI Daily Podcast</span>
+                    <span className="text-[11px] font-bold text-blue-300 uppercase tracking-widest flex items-center space-x-1.5">
+                      <Radio className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
+                      <span>PathCraft AI Daily Podcast</span>
                     </span>
                     <h3 className="text-lg font-bold font-outfit text-white">
                       {podcastData.title}
@@ -245,7 +245,7 @@ export default function SummaryPodcastModal({ isOpen, onClose, moduleTitle, skil
                     {[40, 70, 30, 90, 50, 80, 40, 60].map((h, i) => (
                       <div
                         key={i}
-                        className={`w-1 bg-indigo-400 rounded-full transition-all duration-300 ${
+                        className={`w-1 bg-blue-400 rounded-full transition-all duration-300 ${
                           isPlaying ? 'animate-bounce' : 'opacity-40'
                         }`}
                         style={{
@@ -262,7 +262,7 @@ export default function SummaryPodcastModal({ isOpen, onClose, moduleTitle, skil
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={handleTogglePlay}
-                      className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white flex items-center justify-center shadow-lg transition active:scale-95"
+                      className="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md transition active:scale-95 cursor-pointer"
                     >
                       {isPlaying ? <Pause className="w-5 h-5 fill-white" /> : <Play className="w-5 h-5 fill-white ml-0.5" />}
                     </button>

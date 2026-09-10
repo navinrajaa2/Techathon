@@ -97,7 +97,7 @@ export default function CertificateModal({
 
             {/* Top Seal & Organization */}
             <div className="flex flex-col items-center justify-center space-y-1 relative z-10">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/25 ring-4 ring-blue-100">
+              <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md ring-4 ring-blue-100">
                 <Award className="w-8 h-8" />
               </div>
               <div className="text-[11px] font-extrabold tracking-widest text-blue-800 uppercase pt-2">

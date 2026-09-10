@@ -24,12 +24,13 @@ export async function fetchPersonas() {
   }
 }
 
-export async function parseSkillsFreeText(text) {
+export async function parseSkillsFreeText(payload) {
   try {
+    const bodyData = typeof payload === 'string' ? { text: payload } : payload;
     const res = await fetch(`${API_BASE}/parse-skills`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
+      body: JSON.stringify(bodyData)
     });
     if (!res.ok) throw new Error('API error');
     return await res.json();

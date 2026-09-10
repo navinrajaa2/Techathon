@@ -82,7 +82,7 @@ export default function RoadmapView({
       <DailyChallengeWidget streakDays={8} />
 
       {/* Header Summary Banner */}
-      <div className="bg-gradient-to-br from-white via-blue-50/40 to-indigo-50/50 rounded-2xl p-6 sm:p-8 border border-blue-200/80 shadow-sm relative overflow-hidden">
+      <div className="bg-blue-50/70 rounded-2xl p-6 sm:p-8 border border-blue-200/90 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16"></div>
 
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
@@ -447,7 +447,7 @@ export default function RoadmapView({
                           })}
                           className={`w-full px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition shadow-xs active:scale-95 ${step.status === 'project_verified'
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-default'
-                            : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-emerald-500/20'
+                            : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                             }`}
                           title="Demonstrate skill with a real-world project, reviewed by Gemini AI"
                         >
@@ -464,7 +464,7 @@ export default function RoadmapView({
                           disabled={isVerified}
                           className={`w-full px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition shadow-xs active:scale-95 ${isVerified
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 opacity-90 cursor-default'
-                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
                             }`}
                         >
                           <Award className="w-3.5 h-3.5 shrink-0" />
