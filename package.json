@@ -13,5 +13,8 @@
     "client": "npm --prefix client run dev",
     "build:client": "npm --prefix client run build",
     "test:server": "node server/index.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
   }
 }

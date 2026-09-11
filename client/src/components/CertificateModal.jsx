@@ -71,6 +71,16 @@ export default function CertificateModal({
 
           <div className="flex items-center space-x-2">
             <button
+              onClick={() => {
+                const url = encodeURIComponent('https://pathcraft.vercel.app/verify/' + verificationId);
+                const title = encodeURIComponent(`I just completed my target career skills for ${targetRoleTitle} via PathCraft!`);
+                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${title}`, '_blank');
+              }}
+              className="px-3 py-1.5 rounded-lg bg-[#0a66c2] hover:bg-[#004182] text-white text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
+            >
+              <span>Share to LinkedIn</span>
+            </button>
+            <button
               onClick={handlePrint}
               className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition"
             >
@@ -92,8 +102,8 @@ export default function CertificateModal({
             ref={certRef}
             className="w-full bg-white p-8 rounded-2xl border-4 border-double border-blue-900/40 shadow-xl relative text-center space-y-6 overflow-hidden"
           >
-            {/* Background Guilloche watermark */}
-            <div className="absolute inset-0 bg-radial from-blue-50/50 to-transparent pointer-events-none"></div>
+            {/* Background Guilloche watermark (Flat alternative) */}
+            <div className="absolute inset-0 bg-blue-50/30 pointer-events-none"></div>
 
             {/* Top Seal & Organization */}
             <div className="flex flex-col items-center justify-center space-y-1 relative z-10">

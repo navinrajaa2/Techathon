@@ -22,6 +22,7 @@ import SummaryPodcastModal from './components/SummaryPodcastModal';
 import NotificationDrawer from './components/NotificationDrawer';
 import FeedbackAreaModal from './components/FeedbackAreaModal';
 import OrganisationPlan from './components/OrganisationPlan';
+import AgenticControlPanel from './components/AgenticControlPanel';
 
 import { CheckCircle2, Sparkles, Sliders, X, FileText } from 'lucide-react';
 import {
@@ -97,6 +98,10 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('roadmap'); // 'roadmap' | 'gap' | 'simulator' | 'manager'
   const [personas, setPersonas] = useState(FALLBACK_PERSONAS);
   const [selectedPersona, setSelectedPersona] = useState(FALLBACK_PERSONAS[0]);
+
+  // Gamification State
+  const [xp, setXp] = useState(1450);
+  const [streak, setStreak] = useState(4);
 
   const handleLogin = (userData) => {
     setCurrentUser(userData);
@@ -182,6 +187,14 @@ export default function App() {
       time: 'Yesterday',
       type: 'quiz',
       read: true
+    },
+    {
+      id: 'n_plan_1',
+      title: 'Enterprise Skill Roadmap & Training Plan',
+      message: 'Your Q4 skill training plan has been distributed. Please review your assigned curriculum modules.',
+      time: 'Just now',
+      type: 'plan',
+      read: false
     }
   ]);
 
@@ -274,7 +287,7 @@ export default function App() {
       });
     }
 
-    setAdaptiveNotice(`Extracted resume skills & updated target career matrix. Roadmap recalculated!`);
+    setAdaptiveNotice(`Extracted skills & updated target career matrix. Roadmap recalculated!`);
   };
 
   // Handle Quiz Trigger
@@ -386,6 +399,43 @@ export default function App() {
     }
   };
 
+  // Agentic Actions Handlers
+  const handleSimulateSchedule = () => {
+    // Find next skill to learn
+    const nextSkill = learningPath?.roadmap_steps?.find(s => s.status === 'pending')?.skill_name || 'System Design';
+    setAdaptiveNotice(`🤖 Autonomous Agent: Found a 25m gap in your calendar tomorrow at 2:00 PM. Booked a micro-learning focus block for '${nextSkill}'.`);
+  };
+
+  const handleSimulateMentorPing = () => {
+    const nextSkill = learningPath?.roadmap_steps?.find(s => s.status === 'pending')?.skill_name || 'System Design';
+    setNotifications(prev => [
+      {
+        id: `n_mentor_${Date.now()}`,
+        title: '🤖 Proactive Mentor (Slack)',
+        message: `Hey ${selectedPersona.name.split(' ')[0]}! Noticed you've been pausing on '${nextSkill}'. Need a quick 2-minute TLDR to unblock you?`,
+        time: 'Just now',
+        type: 'mentor_ping',
+        read: false
+      },
+      ...prev
+    ]);
+    setIsNotificationOpen(true);
+  };
+
+  const handleSimulateMarketPivot = () => {
+    setAdaptiveNotice(`🤖 Market Trend Alert: High demand detected for 'Agentic AI Frameworks' in your role target. Pivot applied!`);
+    
+    // Inject a new skill into taxonomy if it doesn't exist, and artificially update the gap
+    setTimeout(() => {
+      // Just re-generate path to simulate adaptive reload
+      generatePath(currentSkills, targetRoleId, weeklyHours).then(pathData => {
+        if (pathData && pathData.learning_path) {
+          setLearningPath(pathData.learning_path);
+        }
+      });
+    }, 1500);
+  };
+
   if (!isAuthenticated) {
     return <LoginPage onLogin={handleLogin} personas={personas} />;
   }
@@ -406,10 +456,12 @@ export default function App() {
         isNotificationOpen={isNotificationOpen}
         onOpenFeedback={() => setIsFeedbackOpen(true)}
         onLogout={handleLogout}
+        xp={xp}
+        streak={streak}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
 
         {/* Extracted Resume Capabilities Display Banner */}
         {extractedResumeInfo && (
@@ -420,7 +472,7 @@ export default function App() {
                 <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                   <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100/80 text-emerald-800 border border-emerald-200 flex items-center space-x-1">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Resume Content Extracted & Active</span>
+                    <span>Resume/Profile Scanned & Active</span>
                   </span>
                   <span className="text-xs text-slate-600 flex items-center space-x-1">
                     <FileText className="w-3.5 h-3.5 text-blue-600" />
@@ -542,6 +594,13 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Agentic Features Control Panel */}
+      <AgenticControlPanel 
+        onSchedule={handleSimulateSchedule}
+        onMentorPing={handleSimulateMentorPing}
+        onMarketPivot={handleSimulateMarketPivot}
+      />
 
       {/* Modals & Drawers */}
       <SkillInputModal

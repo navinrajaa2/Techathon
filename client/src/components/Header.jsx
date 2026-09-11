@@ -20,7 +20,9 @@ export default function Header({
   onOpenNotifications,
   isNotificationOpen = false,
   onOpenFeedback,
-  onLogout
+  onLogout,
+  xp = 0,
+  streak = 0
 }) {
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, height: 0, opacity: 0 });
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -69,7 +71,7 @@ export default function Header({
           </div>
 
           {/* ── Navigation Tabs ── */}
-          <nav className="relative flex items-center p-1 rounded-xl flex-shrink-0 bg-slate-100/80 border border-slate-200/80">
+          <nav className="relative flex items-center p-1 rounded-xl flex-shrink-1 bg-slate-100/80 border border-slate-200/80 overflow-x-auto hide-scrollbar">
 
             {/* Sliding pill */}
             <span
@@ -106,14 +108,18 @@ export default function Header({
           {/* ── Right Controls ── */}
           <div className="flex items-center gap-2 flex-shrink-0">
 
-            {/* Feedback & Review Area Button */}
-            <button
-              onClick={onOpenFeedback}
-              title="Central Feedback & Evaluation Area"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100/80 transition-all duration-200 active:scale-95 whitespace-nowrap cursor-pointer"
-            >
-              <span>Feedback Hub</span>
-            </button>
+            {/* Gamification Stats */}
+            <div className="hidden lg:flex items-center gap-3 mr-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+              <div className="flex items-center space-x-1.5" title="Experience Points">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span className="text-xs font-bold text-slate-800">{xp} XP</span>
+              </div>
+              <div className="w-px h-4 bg-slate-300"></div>
+              <div className="flex items-center space-x-1.5" title="Day Streak">
+                <Zap className="w-4 h-4 text-rose-500" />
+                <span className="text-xs font-bold text-slate-800">{streak} Days</span>
+              </div>
+            </div>
 
             {/* Edit Skills */}
             <button
@@ -123,6 +129,21 @@ export default function Header({
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
               <span className="hidden sm:inline">Profile &amp; Skills</span>
+            </button>
+
+            {/* Stored Notification Stream Bell Button */}
+            <button
+              onClick={onOpenNotifications}
+              title="Stored Notifications & AI Feedback Stream"
+              className={`relative p-2 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center bg-slate-100 border cursor-pointer ${isNotificationOpen ? 'border-blue-400 text-blue-700 bg-blue-50' : 'border-slate-200 text-slate-600 hover:bg-slate-200/80'
+                }`}
+            >
+              <Bell className={`w-4 h-4 ${isNotificationOpen ? 'text-blue-600' : 'text-slate-600'}`} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 text-[9px] font-black rounded-full bg-rose-500 text-white border border-white shadow-xs">
+                  {unreadCount}
+                </span>
+              )}
             </button>
 
             {/* Persona Switcher & User Profile */}
@@ -200,21 +221,6 @@ export default function Header({
                 </div>
               )}
             </div>
-
-            {/* Stored Notification Stream Bell Button */}
-            <button
-              onClick={onOpenNotifications}
-              title="Stored Notifications & AI Feedback Stream"
-              className={`relative p-2 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center bg-slate-100 border cursor-pointer ${isNotificationOpen ? 'border-blue-400 text-blue-700 bg-blue-50' : 'border-slate-200 text-slate-600 hover:bg-slate-200/80'
-                }`}
-            >
-              <Bell className={`w-4 h-4 ${isNotificationOpen ? 'text-blue-600' : 'text-slate-600'}`} />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 text-[9px] font-black rounded-full bg-rose-500 text-white border border-white shadow-xs">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
           </div>
 
         </div>

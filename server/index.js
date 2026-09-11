@@ -425,6 +425,39 @@ app.post('/api/org-training-plan/send-email', async (req, res) => {
   }
 });
 
+// Slack Integration Endpoint
+app.post('/api/slack/send', async (req, res) => {
+  try {
+    const { token, channel_id, message } = req.body;
+    
+    if (!token || !channel_id || !message) {
+      return res.status(400).json({ error: 'token, channel_id, and message are required' });
+    }
+
+    const response = await fetch('https://slack.com/api/chat.postMessage', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        channel: channel_id,
+        text: message
+      })
+    });
+
+    const data = await response.json();
+    
+    if (!data.ok) {
+      return res.status(400).json({ error: data.error });
+    }
+
+    res.json({ success: true, message: 'Sent to Slack!' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Dynamic AI Scenario Assessment Quiz Generator (Powered by Gemini)
 app.post('/api/quiz/generate-dynamic', async (req, res) => {
   try {
@@ -471,9 +504,14 @@ app.post('/api/parse-skills', async (req, res) => {
     }
 
     // Try Gemini Semantic Parser first
-    const data = loadTaxonomyData();
-    const validSkillIds = (data.skills || []).map(s => s.id);
-    const geminiResult = await parseSkillsWithGemini(text, validSkillIds, base64);
+    let geminiResult = null;
+    try {
+      const data = loadTaxonomyData();
+      const validSkillIds = (data.skills || []).map(s => s.id);
+      geminiResult = await parseSkillsWithGemini(text, validSkillIds, base64);
+    } catch (geminiErr) {
+      console.warn('Gemini parsing failed, falling back to local NLP:', geminiErr.message);
+    }
 
     if (geminiResult && Object.keys(geminiResult.parsed_skills || {}).length > 0) {
       return res.json(geminiResult);

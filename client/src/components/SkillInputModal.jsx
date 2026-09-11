@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  X, Sparkles, Sliders, CheckCircle2, Clock, Target, AlertCircle, UploadCloud, FileText, Check, Loader2
+  X, Sparkles, Sliders, CheckCircle2, Clock, Target, UploadCloud, FileText, Loader2, GitBranch
 } from 'lucide-react';
 import { parseSkillsFreeText } from '../services/api';
 import { extractResumeContent } from '../utils/resumeParser';
@@ -15,8 +15,9 @@ export default function SkillInputModal({
   weeklyHours,
   onSave
 }) {
-  const [activeMode, setActiveMode] = useState('resume'); // 'resume' | 'freeText' | 'sliders'
-  const [freeText, setFreeText] = useState("I know basic Python scripting, have written complex SQL JOINs, built interactive Tableau dashboards, and ran some basic A/B test experiments.");
+  const [activeMode, setActiveMode] = useState('resume'); // 'resume' | 'freeText' | 'sliders' | 'github'
+  const [freeText, setFreeText] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
   const [localSkills, setLocalSkills] = useState(currentSkills || {});
   const [localRole, setLocalRole] = useState(targetRoleId || 'sr_data_analyst');
   const [localHours, setLocalHours] = useState(weeklyHours || 5);
@@ -30,18 +31,19 @@ export default function SkillInputModal({
 
   const handleParsePayload = async (payload) => {
     setIsParsing(true);
-    const res = await parseSkillsFreeText(payload);
-    setIsParsing(false);
-
-    if (res && res.parsed_skills) {
-      setLocalSkills(prev => ({
-        ...prev,
-        ...res.parsed_skills
-      }));
-      setExtractedMentions(res.detected_mentions || []);
-      if (res.summary) {
-        setExtractedSummary(res.summary);
+    try {
+      const res = await parseSkillsFreeText(payload);
+      if (res && res.parsed_skills) {
+        setLocalSkills(res.parsed_skills);
+        setExtractedMentions(res.detected_mentions || []);
+        if (res.summary) {
+          setExtractedSummary(res.summary);
+        }
       }
+    } catch (err) {
+      console.error('Error parsing payload:', err);
+    } finally {
+      setIsParsing(false);
     }
   };
 
@@ -49,6 +51,16 @@ export default function SkillInputModal({
     const text = textToParse || freeText;
     if (!text.trim()) return;
     await handleParsePayload({ text });
+  };
+
+  const handleParseGithub = async () => {
+    if (!githubUrl.trim()) return;
+    setIsParsing(true);
+    setUploadedFileName(githubUrl);
+    setExtractedSummary('');
+    // Simulate analyzing a github profile by passing the URL text to the parser
+    // In a real app, this would call a backend endpoint to fetch the github profile
+    await handleParsePayload({ text: `Analyze GitHub Profile: ${githubUrl}. The user is proficient in languages and frameworks found in their repositories.` });
   };
 
   const handleFileProcess = async (file) => {
@@ -95,23 +107,6 @@ export default function SkillInputModal({
     if (file) handleFileProcess(file);
   };
 
-  const handleDemoResumeLoad = async (presetName) => {
-    let demoText = "";
-    if (presetName === 'data') {
-      setUploadedFileName("Priya_Sharma_Resume_2026.pdf");
-      demoText = "Senior experience with SQL data warehousing, BigQuery, Snowflake, and Python data analytics (pandas/numpy). Built interactive Tableau executive dashboards and formulated A/B test experimentation hypotheses.";
-    } else if (presetName === 'software') {
-      setUploadedFileName("Marcus_Chen_Fullstack_Resume.pdf");
-      demoText = "Frontend Engineer with 4 years experience in React, JavaScript, TypeScript, TailwindCSS, Node.js, Express microservices, REST APIs, and distributed Docker system architecture.";
-    } else {
-      setUploadedFileName("Sarah_Jenkins_Product_Resume.pdf");
-      demoText = "Product Manager with strong background in product discovery, user research interviews, AI product strategy, roadmapping, SQL query analysis, and data storytelling.";
-    }
-
-    setFreeText(demoText);
-    await handleParseText(demoText);
-  };
-
   const handleSliderChange = (skillId, val) => {
     setLocalSkills(prev => ({
       ...prev,
@@ -143,7 +138,7 @@ export default function SkillInputModal({
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900 font-outfit">Skills & Career Goal Matrix</h2>
-              <p className="text-xs text-slate-500">Auto-scan resume, describe background, or adjust manual skill levels</p>
+              <p className="text-xs text-slate-500">Auto-scan resume, GitHub, describe background, or adjust manual skill levels</p>
             </div>
           </div>
           <button
@@ -155,12 +150,12 @@ export default function SkillInputModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1">
+        <div className="p-6 overflow-y-auto space-y-6 flex-1 hide-scrollbar">
 
           {/* Target Role & Weekly Hours Selector */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-blue-50/60 p-4 rounded-xl border border-blue-100">
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1.5 flex items-center space-x-1.5">
+              <label className="text-xs font-bold text-slate-700 mb-1.5 flex items-center space-x-1.5">
                 <Target className="w-3.5 h-3.5 text-blue-600" />
                 <span>Target Career Goal / Promotion</span>
               </label>
@@ -178,7 +173,7 @@ export default function SkillInputModal({
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1.5 flex items-center space-x-1.5">
+              <label className="text-xs font-bold text-slate-700 mb-1.5 flex items-center space-x-1.5">
                 <Clock className="w-3.5 h-3.5 text-blue-600" />
                 <span>Weekly Time Budget ({localHours} hrs/week)</span>
               </label>
@@ -199,8 +194,8 @@ export default function SkillInputModal({
             </div>
           </div>
 
-          {/* Mode Switcher: Resume Upload vs NLP vs Manual */}
-          <div className="flex items-center space-x-2 border-b border-slate-200 pb-3">
+          {/* Mode Switcher */}
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
             <button
               onClick={() => setActiveMode('resume')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${activeMode === 'resume'
@@ -209,7 +204,17 @@ export default function SkillInputModal({
                 }`}
             >
               <UploadCloud className="w-3.5 h-3.5" />
-              <span> Resume / PDF Auto-Scanner</span>
+              <span>Resume Scanner</span>
+            </button>
+            <button
+              onClick={() => setActiveMode('github')}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${activeMode === 'github'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+            >
+              <GitBranch className="w-3.5 h-3.5" />
+              <span>GitHub Analyzer</span>
             </button>
             <button
               onClick={() => setActiveMode('freeText')}
@@ -219,7 +224,7 @@ export default function SkillInputModal({
                 }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>AI Free-Text Extraction</span>
+              <span>AI Free-Text</span>
             </button>
             <button
               onClick={() => setActiveMode('sliders')}
@@ -229,14 +234,13 @@ export default function SkillInputModal({
                 }`}
             >
               <Sliders className="w-3.5 h-3.5" />
-              <span>Manual Skill Sliders</span>
+              <span>Manual Sliders</span>
             </button>
           </div>
 
           {/* Mode 1: Resume Upload / PDF Drop */}
           {activeMode === 'resume' && (
             <div className="space-y-4 animate-fadeIn">
-
               {/* Dropzone */}
               <label
                 onDragOver={handleDragOver}
@@ -268,7 +272,7 @@ export default function SkillInputModal({
                     <span className="text-blue-700 flex items-center justify-center space-x-1.5">
                       <span>Analyzing resume structure & extracting skill levels...</span>
                     </span>
-                  ) : uploadedFileName ? (
+                  ) : uploadedFileName && activeMode === 'resume' ? (
                     <span className="text-emerald-700 flex items-center justify-center space-x-1">
                       <FileText className="w-4 h-4" />
                       <span>Loaded: {uploadedFileName}</span>
@@ -282,29 +286,12 @@ export default function SkillInputModal({
                 </p>
               </label>
 
-              {/* Sample Quick Demo Resumes */}
-              <div className="flex items-center space-x-2 text-xs text-slate-500">
-                <span className="font-semibold text-slate-600">Try 1-Click Sample Resumes:</span>
-                <button
-                  onClick={() => handleDemoResumeLoad('data')}
-                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 text-[11px] font-semibold transition"
-                >
-                  Data Analyst Resume
-                </button>
-                <button
-                  onClick={() => handleDemoResumeLoad('software')}
-                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 text-[11px] font-semibold transition"
-                >
-                  Fullstack Dev Resume
-                </button>
-              </div>
-
               {/* Extracted Summary & Mentions Breakdown */}
               {(extractedMentions.length > 0 || extractedSummary) && (
                 <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2 animate-fadeIn">
                   <div className="text-xs font-bold text-emerald-800 flex items-center space-x-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Auto-Extracted Skills & Levels from Resume ({extractedMentions.length}):</span>
+                    <span>Auto-Extracted Skills & Levels ({extractedMentions.length}):</span>
                   </div>
                   {extractedSummary && (
                     <p className="text-xs text-emerald-900 bg-white/70 p-2.5 rounded-lg border border-emerald-100 italic">
@@ -320,11 +307,63 @@ export default function SkillInputModal({
                   </div>
                 </div>
               )}
-
             </div>
           )}
 
-          {/* Mode 2: AI Free-Text Parser */}
+          {/* Mode 2: GitHub Analyzer */}
+          {activeMode === 'github' && (
+            <div className="space-y-4 animate-fadeIn">
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                  Enter your GitHub Profile URL:
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="url"
+                    value={githubUrl}
+                    onChange={(e) => setGithubUrl(e.target.value)}
+                    className="flex-1 text-xs bg-white border border-slate-300 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                    placeholder="https://github.com/username"
+                  />
+                  <button
+                    onClick={handleParseGithub}
+                    disabled={isParsing || !githubUrl}
+                    className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center space-x-2 shadow-xs transition disabled:opacity-50"
+                  >
+                    {isParsing ? <Loader2 className="w-4 h-4 animate-spin" /> : <GitBranch className="w-4 h-4" />}
+                    <span>{isParsing ? 'Analyzing...' : 'Scan Profile'}</span>
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-2">
+                  We'll analyze your public repositories, languages, and commit history to extract your technical skills.
+                </p>
+              </div>
+
+              {/* Extracted Summary & Mentions Breakdown */}
+              {(extractedMentions.length > 0 || extractedSummary) && (
+                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2 animate-fadeIn">
+                  <div className="text-xs font-bold text-emerald-800 flex items-center space-x-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Auto-Extracted Skills & Levels ({extractedMentions.length}):</span>
+                  </div>
+                  {extractedSummary && (
+                    <p className="text-xs text-emerald-900 bg-white/70 p-2.5 rounded-lg border border-emerald-100 italic">
+                      "{extractedSummary}"
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {extractedMentions.map((m, i) => (
+                      <span key={i} className="text-[11px] px-2.5 py-1 rounded-md bg-white text-emerald-800 font-bold border border-emerald-200 shadow-2xs">
+                        {m.skill_name}: <strong>Lvl {m.inferred_level || m.estimated_level}</strong>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Mode 3: AI Free-Text Parser */}
           {activeMode === 'freeText' && (
             <div className="space-y-4 animate-fadeIn">
               <div>
@@ -343,13 +382,12 @@ export default function SkillInputModal({
               <div className="flex items-center justify-between">
                 <button
                   onClick={() => handleParseText(freeText)}
-                  disabled={isParsing}
+                  disabled={isParsing || !freeText.trim()}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center space-x-2 shadow-xs transition disabled:opacity-50"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  {isParsing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   <span>{isParsing ? 'Extracting Skills with NLP...' : 'Extract & Match Skills'}</span>
                 </button>
-
                 <span className="text-[11px] text-slate-500">Auto-detects skill levels (1-5) and keywords</span>
               </div>
 
@@ -362,7 +400,7 @@ export default function SkillInputModal({
                   <div className="flex flex-wrap gap-1.5">
                     {extractedMentions.map((m, i) => (
                       <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-white text-emerald-800 font-bold border border-emerald-200 shadow-2xs">
-                        {m.skill_name}: Lvl {m.inferred_level}
+                        {m.skill_name}: Lvl {m.inferred_level || m.estimated_level}
                       </span>
                     ))}
                   </div>
@@ -371,7 +409,7 @@ export default function SkillInputModal({
             </div>
           )}
 
-          {/* Mode 3: Manual Sliders */}
+          {/* Mode 4: Manual Sliders */}
           {activeMode === 'sliders' && (
             <div className="space-y-4 animate-fadeIn">
               <div className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center justify-between">
@@ -379,7 +417,7 @@ export default function SkillInputModal({
                 <span className="text-slate-500 font-normal">Level 1 (Novice) → Level 5 (Master)</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1 hide-scrollbar">
                 {skills.map(sk => {
                   const currentVal = localSkills[sk.id] || 0;
                   return (

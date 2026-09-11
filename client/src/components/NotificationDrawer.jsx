@@ -181,6 +181,20 @@ export default function NotificationDrawer({
                         View Detailed Feedback &rarr;
                       </span>
                     )}
+
+                    {notif.type === 'plan' && (
+                      <div className="pt-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            alert("Employee marked as Notified!");
+                          }}
+                          className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-sm transition-all active:scale-95"
+                        >
+                          Notified
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

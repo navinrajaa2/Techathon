@@ -340,7 +340,79 @@ export default function ManagerDashboard() {
             <div className="text-[11px] text-rose-700 font-semibold mt-1">High priority for upskilling</div>
           </div>
         </div>
+      </div>
 
+      {/* Retention & Flight Risk Radar */}
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs relative overflow-hidden animate-fadeIn">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-rose-400/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
+        
+        <div className="flex items-center justify-between mb-4 relative z-10">
+          <h2 className="text-base font-bold text-slate-900 font-outfit flex items-center space-x-2">
+            <AlertTriangle className="w-5 h-5 text-rose-500" />
+            <span>Retention & Flight Risk Radar</span>
+          </h2>
+          <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 uppercase tracking-wider">
+            Predictive AI Active
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 relative z-10">
+          <div className="p-4 rounded-xl bg-rose-50/50 border border-rose-200 hover:shadow-md transition">
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex items-center space-x-2">
+                <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=f43f5e&color=fff" alt="Sarah" className="w-8 h-8 rounded-full" />
+                <div>
+                  <div className="text-xs font-bold text-slate-900">Sarah Jenkins</div>
+                  <div className="text-[10px] text-slate-500">Associate PM</div>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-700 border border-rose-200 animate-pulse">High Risk 🚨</span>
+            </div>
+            <div className="space-y-1.5 mt-3 text-[11px] text-slate-700">
+              <div className="flex justify-between"><span className="text-slate-500">Upskill Velocity:</span><span className="font-bold text-emerald-600">Top 5% (Fast)</span></div>
+              <div className="flex justify-between"><span className="text-slate-500">Last Promo:</span><span className="font-bold text-rose-600">2.5 years ago</span></div>
+              <div className="flex justify-between"><span className="text-slate-500">Comp Ratio:</span><span className="font-bold text-rose-600">0.82 (Below Band)</span></div>
+            </div>
+            <div className="mt-4 flex gap-2">
+              <button className="flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold transition">Propose Promo</button>
+              <button className="flex-1 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[10px] font-bold transition">Schedule 1:1</button>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 hover:shadow-md transition">
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex items-center space-x-2">
+                <img src="https://ui-avatars.com/api/?name=Marcus+Chen&background=f59e0b&color=fff" alt="Marcus" className="w-8 h-8 rounded-full" />
+                <div>
+                  <div className="text-xs font-bold text-slate-900">Marcus Chen</div>
+                  <div className="text-[10px] text-slate-500">Frontend Dev</div>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">Medium Risk</span>
+            </div>
+            <div className="space-y-1.5 mt-3 text-[11px] text-slate-700">
+              <div className="flex justify-between"><span className="text-slate-500">Target Role:</span><span className="font-bold text-blue-600">Fullstack</span></div>
+              <div className="flex justify-between"><span className="text-slate-500">Readiness:</span><span className="font-bold text-emerald-600">85% (Ready)</span></div>
+              <div className="flex justify-between"><span className="text-slate-500">Market Demand:</span><span className="font-bold text-rose-600">Very High</span></div>
+            </div>
+            <div className="mt-4 flex gap-2">
+              <button className="flex-1 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition">Suggest Lateral Move</button>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-900 text-slate-100 flex flex-col justify-center">
+            <div className="flex items-center space-x-2 mb-2 text-emerald-400">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-xs font-bold">AI Retention Insights</span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-slate-300">
+              Employees in the <strong className="text-white">Top 10% of learning velocity</strong> have a 3x higher flight risk if their compensation isn't adjusted within 6 months of hitting target role readiness.
+            </p>
+            <p className="text-[11px] leading-relaxed text-slate-300 mt-2">
+              Proactive lateral mobility increases retention of top learners by <strong className="text-emerald-400">72%</strong>.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* AI-Powered Suggestions Panel */}
@@ -603,9 +675,9 @@ export default function ManagerDashboard() {
                                 className="h-full rounded-full transition-all duration-1000 ease-out"
                                 style={{
                                   width: animateReady ? `${member.readiness_percent}%` : '0%',
-                                  background: member.readiness_percent >= 75 ? 'linear-gradient(90deg, #10b981, #059669)'
-                                    : member.readiness_percent >= 55 ? 'linear-gradient(90deg, #f59e0b, #d97706)'
-                                      : 'linear-gradient(90deg, #f43f5e, #e11d48)'
+                                  background: member.readiness_percent >= 75 ? '#10b981'
+                                    : member.readiness_percent >= 55 ? '#f59e0b'
+                                      : '#f43f5e'
                                 }}
                               ></div>
                             </div>

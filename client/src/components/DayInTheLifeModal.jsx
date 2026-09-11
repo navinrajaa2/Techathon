@@ -1,242 +1,180 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  X, Compass, Sparkles, CheckCircle2, AlertTriangle, ArrowRight, Award, Bot, RefreshCw, Zap 
+  X, Terminal, MessageSquare, AlertTriangle, Database, Activity, Code2, 
+  RefreshCw, CheckCircle2, ServerCrash, Clock, ShieldCheck 
 } from 'lucide-react';
-import { fetchMentorChat } from '../services/api';
 
-const SCENARIOS = [
-  {
-    id: 's1',
-    time: '9:30 AM — Architecture Review',
-    title: 'High-Volume Stream Ingestion Bottleneck',
-    description: 'Your telemetry ingestion pipeline is dropping 4% of events during flash traffic spikes. The business team wants a fix before tomorrow morning.',
-    options: [
-      {
-        id: 'opt1',
-        text: 'Deploy an in-memory Redis buffer with exponential backoff retry to absorb burst spikes immediately without touching core schema.',
-        type: 'balanced'
-      },
-      {
-        id: 'opt2',
-        text: 'Scale up compute cluster nodes 3x immediately, swallowing the cloud cost until next sprint.',
-        type: 'costly'
-      },
-      {
-        id: 'opt3',
-        text: 'Drop non-critical metadata columns at the gateway level to reduce payload size by 60% with zero downtime.',
-        type: 'pragmatic'
-      }
-    ]
-  },
-  {
-    id: 's2',
-    time: '2:15 PM — Cross-Functional Product Sync',
-    title: 'AI Feature Latency vs Accuracy Dilemma',
-    description: 'The product manager wants to ship an LLM summary feature, but the full 70B model has a 3.8s latency, exceeding the 1.5s SLA.',
-    options: [
-      {
-        id: 'opt1',
-        text: 'Implement a speculative routing pipeline: use an 8B model for 85% of standard queries, falling back to 70B only on complex edge cases.',
-        type: 'optimal'
-      },
-      {
-        id: 'opt2',
-        text: 'Ask the product team to compromise the SLA to 4.0s for the initial launch.',
-        type: 'compromise'
-      },
-      {
-        id: 'opt3',
-        text: 'Pre-compute and cache 90% of user summaries asynchronously overnight using batch workers.',
-        type: 'creative'
-      }
-    ]
-  }
-];
+const OUTAGE_SCENARIO = {
+  title: 'SEV-1: High-Volume Ingestion Drop',
+  time: '03:14 AM — On-Call PagerDuty Alert',
+  description: 'The telemetry ingestion pipeline is dropping 15% of events. Business dashboard is throwing 500 errors.',
+  tools: [
+    { id: 'datadog', label: 'Check Datadog Logs', icon: Activity, delay: 1500, log: '[Datadog] ERRO: Redis OOM (Out of Memory) detected on ingress-cache-01.' },
+    { id: 'query_db', label: 'Query Postgres DB', icon: Database, delay: 2000, log: '[Postgres] Conn_Pool_Exhausted. 100/100 active connections.' },
+    { id: 'restart_pod', label: 'Restart K8s Pod', icon: RefreshCw, delay: 3000, log: '[K8s] ingress-cache-01 restarted. Memory cleared, but filling up fast.' },
+    { id: 'scale_redis', label: 'Scale Redis Buffer', icon: ServerCrash, delay: 2500, log: '[Infra] Scaled Redis maxmemory to 8GB. Ingestion stabilized.' }
+  ]
+};
 
-export default function DayInTheLifeModal({ 
-  isOpen, 
-  onClose, 
-  targetRoleTitle, 
-  learnerName 
-}) {
-  const [currentScenarioIdx, setCurrentScenarioIdx] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [feedback, setFeedback] = useState(null);
-  const [loading, setLoading] = useState(false);
+export default function DayInTheLifeModal({ isOpen, onClose, targetRoleTitle }) {
+  const [logs, setLogs] = useState([]);
+  const [slackMessages, setSlackMessages] = useState([]);
+  const [activeTools, setActiveTools] = useState(new Set());
+  const [isResolved, setIsResolved] = useState(false);
   const [score, setScore] = useState(0);
-  const [completed, setCompleted] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setLogs([]);
+      setSlackMessages([]);
+      setActiveTools(new Set());
+      setIsResolved(false);
+      setScore(0);
+      return;
+    }
+
+    // Initial sequence
+    setLogs([{ text: `[SYSTEM] Authenticated as ${targetRoleTitle || 'Senior Engineer'}`, time: '03:14:00' }]);
+    
+    setTimeout(() => {
+      setLogs(prev => [...prev, { text: `[PAGERDUTY] SEV-1 ALARM: 15% packet drop on ingestion pipeline.`, time: '03:14:05', alert: true }]);
+    }, 1000);
+
+    setTimeout(() => {
+      setSlackMessages([{ sender: '@product_manager', msg: 'Hey, the live ops dashboard is down! Are we losing data??' }]);
+    }, 2500);
+
+  }, [isOpen]);
+
+  const handleUseTool = (tool) => {
+    if (activeTools.has(tool.id) || isResolved) return;
+    
+    setActiveTools(prev => new Set(prev).add(tool.id));
+    setLogs(prev => [...prev, { text: `> Executing: ${tool.label}...`, time: new Date().toLocaleTimeString('en-US', { hour12: false }) }]);
+    
+    setTimeout(() => {
+      setLogs(prev => [...prev, { text: tool.log, time: new Date().toLocaleTimeString('en-US', { hour12: false }) }]);
+      
+      // Dynamic Slack Reactions
+      if (tool.id === 'datadog') {
+        setSlackMessages(prev => [...prev, { sender: '@devops_lead', msg: 'OOM error? Check the redis maxmemory config.' }]);
+      }
+      
+      if (tool.id === 'scale_redis') {
+        setSlackMessages(prev => [...prev, { sender: '@devops_lead', msg: 'Nice catch. Memory looks stable now.' }]);
+        setTimeout(() => setIsResolved(true), 2000);
+        setScore(prev => prev + 150);
+      } else {
+        setScore(prev => prev + 25);
+      }
+    }, tool.delay);
+  };
 
   if (!isOpen) return null;
 
-  const currentScenario = SCENARIOS[currentScenarioIdx];
-
-  const handleSelectOption = async (option) => {
-    setSelectedOption(option);
-    setLoading(true);
-
-    const prompt = `I am roleplaying as a ${targetRoleTitle || 'Senior Engineer'}. 
-Scenario: ${currentScenario.title} (${currentScenario.description})
-My Decision: "${option.text}"
-Evaluate my technical and leadership decision in 3 concise bullet points: Strengths, Tradeoffs, and Senior Advice.`;
-
-    try {
-      const liveFeedback = await fetchMentorChat(prompt, currentScenario.title, targetRoleTitle);
-      setFeedback(liveFeedback || `✅ **Senior Evaluation**: Solid pragmatic decision! Implementing this isolates immediate risk while maintaining system resilience. Bonus points for addressing latency SLAs directly.`);
-      setScore(prev => prev + 50);
-    } catch (err) {
-      setFeedback(`✅ **Senior Evaluation**: Excellent architectural judgment! This demonstrates strong tradeoff awareness required at the senior level.`);
-      setScore(prev => prev + 50);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentScenarioIdx < SCENARIOS.length - 1) {
-      setCurrentScenarioIdx(prev => prev + 1);
-      setSelectedOption(null);
-      setFeedback(null);
-    } else {
-      setCompleted(true);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+      <div className="bg-[#0a0a0a] border border-slate-800 rounded-xl w-full max-w-5xl h-[85vh] flex flex-col font-mono shadow-2xl overflow-hidden relative">
         
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-blue-50/60">
+        {/* Header - Hacker Style */}
+        <div className="bg-[#111] px-4 py-3 border-b border-slate-800 flex justify-between items-center shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-500/25">
-              <Zap className="w-5 h-5" />
+            <ShieldCheck className="w-5 h-5 text-emerald-500" />
+            <span className="text-slate-300 font-bold text-sm tracking-widest uppercase">Incident War Room RPG</span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-xs text-rose-500 font-bold animate-pulse">SLA: 14m 22s</span>
+            <button onClick={onClose} className="text-slate-500 hover:text-white transition">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Main Grid */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 min-h-0">
+          
+          {/* Left Panel: Scenario & Tools */}
+          <div className="border-r border-slate-800 flex flex-col min-h-0 bg-[#0f0f0f]">
+            <div className="p-4 border-b border-slate-800 shrink-0">
+              <span className="text-rose-500 text-[10px] font-bold uppercase tracking-widest">{OUTAGE_SCENARIO.time}</span>
+              <h2 className="text-white text-lg font-bold mt-1 leading-tight">{OUTAGE_SCENARIO.title}</h2>
+              <p className="text-slate-400 text-xs mt-2 leading-relaxed">{OUTAGE_SCENARIO.description}</p>
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="font-extrabold text-slate-900 font-outfit text-sm">
-                  "Day in the Life" Career Simulator
-                </h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                  Interactive Roleplay
-                </span>
+            
+            <div className="p-4 flex-1 overflow-y-auto">
+              <h3 className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                <Terminal className="w-3 h-3" /> Available Actions
+              </h3>
+              <div className="space-y-2">
+                {OUTAGE_SCENARIO.tools.map((tool) => (
+                  <button
+                    key={tool.id}
+                    disabled={activeTools.has(tool.id) || isResolved}
+                    onClick={() => handleUseTool(tool)}
+                    className={`w-full p-3 rounded-lg border text-left text-xs font-bold flex items-center space-x-3 transition ${
+                      activeTools.has(tool.id)
+                        ? 'bg-[#111] border-slate-800 text-slate-600 cursor-not-allowed'
+                        : 'bg-[#1a1a1a] border-slate-700 text-slate-300 hover:border-emerald-500 hover:text-emerald-400'
+                    }`}
+                  >
+                    <tool.icon className={`w-4 h-4 ${activeTools.has(tool.id) ? 'text-slate-600' : 'text-blue-500'}`} />
+                    <span>{tool.label}</span>
+                  </button>
+                ))}
               </div>
-              <p className="text-xs text-slate-500">
-                Experience real production decisions for <strong className="text-slate-800">{targetRoleTitle || 'Senior Role'}</strong>
-              </p>
             </div>
           </div>
 
-          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1">
-          
-          {completed ? (
-            <div className="p-8 text-center space-y-4 animate-fadeIn">
-              <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto ring-4 ring-emerald-50 shadow-md">
-                <Award className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="text-xl font-extrabold text-slate-900 font-outfit">Roleplay Simulation Complete!</h3>
-                <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
-                  You successfully resolved high-stakes architectural tradeoffs for <strong>{targetRoleTitle}</strong> with senior-level decision making.
-                </p>
-              </div>
-
-              <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 font-bold text-sm">
-                <Sparkles className="w-4 h-4 text-blue-600" />
-                <span>Awarded +{score} Role Readiness XP!</span>
-              </div>
-
-              <div className="pt-4">
-                <button
-                  onClick={onClose}
-                  className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition"
-                >
-                  Return to Learning Roadmap
+          {/* Middle Panel: Terminal Logs */}
+          <div className="col-span-1 md:col-span-2 flex flex-col min-h-0 bg-black relative">
+            
+            {/* Resolution Overlay */}
+            {isResolved && (
+              <div className="absolute inset-0 bg-emerald-950/40 backdrop-blur-sm z-10 flex flex-col items-center justify-center animate-fadeIn">
+                <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-4 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+                <h2 className="text-3xl font-black text-white font-outfit mb-2">INCIDENT RESOLVED</h2>
+                <p className="text-emerald-400 text-sm font-bold mb-6">+{score} Senior Architect XP</p>
+                <button onClick={onClose} className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition uppercase tracking-widest cursor-pointer">
+                  End Simulation
                 </button>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-5">
-              
-              {/* Scenario Header */}
-              <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-100 space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-blue-700 uppercase tracking-wider">{currentScenario.time}</span>
-                  <span className="text-slate-500">Scenario {currentScenarioIdx + 1} of {SCENARIOS.length}</span>
+            )}
+
+            {/* Terminal Output */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-[11px]" id="rpg-terminal">
+              {logs.map((log, i) => (
+                <div key={i} className={`flex items-start ${log.alert ? 'text-rose-400 font-bold' : 'text-slate-300'}`}>
+                  <span className="text-slate-600 mr-3 shrink-0">[{log.time}]</span>
+                  <span className="leading-relaxed">{log.text}</span>
                 </div>
-                <h4 className="text-sm font-extrabold text-slate-900 font-outfit">{currentScenario.title}</h4>
-                <p className="text-xs text-slate-700 leading-relaxed">{currentScenario.description}</p>
-              </div>
-
-              {/* Options */}
-              <div className="space-y-2.5">
-                <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  How would you handle this as {targetRoleTitle}?
-                </div>
-
-                {currentScenario.options.map((opt, idx) => {
-                  const isSelected = selectedOption?.id === opt.id;
-                  return (
-                    <button
-                      key={opt.id}
-                      disabled={loading || !!feedback}
-                      onClick={() => handleSelectOption(opt)}
-                      className={`w-full text-left p-3.5 rounded-xl border text-xs transition flex items-start space-x-3 ${
-                        isSelected
-                          ? 'bg-blue-50 border-blue-600 ring-2 ring-blue-600/20 text-blue-950 font-semibold'
-                          : 'bg-white border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-700'
-                      }`}
-                    >
-                      <span className="w-5 h-5 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center text-[10px] font-bold text-slate-600 shrink-0 mt-0.5">
-                        {String.fromCharCode(65 + idx)}
-                      </span>
-                      <span className="flex-1 leading-relaxed">{opt.text}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Loading Evaluation */}
-              {loading && (
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center space-x-2 text-xs text-slate-500">
-                  <Bot className="w-4 h-4 text-blue-600 animate-spin-slow" />
-                  <span>Gemini AI is evaluating your architectural decision...</span>
+              ))}
+              {!isResolved && (
+                <div className="flex items-center text-slate-500 pt-2">
+                  <span className="mr-2">&gt;</span><span className="animate-pulse">_</span>
                 </div>
               )}
+            </div>
 
-              {/* AI Feedback Card */}
-              {feedback && (
-                <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 space-y-2 animate-fadeIn">
-                  <div className="text-xs font-bold text-emerald-800 flex items-center space-x-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Gemini AI Executive Feedback (+50 XP):</span>
+            {/* Slack Popups Area */}
+            <div className="h-48 border-t border-slate-800 bg-[#0a0a0a] p-4 overflow-y-auto shrink-0 flex flex-col justify-end space-y-2">
+              <div className="text-[10px] text-slate-600 font-bold uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                <MessageSquare className="w-3 h-3" /> Team Comms
+              </div>
+              {slackMessages.map((msg, i) => (
+                <div key={i} className="bg-[#111] border border-slate-800 rounded-lg p-2.5 flex items-start space-x-3 animate-fadeIn">
+                  <div className="w-6 h-6 rounded bg-indigo-500/20 flex items-center justify-center shrink-0">
+                    <span className="text-indigo-400 font-bold text-[10px]">{msg.sender[1].toUpperCase()}</span>
                   </div>
-                  <div className="text-xs text-emerald-950 leading-relaxed whitespace-pre-line">
-                    {feedback}
-                  </div>
-                  
-                  <div className="pt-2 flex justify-end">
-                    <button
-                      onClick={handleNext}
-                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center space-x-1.5 shadow-xs transition"
-                    >
-                      <span>{currentScenarioIdx < SCENARIOS.length - 1 ? 'Next Workplace Challenge' : 'Complete Roleplay'}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                  <div>
+                    <div className="text-[10px] font-bold text-indigo-400 mb-0.5">{msg.sender}</div>
+                    <div className="text-xs text-slate-300">{msg.msg}</div>
                   </div>
                 </div>
-              )}
-
+              ))}
             </div>
-          )}
+          </div>
 
         </div>
-
       </div>
     </div>
   );

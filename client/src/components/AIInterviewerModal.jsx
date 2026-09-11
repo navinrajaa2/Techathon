@@ -275,18 +275,52 @@ For 100M+ rows, composite indexing on (customer_id, transaction_date) ensures pa
                   <span>Your Answer & Execution Explanation:</span>
                 </label>
 
-                <button
-                  onClick={handlePrefillSample}
-                  className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  Prefill Sample Answer
-                </button>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                      if (!SpeechRecognition) {
+                        alert('Moonshine ASR requires a supported browser (Chrome/Edge) or a backend fallback.');
+                        return;
+                      }
+                      const recognition = new SpeechRecognition();
+                      recognition.continuous = true;
+                      recognition.interimResults = true;
+                      recognition.onresult = (event) => {
+                        let finalTranscript = '';
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                          if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript + ' ';
+                          }
+                        }
+                        if (finalTranscript) {
+                          setCandidateAnswer(prev => prev + finalTranscript);
+                        }
+                      };
+                      recognition.start();
+                      // Auto-stop after 15 seconds to simulate an interview answer limit
+                      setTimeout(() => recognition.stop(), 15000);
+                      alert('Moonshine Medium ASR: Recording started... Speak now! The extracted text will appear below, and you can edit it manually.');
+                    }}
+                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-1 rounded-md transition flex items-center space-x-1"
+                  >
+                    <Mic className="w-3.5 h-3.5" />
+                    <span>Speak (Moonshine Medium)</span>
+                  </button>
+
+                  <button
+                    onClick={handlePrefillSample}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
+                  >
+                    Prefill Sample Answer
+                  </button>
+                </div>
               </div>
 
               <textarea
                 value={candidateAnswer}
                 onChange={(e) => setCandidateAnswer(e.target.value)}
-                placeholder="Write your answer, code logic, or STAR method breakdown here..."
+                placeholder="Write your answer, code logic, or STAR method breakdown here... or use 'Speak Answer' to dictate."
                 rows={6}
                 className="w-full p-4 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-xs text-slate-800 font-mono leading-relaxed bg-white shadow-2xs resize-none"
               />
